@@ -1,0 +1,102 @@
+syntax = "proto3";
+package game_engine;
+
+import "google/protobuf/descriptor.proto";
+
+option go_package = "angelbeltran/game-engine/protoc-gen-game/protos/game_engine_pb";
+
+// Action extensions
+
+extend google.protobuf.ServiceOptions {
+  optional bool is_action_service = 50000;  // TODO: deliberate these numbers
+}
+
+extend google.protobuf.MethodOptions {
+  optional Action action = 50001;  // TODO: deliberate these numbers
+}
+
+message Action {
+  Effect effect = 1;
+  Rule rule = 2;
+  Error error = 3;
+}
+
+message Rule {
+  oneof rule_field {
+    SingleRule single = 1;
+    AndRules and = 2;
+    OrRules or = 3;
+  }
+}
+
+message SingleRule {
+  enum Operator {
+    NO_OP = 0;
+    EQ = 1;
+    NEQ = 2;
+    LT = 3;
+    LTE = 4;
+    GT = 5;
+    GTE = 6;
+  }
+
+  message Operand {
+    oneof contents {
+      Field field = 1;
+      Value value = 2;
+    }
+  }
+
+  Operator operator = 1;
+  Operand left = 2;
+  Operand right = 3;
+}
+
+message AndRules {
+  repeated Rule rules = 1;
+}
+
+message OrRules {
+  repeated Rule rules = 1;
+}
+
+message Effect {
+  message Update {
+    Field dest = 1;
+
+    oneof src {
+      Field src_field = 2;
+      Value src_value = 3;
+    }
+  }
+
+  oneof operation {
+    Update update = 1;
+  }
+}
+
+message Field {
+  repeated string name = 1;
+}
+
+message Value {
+  oneof value {
+    bool bool_value = 1;
+    int64 integer_value = 2;
+    float float_value = 3;
+    string string_value = 4;
+  }
+}
+
+message Error {
+  bool success = 1;
+  string code = 2;
+  string msg = 3;
+}
+
+// State message extension
+
+extend google.protobuf.MessageOptions {
+  optional bool is_game_state = 50002;
+}
+
