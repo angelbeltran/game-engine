@@ -73,7 +73,9 @@ func (e *gameEngine) {{$bundle.Method.GetName}}(ctx context.Context, in *{{$bund
 			}, nil
 		}
 
-		{{printEffect "state" $state $action.Effect}}
+		{{range $_, $effect := $action.Effect}}
+		{{printEffect "state" $state $effect}}
+		{{end}}
 
 		return &game_engine_pb.Error{}, nil
 

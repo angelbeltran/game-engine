@@ -16,7 +16,7 @@ extend google.protobuf.MethodOptions {
 }
 
 message Action {
-  Effect effect = 1;
+  repeated Effect effect = 1;
   Rule rule = 2;
   Error error = 3;
 }

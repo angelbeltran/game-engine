@@ -21,8 +21,10 @@ func validateAction(state types.Type, msg *pb.Action) error {
 	if err := validateRule(state, msg.Rule); err != nil {
 		return fmt.Errorf("invalid rule: %w", err)
 	}
-	if err := validateEffect(state, msg.Effect); err != nil {
-		return fmt.Errorf("invalid effect: %w", err)
+	for _, effect := range msg.Effect {
+		if err := validateEffect(state, effect); err != nil {
+			return fmt.Errorf("invalid effect: %w", err)
+		}
 	}
 
 	return nil
