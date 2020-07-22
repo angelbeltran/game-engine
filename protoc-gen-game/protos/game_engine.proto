@@ -21,6 +21,21 @@ message Action {
   Error error = 3;
 }
 
+message Effect {
+  message Update {
+    Field dest = 1;
+
+    oneof src {
+      Field src_field = 2;
+      Value src_value = 3;
+    }
+  }
+
+  oneof operation {
+    Update update = 1;
+  }
+}
+
 message Rule {
   oneof rule_field {
     SingleRule single = 1;
@@ -58,21 +73,6 @@ message AndRules {
 
 message OrRules {
   repeated Rule rules = 1;
-}
-
-message Effect {
-  message Update {
-    Field dest = 1;
-
-    oneof src {
-      Field src_field = 2;
-      Value src_value = 3;
-    }
-  }
-
-  oneof operation {
-    Update update = 1;
-  }
 }
 
 message Field {
