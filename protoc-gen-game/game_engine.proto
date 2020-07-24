@@ -27,7 +27,7 @@ message Action {
 
 message Effect {
   message Update {
-    Field dest = 1;
+    Property dest = 1;
     Operand src = 2;
   }
 
@@ -37,54 +37,54 @@ message Effect {
 }
 
 message Rule {
+  message Single {
+    enum Operator {
+      NO_OP = 0;
+      EQ = 1;
+      NEQ = 2;
+      LT = 3;
+      LTE = 4;
+      GT = 5;
+      GTE = 6;
+    }
+
+    Operator operator = 1;
+    Operand left = 2;
+    Operand right = 3;
+  }
+
+  message And {
+    repeated Rule rules = 1;
+  }
+
+  message Or {
+    repeated Rule rules = 1;
+  }
+
   oneof rule_field {
-    SingleRule single = 1;
-    AndRules and = 2;
-    OrRules or = 3;
+    Single single = 1;
+    And and = 2;
+    Or or = 3;
   }
-}
-
-message SingleRule {
-  enum Operator {
-    NO_OP = 0;
-    EQ = 1;
-    NEQ = 2;
-    LT = 3;
-    LTE = 4;
-    GT = 5;
-    GTE = 6;
-  }
-
-  Operator operator = 1;
-  Operand left = 2;
-  Operand right = 3;
 }
 
 message Operand {
   oneof operand {
-    Field field = 1;
+    Property prop = 1;
     Value value = 2;
   }
 }
 
-message AndRules {
-  repeated Rule rules = 1;
-}
-
-message OrRules {
-  repeated Rule rules = 1;
-}
-
-message Field {
+message Property {
   repeated string name = 1;
 }
 
 message Value {
   oneof value {
-    bool bool_value = 1;
-    int64 integer_value = 2;
-    float float_value = 3;
-    string string_value = 4;
+    bool bool = 1;
+    int64 integer = 2;
+    float float = 3;
+    string string = 4;
   }
 }
 

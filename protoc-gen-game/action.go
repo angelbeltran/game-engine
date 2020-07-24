@@ -39,14 +39,14 @@ func validateEffect(state types.Type, effect *pb.Effect) error {
 		}
 
 		switch src := up.Src.GetOperand().(type) {
-		case *pb.Operand_Field:
-			if src.Field == nil {
-				return fmt.Errorf("empty effect source field on update effect")
+		case *pb.Operand_Prop:
+			if src.Prop == nil {
+				return fmt.Errorf("empty effect source property on update effect")
 			}
 
 			var exists bool
-			if srcType, exists = getField(state, src.Field.Name); !exists {
-				return fmt.Errorf("update effect source field '%s' does not exist", strings.Join(src.Field.Name, "."))
+			if srcType, exists = getProperty(state, src.Prop.Name); !exists {
+				return fmt.Errorf("update effect source property '%s' does not exist", strings.Join(src.Prop.Name, "."))
 			}
 
 		case *pb.Operand_Value:
@@ -65,9 +65,9 @@ func validateEffect(state types.Type, effect *pb.Effect) error {
 			return fmt.Errorf("missing destination on update effect")
 		}
 
-		destType, exists := getField(state, dest.Name)
+		destType, exists := getProperty(state, dest.Name)
 		if !exists {
-			return fmt.Errorf("update effect destination field '%s' does not exist", strings.Join(dest.Name, "."))
+			return fmt.Errorf("update effect destination property '%s' does not exist", strings.Join(dest.Name, "."))
 		}
 
 		if !srcType.IsSameType(destType) {
@@ -152,8 +152,8 @@ func getOperandType(state types.Type, o *pb.Operand) (types.Type, error) {
 		return getValueType(v)
 	}
 
-	if v := o.GetField(); v != nil {
-		field, exists := getField(state, []string(v.Name))
+	if v := o.GetProp(); v != nil {
+		field, exists := getProperty(state, []string(v.Name))
 		if !exists {
 			return nil, fmt.Errorf("field '%s' does not exist", strings.Join(v.Name, "."))
 		}
@@ -166,20 +166,20 @@ func getOperandType(state types.Type, o *pb.Operand) (types.Type, error) {
 
 func getValueType(val *pb.Value) (types.Type, error) {
 	switch val.Value.(type) {
-	case *pb.Value_BoolValue:
+	case *pb.Value_Bool:
 		return types.Bool{}, nil
-	case *pb.Value_IntegerValue:
+	case *pb.Value_Integer:
 		return types.Integer{}, nil
-	case *pb.Value_FloatValue:
+	case *pb.Value_Float:
 		return types.Float{}, nil
-	case *pb.Value_StringValue:
+	case *pb.Value_String_:
 		return types.String{}, nil
 	}
 
 	return nil, fmt.Errorf("unrecognized operand value type: %T", val.Value)
 }
 
-func getField(t types.Type, path []string) (field types.Type, found bool) {
+func getProperty(t types.Type, path []string) (field types.Type, found bool) {
 	if len(path) == 0 {
 		return nil, false
 	}
@@ -198,55 +198,55 @@ func getField(t types.Type, path []string) (field types.Type, found bool) {
 		return field, found
 	}
 
-	return getField(field, path[1:])
+	return getProperty(field, path[1:])
 }
 
-func validateOperator(t types.Type, op pb.SingleRule_Operator) error {
+func validateOperator(t types.Type, op pb.Rule_Single_Operator) error {
 
 	switch t.(type) {
 	case types.Bool:
 		switch op {
-		case pb.SingleRule_EQ, pb.SingleRule_NEQ:
+		case pb.Rule_Single_EQ, pb.Rule_Single_NEQ:
 		default:
 			return fmt.Errorf("operator %s is incompatible with boolean values", op)
 		}
 	case types.Integer:
 		switch op {
-		case pb.SingleRule_EQ, pb.SingleRule_NEQ,
-			pb.SingleRule_LT, pb.SingleRule_LTE,
-			pb.SingleRule_GT, pb.SingleRule_GTE:
+		case pb.Rule_Single_EQ, pb.Rule_Single_NEQ,
+			pb.Rule_Single_LT, pb.Rule_Single_LTE,
+			pb.Rule_Single_GT, pb.Rule_Single_GTE:
 		default:
 			return fmt.Errorf("operator %s is incompatible with integer values", op)
 		}
 	case types.Float:
 		switch op {
-		case pb.SingleRule_EQ, pb.SingleRule_NEQ,
-			pb.SingleRule_LT, pb.SingleRule_LTE,
-			pb.SingleRule_GT, pb.SingleRule_GTE:
+		case pb.Rule_Single_EQ, pb.Rule_Single_NEQ,
+			pb.Rule_Single_LT, pb.Rule_Single_LTE,
+			pb.Rule_Single_GT, pb.Rule_Single_GTE:
 		default:
 			return fmt.Errorf("operator %s is incompatible with float values", op)
 		}
 	case types.String:
 		switch op {
-		case pb.SingleRule_EQ, pb.SingleRule_NEQ,
-			pb.SingleRule_LT, pb.SingleRule_LTE,
-			pb.SingleRule_GT, pb.SingleRule_GTE:
+		case pb.Rule_Single_EQ, pb.Rule_Single_NEQ,
+			pb.Rule_Single_LT, pb.Rule_Single_LTE,
+			pb.Rule_Single_GT, pb.Rule_Single_GTE:
 		default:
 			return fmt.Errorf("operator %s is incompatible with string values", op)
 		}
 	case types.Bytes:
 		switch op {
-		case pb.SingleRule_EQ, pb.SingleRule_NEQ,
-			pb.SingleRule_LT, pb.SingleRule_LTE,
-			pb.SingleRule_GT, pb.SingleRule_GTE:
+		case pb.Rule_Single_EQ, pb.Rule_Single_NEQ,
+			pb.Rule_Single_LT, pb.Rule_Single_LTE,
+			pb.Rule_Single_GT, pb.Rule_Single_GTE:
 		default:
 			return fmt.Errorf("operator %s is incompatible with bytes values", op)
 		}
 	case types.Enum:
 		switch op {
-		case pb.SingleRule_EQ, pb.SingleRule_NEQ,
-			pb.SingleRule_LT, pb.SingleRule_LTE,
-			pb.SingleRule_GT, pb.SingleRule_GTE:
+		case pb.Rule_Single_EQ, pb.Rule_Single_NEQ,
+			pb.Rule_Single_LT, pb.Rule_Single_LTE,
+			pb.Rule_Single_GT, pb.Rule_Single_GTE:
 		default:
 			return fmt.Errorf("operator %s is incompatible with enum values", op)
 		}

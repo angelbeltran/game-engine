@@ -102,17 +102,17 @@ func printRule(prefix string, rule *pb.Rule) (string, error) {
 		var op string
 
 		switch v := s.GetOperator(); v {
-		case pb.SingleRule_EQ:
+		case pb.Rule_Single_EQ:
 			op = "=="
-		case pb.SingleRule_NEQ:
+		case pb.Rule_Single_NEQ:
 			op = "!="
-		case pb.SingleRule_LT:
+		case pb.Rule_Single_LT:
 			op = "<"
-		case pb.SingleRule_LTE:
+		case pb.Rule_Single_LTE:
 			op = "<="
-		case pb.SingleRule_GT:
+		case pb.Rule_Single_GT:
 			op = ">"
-		case pb.SingleRule_GTE:
+		case pb.Rule_Single_GTE:
 			op = ">="
 		default:
 			return "", fmt.Errorf("unexpected operator: %s", v)
@@ -165,7 +165,7 @@ func printRule(prefix string, rule *pb.Rule) (string, error) {
 }
 
 func encodeOperandWithNilChecks(prefix string, op *pb.Operand) (string, error) {
-	if f := op.GetField(); f != nil {
+	if f := op.GetProp(); f != nil {
 		allButLast := f.Name[:len(f.Name)-1]
 
 		nilChecks := make([]string, len(allButLast))
@@ -196,16 +196,18 @@ func joinCamelCase(a []string) string {
 	return strings.Join(b, ".")
 }
 
+// TODO: merge with 'getValueType' into a 'getValue' func
+
 func extractValue(msg *pb.Value) (interface{}, error) {
 	switch v := msg.GetValue().(type) {
-	case *pb.Value_BoolValue:
-		return v.BoolValue, nil
-	case *pb.Value_IntegerValue:
-		return v.IntegerValue, nil
-	case *pb.Value_FloatValue:
-		return v.FloatValue, nil
-	case *pb.Value_StringValue:
-		return v.StringValue, nil
+	case *pb.Value_Bool:
+		return v.Bool, nil
+	case *pb.Value_Integer:
+		return v.Integer, nil
+	case *pb.Value_Float:
+		return v.Float, nil
+	case *pb.Value_String_:
+		return v.String_, nil
 	}
 
 	return nil, fmt.Errorf("unexpected value type: %T", msg.GetValue())
@@ -280,7 +282,7 @@ func printEffect(prefix string, state *desc.MessageDescriptor, effect *pb.Effect
 			return "", fmt.Errorf("no source specified to update with")
 		}
 
-		if f := src.GetField(); f != nil {
+		if f := src.GetProp(); f != nil {
 			allButLast := f.Name[:len(f.Name)-1]
 			nilChecks := make([]string, len(allButLast))
 			for i := range allButLast {
