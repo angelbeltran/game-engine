@@ -11,6 +11,9 @@ import (
 	"angelbeltran/game-engine/protoc-gen-game/types"
 )
 
+//go:generate protoc -I=protos --go_out=$GOPATH/src game_engine.proto
+//go:generate go mod vendor
+
 func main() {
 	output := os.Stdout
 	os.Stdout = os.Stderr

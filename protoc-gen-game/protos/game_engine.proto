@@ -15,6 +15,11 @@ extend google.protobuf.MethodOptions {
   optional Action action = 50001;  // TODO: deliberate these numbers
 }
 
+extend google.protobuf.MessageOptions {
+  optional bool is_game_state = 50002;  // TODO: deliberate these numbers
+}
+
+
 message Action {
   repeated Effect effect = 1;
   Rule rule = 2;
@@ -93,10 +98,3 @@ message Error {
   string code = 2;
   string msg = 3;
 }
-
-// State message extension
-
-extend google.protobuf.MessageOptions {
-  optional bool is_game_state = 50002;
-}
-

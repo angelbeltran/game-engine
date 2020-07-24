@@ -895,7 +895,7 @@ var (
 // Extension fields to descriptor.MessageOptions.
 var (
 	// optional bool is_game_state = 50002;
-	E_IsGameState = &file_game_engine_proto_extTypes[2]
+	E_IsGameState = &file_game_engine_proto_extTypes[2] // TODO: deliberate these numbers
 )
 
 var File_game_engine_proto protoreflect.FileDescriptor
