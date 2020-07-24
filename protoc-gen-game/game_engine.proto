@@ -27,7 +27,7 @@ message Action {
 
 message Effect {
   message Update {
-    Property dest = 1;
+    Path dest = 1;
     Operand src = 2;
   }
 
@@ -70,13 +70,14 @@ message Rule {
 
 message Operand {
   oneof operand {
-    Property prop = 1;
-    Value value = 2;
+    Value value = 1;
+    Path prop = 2;
+    Path input = 3;
   }
 }
 
-message Property {
-  repeated string name = 1;
+message Path {
+  repeated string path = 1;
 }
 
 message Value {

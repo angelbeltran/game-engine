@@ -71,14 +71,17 @@ func entrypoint(req *plugins.CodeGenRequest, resp *plugins.CodeGenResponse) erro
 			continue
 		}
 
-		// Parse the action option.
+		// Validate the action option.
 
-		if err := validateAction(state, action); err != nil {
+		input := types.FromMessage(method.GetInputType())
+
+		if err := validateAction(state, input, action); err != nil {
 			return err
 		}
 
 		methods = append(methods, methodBundle{
 			Method: method,
+			Input:  input,
 			Action: action,
 		})
 	}

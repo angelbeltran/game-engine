@@ -64,7 +64,7 @@ func (e *gameEngine) {{$bundle.Method.GetName}}(ctx context.Context, in *{{$bund
 		state.Lock()
 		defer state.Unlock()
 
-		allowed := {{printRule "state" $action.Rule}}
+		allowed := {{printRule "state" "in" $action.Rule}}
 		if !allowed {
 			return &game_engine_pb.Error{
 				Code: {{printf "%q" $action.Error.Code}},
@@ -73,7 +73,7 @@ func (e *gameEngine) {{$bundle.Method.GetName}}(ctx context.Context, in *{{$bund
 		}
 
 		{{range $_, $effect := $action.Effect}}
-		{{printEffect "state" $state $effect}}
+		{{printEffect "state" "in" $state $effect}}
 		{{end}}
 
 		return &game_engine_pb.Error{}, nil
@@ -96,7 +96,7 @@ var state struct{
 
 var goNames plugins.GoNames
 
-func printRule(prefix string, rule *pb.Rule) (string, error) {
+func printRule(statePrefix, inputPrefix string, rule *pb.Rule) (string, error) {
 	if s := rule.GetSingle(); s != nil {
 		var op string
 
@@ -117,12 +117,12 @@ func printRule(prefix string, rule *pb.Rule) (string, error) {
 			return "", fmt.Errorf("unexpected operator: %s", v)
 		}
 
-		lh, err := encodeOperandWithNilChecks(prefix, s.GetLeft())
+		lh, err := printOperandWithNilChecks(statePrefix, inputPrefix, s.GetLeft())
 		if err != nil {
 			return "", err
 		}
 
-		rh, err := encodeOperandWithNilChecks(prefix, s.GetRight())
+		rh, err := printOperandWithNilChecks(statePrefix, inputPrefix, s.GetRight())
 		if err != nil {
 			return "", err
 		}
@@ -134,7 +134,7 @@ func printRule(prefix string, rule *pb.Rule) (string, error) {
 		printed := make([]string, len(and.Rules))
 
 		for i, r := range and.Rules {
-			str, err := printRule(prefix, r)
+			str, err := printRule(statePrefix, inputPrefix, r)
 			if err != nil {
 				return "", err
 			}
@@ -149,7 +149,7 @@ func printRule(prefix string, rule *pb.Rule) (string, error) {
 		printed := make([]string, len(or.Rules))
 
 		for i, r := range or.Rules {
-			str, err := printRule(prefix, r)
+			str, err := printRule(statePrefix, inputPrefix, r)
 			if err != nil {
 				return "", err
 			}
@@ -163,18 +163,7 @@ func printRule(prefix string, rule *pb.Rule) (string, error) {
 	return "", fmt.Errorf("empty rule definition")
 }
 
-func encodeOperandWithNilChecks(prefix string, op *pb.Operand) (string, error) {
-	if f := op.GetProp(); f != nil {
-		allButLast := f.Name[:len(f.Name)-1]
-
-		nilChecks := make([]string, len(allButLast))
-		for i := range allButLast {
-			nilChecks[i] = fmt.Sprintf("%s.%s != nil", prefix, joinCamelCase(f.Name[:i+1]))
-		}
-
-		return strings.Join(append(nilChecks, fmt.Sprintf("%s.%s", prefix, joinCamelCase(f.Name))), " && "), nil
-	}
-
+func printOperandWithNilChecks(statePrefix, inputPrefix string, op *pb.Operand) (string, error) {
 	if v := op.GetValue(); v != nil {
 		_, val, err := extractValue(v)
 		if err != nil {
@@ -182,6 +171,28 @@ func encodeOperandWithNilChecks(prefix string, op *pb.Operand) (string, error) {
 		}
 
 		return fmt.Sprint(val), nil
+	}
+
+	if p := op.GetProp(); p != nil {
+		allButLast := p.Path[:len(p.Path)-1]
+
+		nilChecks := make([]string, len(allButLast))
+		for i := range allButLast {
+			nilChecks[i] = fmt.Sprintf("%s.%s != nil", statePrefix, joinCamelCase(p.Path[:i+1]))
+		}
+
+		return strings.Join(append(nilChecks, fmt.Sprintf("%s.%s", statePrefix, joinCamelCase(p.Path))), " && "), nil
+	}
+
+	if in := op.GetInput(); in != nil {
+		allButLast := in.Path[:len(in.Path)-1]
+
+		nilChecks := make([]string, len(allButLast))
+		for i := range allButLast {
+			nilChecks[i] = fmt.Sprintf("%s.%s != nil", inputPrefix, joinCamelCase(in.Path[:i+1]))
+		}
+
+		return strings.Join(append(nilChecks, fmt.Sprintf("%s.%s", inputPrefix, joinCamelCase(in.Path))), " && "), nil
 	}
 
 	return "", fmt.Errorf("undefined operand")
@@ -195,103 +206,114 @@ func joinCamelCase(a []string) string {
 	return strings.Join(b, ".")
 }
 
-func printEffect(prefix string, state *desc.MessageDescriptor, effect *pb.Effect) (string, error) {
+func printEffect(statePrefix, inputPrefix string, state *desc.MessageDescriptor, effect *pb.Effect) (string, error) {
 	if up := effect.GetUpdate(); up != nil {
+		return printUpdateEffect(statePrefix, inputPrefix, state, up)
+	}
 
-		var (
-			nilCheck        string
-			initializations []string
-			lh              string
-			rh              string
-		)
+	return "", fmt.Errorf("no effect specified")
+}
 
-		dst := up.GetDest()
-		if dst == nil {
-			return "", fmt.Errorf("no field specified to be set in update")
+func printUpdateEffect(statePrefix, inputPrefix string, state *desc.MessageDescriptor, up *pb.Effect_Update) (string, error) {
+	var (
+		nilCheck        string
+		initializations []string
+		lh              string
+		rh              string
+	)
+
+	dst := up.GetDest()
+	if dst == nil {
+		return "", fmt.Errorf("no property specified to be set in update")
+	}
+
+	allButLast := dst.Path[:len(dst.Path)-1]
+	initializations = make([]string, len(allButLast))
+
+	msgType := state
+
+	for i, name := range allButLast {
+		field := msgType.FindFieldByName(name)
+		if field == nil {
+			return "", fmt.Errorf("no field under the path %s found in the state message description", strings.Join(dst.Path[:i+1], "."))
 		}
 
-		allButLast := dst.Name[:len(dst.Name)-1]
-		initializations = make([]string, len(allButLast))
+		if msgType = field.GetMessageType(); msgType == nil {
+			return "", fmt.Errorf("failed to look up message type for field %s in the state message description", strings.Join(dst.Path[:i+1], ","))
+		}
 
-		msgType := state
+		typeName := goNames.GoTypeOfField(field).String()
 
-		for i, name := range allButLast {
-			field := msgType.FindFieldByName(name)
-			if field == nil {
-				return "", fmt.Errorf("no field under the path %s found in the state message description", strings.Join(dst.Name[:i+1], "."))
-			}
+		if !strings.HasPrefix(typeName, "*") {
+			// no initialization needed since the
+			// field is a not a pointer.
+			continue
+		}
 
-			if msgType = field.GetMessageType(); msgType == nil {
-				return "", fmt.Errorf("failed to look up message type for field %s in the state message description", strings.Join(dst.Name[:i+1], ","))
-			}
+		typeName = typeName[1:]
 
-			typeName := goNames.GoTypeOfField(field).String()
+		parts := strings.Split(typeName, ".")
 
-			isPtr := strings.HasPrefix(typeName, "*")
-			if !isPtr {
-				// no initialization needed since the
-				// field is a not a pointer.
-				continue
-			}
+		switch len(parts) {
+		case 1:
+		case 2:
+			// remove the package name prefix.
+			typeName = parts[1]
+		default:
+			return "", fmt.Errorf("type name has more that one '.': %s", typeName)
+		}
 
-			typeName = typeName[1:]
+		fullStateFieldName := fmt.Sprintf("%s.%s", statePrefix, joinCamelCase(allButLast[:i+1]))
 
-			parts := strings.Split(typeName, ".")
-
-			switch len(parts) {
-			case 1:
-			case 2:
-				// remove the package name prefix.
-				typeName = parts[1]
-			default:
-				return "", fmt.Errorf("type name has more that one '.': %s", typeName)
-			}
-
-			fullStateFieldName := fmt.Sprintf("%s.%s", prefix, joinCamelCase(allButLast[:i+1]))
-
-			initializations = append(initializations, `
+		initializations = append(initializations, `
 					if `+fullStateFieldName+` == nil {
 						`+fullStateFieldName+` = &`+typeName+`{}
 					}
 				`)
 
-		}
-
-		lh = fmt.Sprintf("%s.%s", prefix, joinCamelCase(dst.Name))
-
-		src := up.GetSrc()
-		if src == nil {
-			return "", fmt.Errorf("no source specified to update with")
-		}
-
-		if f := src.GetProp(); f != nil {
-			allButLast := f.Name[:len(f.Name)-1]
-			nilChecks := make([]string, len(allButLast))
-			for i := range allButLast {
-				nilChecks[i] = fmt.Sprintf("(%s.%s != nil)", prefix, joinCamelCase(f.Name[:i+1]))
-			}
-			nilCheck = strings.Join(nilChecks, " && ")
-
-			rh = fmt.Sprintf("%s.%s", prefix, joinCamelCase(f.Name))
-		} else if v := src.GetValue(); v != nil {
-			_, val, err := extractValue(v)
-			if err != nil {
-				return "", err
-			}
-
-			rh = fmt.Sprint(val)
-		} else {
-			return "", fmt.Errorf("no source field or value specified to update with")
-		}
-
-		res := lh + " = " + rh
-
-		if nilCheck != "" {
-			res = `if ` + nilCheck + ` { ` + res + ` }`
-		}
-
-		return strings.Join(initializations, "\n") + "\n\n" + res, nil
 	}
 
-	return "", fmt.Errorf("no effect specified")
+	lh = fmt.Sprintf("%s.%s", statePrefix, joinCamelCase(dst.Path))
+
+	src := up.GetSrc()
+	if src == nil {
+		return "", fmt.Errorf("no source specified to update with")
+	}
+
+	if v := src.GetValue(); v != nil {
+		_, val, err := extractValue(v)
+		if err != nil {
+			return "", err
+		}
+
+		rh = fmt.Sprint(val)
+	} else {
+		var p *pb.Path
+		var prefix string
+
+		if p = src.GetProp(); p != nil {
+			prefix = statePrefix
+		} else if p = src.GetInput(); p != nil {
+			prefix = inputPrefix
+		} else {
+			return "", fmt.Errorf("no source property or value specified to update with")
+		}
+
+		allButLast := p.Path[:len(p.Path)-1]
+		nilChecks := make([]string, len(allButLast))
+		for i := range allButLast {
+			nilChecks[i] = fmt.Sprintf("(%s.%s != nil)", prefix, joinCamelCase(p.Path[:i+1]))
+		}
+		nilCheck = strings.Join(nilChecks, " && ")
+
+		rh = fmt.Sprintf("%s.%s", prefix, joinCamelCase(p.Path))
+	}
+
+	res := lh + " = " + rh
+
+	if nilCheck != "" {
+		res = `if ` + nilCheck + ` { ` + res + ` }`
+	}
+
+	return strings.Join(initializations, "\n") + "\n\n" + res, nil
 }

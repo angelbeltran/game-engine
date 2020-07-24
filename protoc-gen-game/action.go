@@ -8,7 +8,7 @@ import (
 	"angelbeltran/game-engine/protoc-gen-game/types"
 )
 
-func validateAction(state types.Type, msg *pb.Action) error {
+func validateAction(state, input types.Type, msg *pb.Action) error {
 	if msg.Error == nil || (len(msg.Error.Code)+len(msg.Error.Msg) == 0) {
 		return fmt.Errorf("no error defined on action")
 	}
@@ -18,11 +18,11 @@ func validateAction(state types.Type, msg *pb.Action) error {
 	if msg.Effect == nil {
 		return fmt.Errorf("no effect defined on action")
 	}
-	if err := validateRule(state, msg.Rule); err != nil {
+	if err := validateRule(state, input, msg.Rule); err != nil {
 		return fmt.Errorf("invalid rule: %w", err)
 	}
 	for _, effect := range msg.Effect {
-		if err := validateEffect(state, effect); err != nil {
+		if err := validateEffect(state, input, effect); err != nil {
 			return fmt.Errorf("invalid effect: %w", err)
 		}
 	}
@@ -30,7 +30,7 @@ func validateAction(state types.Type, msg *pb.Action) error {
 	return nil
 }
 
-func validateEffect(state types.Type, effect *pb.Effect) error {
+func validateEffect(state, input types.Type, effect *pb.Effect) error {
 	if up := effect.GetUpdate(); up != nil {
 		var srcType types.Type
 
@@ -39,16 +39,6 @@ func validateEffect(state types.Type, effect *pb.Effect) error {
 		}
 
 		switch src := up.Src.GetOperand().(type) {
-		case *pb.Operand_Prop:
-			if src.Prop == nil {
-				return fmt.Errorf("empty effect source property on update effect")
-			}
-
-			var exists bool
-			if srcType, exists = getProperty(state, src.Prop.Name); !exists {
-				return fmt.Errorf("update effect source property '%s' does not exist", strings.Join(src.Prop.Name, "."))
-			}
-
 		case *pb.Operand_Value:
 			if src.Value == nil {
 				return fmt.Errorf("empty effect source value on update effect")
@@ -58,6 +48,26 @@ func validateEffect(state types.Type, effect *pb.Effect) error {
 			if srcType, _, err = extractValue(src.Value); err != nil {
 				return err
 			}
+
+		case *pb.Operand_Prop:
+			if src.Prop == nil {
+				return fmt.Errorf("empty effect source property on update effect")
+			}
+
+			var exists bool
+			if srcType, exists = resolvePath(state, src.Prop.Path); !exists {
+				return fmt.Errorf("update effect source property '%s' does not exist", strings.Join(src.Prop.Path, "."))
+			}
+
+		case *pb.Operand_Input:
+			if src.Input == nil {
+				return fmt.Errorf("empty effect source input on update effect")
+			}
+
+			var exists bool
+			if srcType, exists = resolvePath(input, src.Input.Path); !exists {
+				return fmt.Errorf("update effect source input '%s' does not exist", strings.Join(src.Input.Path, "."))
+			}
 		}
 
 		dest := up.GetDest()
@@ -65,9 +75,9 @@ func validateEffect(state types.Type, effect *pb.Effect) error {
 			return fmt.Errorf("missing destination on update effect")
 		}
 
-		destType, exists := getProperty(state, dest.Name)
+		destType, exists := resolvePath(state, dest.Path)
 		if !exists {
-			return fmt.Errorf("update effect destination property '%s' does not exist", strings.Join(dest.Name, "."))
+			return fmt.Errorf("update effect destination property '%s' does not exist", strings.Join(dest.Path, "."))
 		}
 
 		if !srcType.IsSameType(destType) {
@@ -80,7 +90,7 @@ func validateEffect(state types.Type, effect *pb.Effect) error {
 	return fmt.Errorf("unrecognized effect type: %T", effect.GetOperation())
 }
 
-func validateRule(state types.Type, rule *pb.Rule) error {
+func validateRule(state, input types.Type, rule *pb.Rule) error {
 	if exp := rule.GetSingle(); exp != nil {
 		if exp.Left == nil {
 			return fmt.Errorf("missing left-hand operand")
@@ -92,12 +102,12 @@ func validateRule(state types.Type, rule *pb.Rule) error {
 			return fmt.Errorf("missing operator")
 		}
 
-		lh, err := getOperandType(state, exp.Left)
+		lh, err := resolveOperandType(state, input, exp.Left)
 		if err != nil {
 			return fmt.Errorf("invalid left-hand operand: %w", err)
 		}
 
-		rh, err := getOperandType(state, exp.Right)
+		rh, err := resolveOperandType(state, input, exp.Right)
 		if err != nil {
 			return fmt.Errorf("invalid right-hand operand: %w", err)
 		}
@@ -120,7 +130,7 @@ func validateRule(state types.Type, rule *pb.Rule) error {
 		}
 
 		for _, r := range rules {
-			if err := validateRule(state, r); err != nil {
+			if err := validateRule(state, input, r); err != nil {
 				return err
 			}
 		}
@@ -135,7 +145,7 @@ func validateRule(state types.Type, rule *pb.Rule) error {
 		}
 
 		for _, r := range rules {
-			if err := validateRule(state, r); err != nil {
+			if err := validateRule(state, input, r); err != nil {
 				return err
 			}
 		}
@@ -146,7 +156,7 @@ func validateRule(state types.Type, rule *pb.Rule) error {
 	return fmt.Errorf("rule with no conditions found")
 }
 
-func getOperandType(state types.Type, o *pb.Operand) (types.Type, error) {
+func resolveOperandType(state, input types.Type, o *pb.Operand) (types.Type, error) {
 
 	if v := o.GetValue(); v != nil {
 		t, _, err := extractValue(v)
@@ -154,52 +164,46 @@ func getOperandType(state types.Type, o *pb.Operand) (types.Type, error) {
 	}
 
 	if v := o.GetProp(); v != nil {
-		field, exists := getProperty(state, []string(v.Name))
+		property, exists := resolvePath(state, []string(v.Path))
 		if !exists {
-			return nil, fmt.Errorf("field '%s' does not exist", strings.Join(v.Name, "."))
+			return nil, fmt.Errorf("property '%s' does not exist", strings.Join(v.Path, "."))
 		}
 
-		return field, nil
+		return property, nil
+	}
+
+	if v := o.GetInput(); v != nil {
+		input, exists := resolvePath(state, []string(v.Path))
+		if !exists {
+			return nil, fmt.Errorf("input '%s' does not exist", strings.Join(v.Path, "."))
+		}
+
+		return input, nil
 	}
 
 	return nil, fmt.Errorf("unexpected operand type: %T", o)
 }
 
-func extractValue(msg *pb.Value) (types.Type, interface{}, error) {
-	switch v := msg.GetValue().(type) {
-	case *pb.Value_Bool:
-		return types.Bool{}, v.Bool, nil
-	case *pb.Value_Integer:
-		return types.Integer{}, v.Integer, nil
-	case *pb.Value_Float:
-		return types.Float{}, v.Float, nil
-	case *pb.Value_String_:
-		return types.String{}, v.String_, nil
-	}
-
-	return nil, nil, fmt.Errorf("unexpected value type: %T", msg.GetValue())
-}
-
-func getProperty(t types.Type, path []string) (field types.Type, found bool) {
+func resolvePath(t types.Type, path []string) (prop types.Type, found bool) {
 	if len(path) == 0 {
 		return nil, false
 	}
 
 	switch v := t.(type) {
 	case types.OneOf:
-		field, found = v[path[0]]
+		prop, found = v[path[0]]
 	case types.Structured:
-		field, found = v[path[0]]
+		prop, found = v[path[0]]
 	case types.Map:
-		field = v.Value
+		prop = v.Value
 		found = true
 	}
 
 	if len(path) == 1 || !found {
-		return field, found
+		return prop, found
 	}
 
-	return getProperty(field, path[1:])
+	return resolvePath(prop, path[1:])
 }
 
 func validateOperator(t types.Type, op pb.Rule_Single_Operator) error {
@@ -252,13 +256,13 @@ func validateOperator(t types.Type, op pb.Rule_Single_Operator) error {
 			return fmt.Errorf("operator %s is incompatible with enum values", op)
 		}
 	case types.OneOf:
-		return fmt.Errorf("no direct operator support exists for oneofs at this time. please reference one of its fields")
+		return fmt.Errorf("no direct operator support exists for oneofs at this time. please reference one of its properties")
 	case types.List:
 		return fmt.Errorf("no direct operator support exists for lists at this time")
 	case types.Structured:
-		return fmt.Errorf("no direct operator support exists for structured at this time. please reference one of its fields")
+		return fmt.Errorf("no direct operator support exists for structured at this time. please reference one of its properties")
 	case types.Map:
-		return fmt.Errorf("no direct operator support exists for maps at this time. please reference one of its fields")
+		return fmt.Errorf("no direct operator support exists for maps at this time. please reference one of its properties")
 	default:
 		return fmt.Errorf("unrecognized operand type: %T", t)
 	}

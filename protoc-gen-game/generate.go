@@ -15,6 +15,7 @@ import (
 type (
 	methodBundle struct {
 		Method *desc.MethodDescriptor
+		Input  types.Type
 		Action *pb.Action
 	}
 
