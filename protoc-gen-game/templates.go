@@ -221,63 +221,66 @@ func printEffect(prefix string, state *desc.MessageDescriptor, effect *pb.Effect
 			rh              string
 		)
 
-		if f := up.GetDest(); f != nil {
+		dst := up.GetDest()
+		if dst == nil {
+			return "", fmt.Errorf("no field specified to be set in update")
+		}
 
-			allButLast := f.Name[:len(f.Name)-1]
-			initializations = make([]string, len(allButLast))
+		allButLast := dst.Name[:len(dst.Name)-1]
+		initializations = make([]string, len(allButLast))
 
-			msgType := state
+		msgType := state
 
-			for i, name := range allButLast {
-				field := msgType.FindFieldByName(name)
-				if field == nil {
-					return "", fmt.Errorf("no field under the path %s found in the state message description", strings.Join(f.Name[:i+1], "."))
-				}
+		for i, name := range allButLast {
+			field := msgType.FindFieldByName(name)
+			if field == nil {
+				return "", fmt.Errorf("no field under the path %s found in the state message description", strings.Join(dst.Name[:i+1], "."))
+			}
 
-				if msgType = field.GetMessageType(); msgType == nil {
-					return "", fmt.Errorf("failed to look up message type for field %s in the state message description", strings.Join(f.Name[:i+1], ","))
-				}
+			if msgType = field.GetMessageType(); msgType == nil {
+				return "", fmt.Errorf("failed to look up message type for field %s in the state message description", strings.Join(dst.Name[:i+1], ","))
+			}
 
-				typeName := goNames.GoTypeOfField(field).String()
+			typeName := goNames.GoTypeOfField(field).String()
 
-				isPtr := strings.HasPrefix(typeName, "*")
-				if !isPtr {
-					// no initialization needed since the
-					// field is a not a pointer.
-					continue
-				}
+			isPtr := strings.HasPrefix(typeName, "*")
+			if !isPtr {
+				// no initialization needed since the
+				// field is a not a pointer.
+				continue
+			}
 
-				typeName = typeName[1:]
+			typeName = typeName[1:]
 
-				parts := strings.Split(typeName, ".")
+			parts := strings.Split(typeName, ".")
 
-				switch len(parts) {
-				case 1:
-				case 2:
-					// remove the package name prefix.
-					typeName = parts[1]
-				default:
-					return "", fmt.Errorf("type name has more that one '.': %s", typeName)
-				}
+			switch len(parts) {
+			case 1:
+			case 2:
+				// remove the package name prefix.
+				typeName = parts[1]
+			default:
+				return "", fmt.Errorf("type name has more that one '.': %s", typeName)
+			}
 
-				fullStateFieldName := fmt.Sprintf("%s.%s", prefix, joinCamelCase(allButLast[:i+1]))
+			fullStateFieldName := fmt.Sprintf("%s.%s", prefix, joinCamelCase(allButLast[:i+1]))
 
-				initializations = append(initializations, `
+			initializations = append(initializations, `
 					if `+fullStateFieldName+` == nil {
 						`+fullStateFieldName+` = &`+typeName+`{}
 					}
 				`)
 
-			}
-
-			lh = fmt.Sprintf("%s.%s", prefix, joinCamelCase(f.Name))
-
-		} else {
-			return "", fmt.Errorf("no field specified to be set in update")
 		}
 
-		if f := up.GetSrcField(); f != nil {
+		lh = fmt.Sprintf("%s.%s", prefix, joinCamelCase(dst.Name))
 
+		src := up.GetSrc()
+		if src == nil {
+			return "", fmt.Errorf("no source specified to update with")
+		}
+
+		if f := src.GetField(); f != nil {
 			allButLast := f.Name[:len(f.Name)-1]
 			nilChecks := make([]string, len(allButLast))
 			for i := range allButLast {
@@ -286,18 +289,15 @@ func printEffect(prefix string, state *desc.MessageDescriptor, effect *pb.Effect
 			nilCheck = strings.Join(nilChecks, " && ")
 
 			rh = fmt.Sprintf("%s.%s", prefix, joinCamelCase(f.Name))
-
-		} else if v := up.GetSrcValue(); v != nil {
-
+		} else if v := src.GetValue(); v != nil {
 			val, err := extractValue(v)
 			if err != nil {
 				return "", err
 			}
 
 			rh = fmt.Sprint(val)
-
 		} else {
-			return "", fmt.Errorf("no field or value specified to update with")
+			return "", fmt.Errorf("no source field or value specified to update with")
 		}
 
 		res := lh + " = " + rh

@@ -34,24 +34,24 @@ func validateEffect(state types.Type, effect *pb.Effect) error {
 	if up := effect.GetUpdate(); up != nil {
 		var srcType types.Type
 
-		switch src := up.GetSrc().(type) {
-		case *pb.Effect_Update_SrcField:
-			if src.SrcField == nil {
+		switch src := up.Src.GetSrc().(type) {
+		case *pb.Effect_Src_Field:
+			if src.Field == nil {
 				return fmt.Errorf("empty effect source field on update effect")
 			}
 
 			var exists bool
-			if srcType, exists = getField(state, src.SrcField.Name); !exists {
-				return fmt.Errorf("update effect source field '%s' does not exist", strings.Join(src.SrcField.Name, "."))
+			if srcType, exists = getField(state, src.Field.Name); !exists {
+				return fmt.Errorf("update effect source field '%s' does not exist", strings.Join(src.Field.Name, "."))
 			}
 
-		case *pb.Effect_Update_SrcValue:
-			if src.SrcValue == nil {
+		case *pb.Effect_Src_Value:
+			if src.Value == nil {
 				return fmt.Errorf("empty effect source value on update effect")
 			}
 
 			var err error
-			if srcType, err = getValueType(src.SrcValue); err != nil {
+			if srcType, err = getValueType(src.Value); err != nil {
 				return err
 			}
 		}
