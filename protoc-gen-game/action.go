@@ -55,7 +55,7 @@ func validateEffect(state types.Type, effect *pb.Effect) error {
 			}
 
 			var err error
-			if srcType, err = getValueType(src.Value); err != nil {
+			if srcType, _, err = extractValue(src.Value); err != nil {
 				return err
 			}
 		}
@@ -149,7 +149,8 @@ func validateRule(state types.Type, rule *pb.Rule) error {
 func getOperandType(state types.Type, o *pb.Operand) (types.Type, error) {
 
 	if v := o.GetValue(); v != nil {
-		return getValueType(v)
+		t, _, err := extractValue(v)
+		return t, err
 	}
 
 	if v := o.GetProp(); v != nil {
@@ -164,19 +165,19 @@ func getOperandType(state types.Type, o *pb.Operand) (types.Type, error) {
 	return nil, fmt.Errorf("unexpected operand type: %T", o)
 }
 
-func getValueType(val *pb.Value) (types.Type, error) {
-	switch val.Value.(type) {
+func extractValue(msg *pb.Value) (types.Type, interface{}, error) {
+	switch v := msg.GetValue().(type) {
 	case *pb.Value_Bool:
-		return types.Bool{}, nil
+		return types.Bool{}, v.Bool, nil
 	case *pb.Value_Integer:
-		return types.Integer{}, nil
+		return types.Integer{}, v.Integer, nil
 	case *pb.Value_Float:
-		return types.Float{}, nil
+		return types.Float{}, v.Float, nil
 	case *pb.Value_String_:
-		return types.String{}, nil
+		return types.String{}, v.String_, nil
 	}
 
-	return nil, fmt.Errorf("unrecognized operand value type: %T", val.Value)
+	return nil, nil, fmt.Errorf("unexpected value type: %T", msg.GetValue())
 }
 
 func getProperty(t types.Type, path []string) (field types.Type, found bool) {
