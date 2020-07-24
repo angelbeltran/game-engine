@@ -7,7 +7,7 @@ import (
 	"github.com/jhump/protoreflect/desc"
 	"github.com/jhump/protoreflect/dynamic"
 
-	pb "angelbeltran/game-engine/protoc-gen-game/protos/game_engine_pb"
+	pb "angelbeltran/game-engine/protoc-gen-game/game_engine_pb"
 )
 
 func createMessageFactoryWithActionExtension(files []*desc.FileDescriptor) (*dynamic.MessageFactory, error) {

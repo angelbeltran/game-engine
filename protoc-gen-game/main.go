@@ -11,7 +11,9 @@ import (
 	"angelbeltran/game-engine/protoc-gen-game/types"
 )
 
-//go:generate protoc -I=protos --go_out=$GOPATH/src game_engine.proto
+// -- go:generate protoc -I=protos --go_out=$GOPATH/src game_engine.proto
+// TODO
+//go:generate protoc -I=. --go_out=$GOPATH/src game_engine.proto
 //go:generate go mod vendor
 
 func main() {
@@ -81,7 +83,7 @@ func entrypoint(req *plugins.CodeGenRequest, resp *plugins.CodeGenResponse) erro
 		})
 	}
 
-	w := resp.OutputFile("engine.go")
+	w := resp.OutputFile("engine.pb.go")
 
 	if err := generateAll(w, generationOptions{
 		Package:   pkgName,
