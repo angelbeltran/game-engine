@@ -19,7 +19,6 @@ extend google.protobuf.MessageOptions {
   optional bool is_game_state = 50002;  // TODO: deliberate these numbers
 }
 
-
 message Action {
   repeated Effect effect = 1;
   Rule rule = 2;
@@ -27,16 +26,9 @@ message Action {
 }
 
 message Effect {
-  message Src {
-    oneof src {
-      Field field = 1;
-      Value value = 2;
-    }
-  }
-
   message Update {
     Field dest = 1;
-    Src src = 2;
+    Operand src = 2;
   }
 
   oneof operation {
@@ -63,16 +55,16 @@ message SingleRule {
     GTE = 6;
   }
 
-  message Operand {
-    oneof contents {
-      Field field = 1;
-      Value value = 2;
-    }
-  }
-
   Operator operator = 1;
   Operand left = 2;
   Operand right = 3;
+}
+
+message Operand {
+  oneof operand {
+    Field field = 1;
+    Value value = 2;
+  }
 }
 
 message AndRules {

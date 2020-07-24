@@ -316,8 +316,8 @@ type SingleRule struct {
 	unknownFields protoimpl.UnknownFields
 
 	Operator SingleRule_Operator `protobuf:"varint,1,opt,name=operator,proto3,enum=game_engine.SingleRule_Operator" json:"operator,omitempty"`
-	Left     *SingleRule_Operand `protobuf:"bytes,2,opt,name=left,proto3" json:"left,omitempty"`
-	Right    *SingleRule_Operand `protobuf:"bytes,3,opt,name=right,proto3" json:"right,omitempty"`
+	Left     *Operand            `protobuf:"bytes,2,opt,name=left,proto3" json:"left,omitempty"`
+	Right    *Operand            `protobuf:"bytes,3,opt,name=right,proto3" json:"right,omitempty"`
 }
 
 func (x *SingleRule) Reset() {
@@ -359,19 +359,99 @@ func (x *SingleRule) GetOperator() SingleRule_Operator {
 	return SingleRule_NO_OP
 }
 
-func (x *SingleRule) GetLeft() *SingleRule_Operand {
+func (x *SingleRule) GetLeft() *Operand {
 	if x != nil {
 		return x.Left
 	}
 	return nil
 }
 
-func (x *SingleRule) GetRight() *SingleRule_Operand {
+func (x *SingleRule) GetRight() *Operand {
 	if x != nil {
 		return x.Right
 	}
 	return nil
 }
+
+type Operand struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Types that are assignable to Operand:
+	//	*Operand_Field
+	//	*Operand_Value
+	Operand isOperand_Operand `protobuf_oneof:"operand"`
+}
+
+func (x *Operand) Reset() {
+	*x = Operand{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_game_engine_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Operand) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Operand) ProtoMessage() {}
+
+func (x *Operand) ProtoReflect() protoreflect.Message {
+	mi := &file_game_engine_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Operand.ProtoReflect.Descriptor instead.
+func (*Operand) Descriptor() ([]byte, []int) {
+	return file_game_engine_proto_rawDescGZIP(), []int{4}
+}
+
+func (m *Operand) GetOperand() isOperand_Operand {
+	if m != nil {
+		return m.Operand
+	}
+	return nil
+}
+
+func (x *Operand) GetField() *Field {
+	if x, ok := x.GetOperand().(*Operand_Field); ok {
+		return x.Field
+	}
+	return nil
+}
+
+func (x *Operand) GetValue() *Value {
+	if x, ok := x.GetOperand().(*Operand_Value); ok {
+		return x.Value
+	}
+	return nil
+}
+
+type isOperand_Operand interface {
+	isOperand_Operand()
+}
+
+type Operand_Field struct {
+	Field *Field `protobuf:"bytes,1,opt,name=field,proto3,oneof"`
+}
+
+type Operand_Value struct {
+	Value *Value `protobuf:"bytes,2,opt,name=value,proto3,oneof"`
+}
+
+func (*Operand_Field) isOperand_Operand() {}
+
+func (*Operand_Value) isOperand_Operand() {}
 
 type AndRules struct {
 	state         protoimpl.MessageState
@@ -384,7 +464,7 @@ type AndRules struct {
 func (x *AndRules) Reset() {
 	*x = AndRules{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_game_engine_proto_msgTypes[4]
+		mi := &file_game_engine_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -397,7 +477,7 @@ func (x *AndRules) String() string {
 func (*AndRules) ProtoMessage() {}
 
 func (x *AndRules) ProtoReflect() protoreflect.Message {
-	mi := &file_game_engine_proto_msgTypes[4]
+	mi := &file_game_engine_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -410,7 +490,7 @@ func (x *AndRules) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AndRules.ProtoReflect.Descriptor instead.
 func (*AndRules) Descriptor() ([]byte, []int) {
-	return file_game_engine_proto_rawDescGZIP(), []int{4}
+	return file_game_engine_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *AndRules) GetRules() []*Rule {
@@ -431,7 +511,7 @@ type OrRules struct {
 func (x *OrRules) Reset() {
 	*x = OrRules{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_game_engine_proto_msgTypes[5]
+		mi := &file_game_engine_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -444,7 +524,7 @@ func (x *OrRules) String() string {
 func (*OrRules) ProtoMessage() {}
 
 func (x *OrRules) ProtoReflect() protoreflect.Message {
-	mi := &file_game_engine_proto_msgTypes[5]
+	mi := &file_game_engine_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -457,7 +537,7 @@ func (x *OrRules) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OrRules.ProtoReflect.Descriptor instead.
 func (*OrRules) Descriptor() ([]byte, []int) {
-	return file_game_engine_proto_rawDescGZIP(), []int{5}
+	return file_game_engine_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *OrRules) GetRules() []*Rule {
@@ -478,7 +558,7 @@ type Field struct {
 func (x *Field) Reset() {
 	*x = Field{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_game_engine_proto_msgTypes[6]
+		mi := &file_game_engine_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -491,7 +571,7 @@ func (x *Field) String() string {
 func (*Field) ProtoMessage() {}
 
 func (x *Field) ProtoReflect() protoreflect.Message {
-	mi := &file_game_engine_proto_msgTypes[6]
+	mi := &file_game_engine_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -504,7 +584,7 @@ func (x *Field) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Field.ProtoReflect.Descriptor instead.
 func (*Field) Descriptor() ([]byte, []int) {
-	return file_game_engine_proto_rawDescGZIP(), []int{6}
+	return file_game_engine_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *Field) GetName() []string {
@@ -530,7 +610,7 @@ type Value struct {
 func (x *Value) Reset() {
 	*x = Value{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_game_engine_proto_msgTypes[7]
+		mi := &file_game_engine_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -543,7 +623,7 @@ func (x *Value) String() string {
 func (*Value) ProtoMessage() {}
 
 func (x *Value) ProtoReflect() protoreflect.Message {
-	mi := &file_game_engine_proto_msgTypes[7]
+	mi := &file_game_engine_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -556,7 +636,7 @@ func (x *Value) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Value.ProtoReflect.Descriptor instead.
 func (*Value) Descriptor() ([]byte, []int) {
-	return file_game_engine_proto_rawDescGZIP(), []int{7}
+	return file_game_engine_proto_rawDescGZIP(), []int{8}
 }
 
 func (m *Value) GetValue() isValue_Value {
@@ -635,7 +715,7 @@ type Error struct {
 func (x *Error) Reset() {
 	*x = Error{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_game_engine_proto_msgTypes[8]
+		mi := &file_game_engine_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -648,7 +728,7 @@ func (x *Error) String() string {
 func (*Error) ProtoMessage() {}
 
 func (x *Error) ProtoReflect() protoreflect.Message {
-	mi := &file_game_engine_proto_msgTypes[8]
+	mi := &file_game_engine_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -661,7 +741,7 @@ func (x *Error) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Error.ProtoReflect.Descriptor instead.
 func (*Error) Descriptor() ([]byte, []int) {
-	return file_game_engine_proto_rawDescGZIP(), []int{8}
+	return file_game_engine_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *Error) GetSuccess() bool {
@@ -685,93 +765,13 @@ func (x *Error) GetMsg() string {
 	return ""
 }
 
-type Effect_Src struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// Types that are assignable to Src:
-	//	*Effect_Src_Field
-	//	*Effect_Src_Value
-	Src isEffect_Src_Src `protobuf_oneof:"src"`
-}
-
-func (x *Effect_Src) Reset() {
-	*x = Effect_Src{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_game_engine_proto_msgTypes[9]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *Effect_Src) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Effect_Src) ProtoMessage() {}
-
-func (x *Effect_Src) ProtoReflect() protoreflect.Message {
-	mi := &file_game_engine_proto_msgTypes[9]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Effect_Src.ProtoReflect.Descriptor instead.
-func (*Effect_Src) Descriptor() ([]byte, []int) {
-	return file_game_engine_proto_rawDescGZIP(), []int{1, 0}
-}
-
-func (m *Effect_Src) GetSrc() isEffect_Src_Src {
-	if m != nil {
-		return m.Src
-	}
-	return nil
-}
-
-func (x *Effect_Src) GetField() *Field {
-	if x, ok := x.GetSrc().(*Effect_Src_Field); ok {
-		return x.Field
-	}
-	return nil
-}
-
-func (x *Effect_Src) GetValue() *Value {
-	if x, ok := x.GetSrc().(*Effect_Src_Value); ok {
-		return x.Value
-	}
-	return nil
-}
-
-type isEffect_Src_Src interface {
-	isEffect_Src_Src()
-}
-
-type Effect_Src_Field struct {
-	Field *Field `protobuf:"bytes,1,opt,name=field,proto3,oneof"`
-}
-
-type Effect_Src_Value struct {
-	Value *Value `protobuf:"bytes,2,opt,name=value,proto3,oneof"`
-}
-
-func (*Effect_Src_Field) isEffect_Src_Src() {}
-
-func (*Effect_Src_Value) isEffect_Src_Src() {}
-
 type Effect_Update struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Dest *Field      `protobuf:"bytes,1,opt,name=dest,proto3" json:"dest,omitempty"`
-	Src  *Effect_Src `protobuf:"bytes,2,opt,name=src,proto3" json:"src,omitempty"`
+	Dest *Field   `protobuf:"bytes,1,opt,name=dest,proto3" json:"dest,omitempty"`
+	Src  *Operand `protobuf:"bytes,2,opt,name=src,proto3" json:"src,omitempty"`
 }
 
 func (x *Effect_Update) Reset() {
@@ -803,7 +803,7 @@ func (x *Effect_Update) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Effect_Update.ProtoReflect.Descriptor instead.
 func (*Effect_Update) Descriptor() ([]byte, []int) {
-	return file_game_engine_proto_rawDescGZIP(), []int{1, 1}
+	return file_game_engine_proto_rawDescGZIP(), []int{1, 0}
 }
 
 func (x *Effect_Update) GetDest() *Field {
@@ -813,92 +813,12 @@ func (x *Effect_Update) GetDest() *Field {
 	return nil
 }
 
-func (x *Effect_Update) GetSrc() *Effect_Src {
+func (x *Effect_Update) GetSrc() *Operand {
 	if x != nil {
 		return x.Src
 	}
 	return nil
 }
-
-type SingleRule_Operand struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// Types that are assignable to Contents:
-	//	*SingleRule_Operand_Field
-	//	*SingleRule_Operand_Value
-	Contents isSingleRule_Operand_Contents `protobuf_oneof:"contents"`
-}
-
-func (x *SingleRule_Operand) Reset() {
-	*x = SingleRule_Operand{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_game_engine_proto_msgTypes[11]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *SingleRule_Operand) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*SingleRule_Operand) ProtoMessage() {}
-
-func (x *SingleRule_Operand) ProtoReflect() protoreflect.Message {
-	mi := &file_game_engine_proto_msgTypes[11]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use SingleRule_Operand.ProtoReflect.Descriptor instead.
-func (*SingleRule_Operand) Descriptor() ([]byte, []int) {
-	return file_game_engine_proto_rawDescGZIP(), []int{3, 0}
-}
-
-func (m *SingleRule_Operand) GetContents() isSingleRule_Operand_Contents {
-	if m != nil {
-		return m.Contents
-	}
-	return nil
-}
-
-func (x *SingleRule_Operand) GetField() *Field {
-	if x, ok := x.GetContents().(*SingleRule_Operand_Field); ok {
-		return x.Field
-	}
-	return nil
-}
-
-func (x *SingleRule_Operand) GetValue() *Value {
-	if x, ok := x.GetContents().(*SingleRule_Operand_Value); ok {
-		return x.Value
-	}
-	return nil
-}
-
-type isSingleRule_Operand_Contents interface {
-	isSingleRule_Operand_Contents()
-}
-
-type SingleRule_Operand_Field struct {
-	Field *Field `protobuf:"bytes,1,opt,name=field,proto3,oneof"`
-}
-
-type SingleRule_Operand_Value struct {
-	Value *Value `protobuf:"bytes,2,opt,name=value,proto3,oneof"`
-}
-
-func (*SingleRule_Operand_Field) isSingleRule_Operand_Contents() {}
-
-func (*SingleRule_Operand_Value) isSingleRule_Operand_Contents() {}
 
 var file_game_engine_proto_extTypes = []protoimpl.ExtensionInfo{
 	{
@@ -960,57 +880,49 @@ var file_game_engine_proto_rawDesc = []byte{
 	0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2e, 0x52, 0x75, 0x6c, 0x65, 0x52, 0x04, 0x72, 0x75, 0x6c,
 	0x65, 0x12, 0x28, 0x0a, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b,
 	0x32, 0x12, 0x2e, 0x67, 0x61, 0x6d, 0x65, 0x5f, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2e, 0x45,
-	0x72, 0x72, 0x6f, 0x72, 0x52, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x22, 0x8e, 0x02, 0x0a, 0x06,
+	0x72, 0x72, 0x6f, 0x72, 0x52, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x22, 0xa5, 0x01, 0x0a, 0x06,
 	0x45, 0x66, 0x66, 0x65, 0x63, 0x74, 0x12, 0x34, 0x0a, 0x06, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65,
 	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x61, 0x6d, 0x65, 0x5f, 0x65, 0x6e,
 	0x67, 0x69, 0x6e, 0x65, 0x2e, 0x45, 0x66, 0x66, 0x65, 0x63, 0x74, 0x2e, 0x55, 0x70, 0x64, 0x61,
-	0x74, 0x65, 0x48, 0x00, 0x52, 0x06, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x1a, 0x64, 0x0a, 0x03,
-	0x53, 0x72, 0x63, 0x12, 0x2a, 0x0a, 0x05, 0x66, 0x69, 0x65, 0x6c, 0x64, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x0b, 0x32, 0x12, 0x2e, 0x67, 0x61, 0x6d, 0x65, 0x5f, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65,
-	0x2e, 0x46, 0x69, 0x65, 0x6c, 0x64, 0x48, 0x00, 0x52, 0x05, 0x66, 0x69, 0x65, 0x6c, 0x64, 0x12,
-	0x2a, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12,
-	0x2e, 0x67, 0x61, 0x6d, 0x65, 0x5f, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2e, 0x56, 0x61, 0x6c,
-	0x75, 0x65, 0x48, 0x00, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x42, 0x05, 0x0a, 0x03, 0x73,
-	0x72, 0x63, 0x1a, 0x5b, 0x0a, 0x06, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x12, 0x26, 0x0a, 0x04,
-	0x64, 0x65, 0x73, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x67, 0x61, 0x6d,
-	0x65, 0x5f, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2e, 0x46, 0x69, 0x65, 0x6c, 0x64, 0x52, 0x04,
-	0x64, 0x65, 0x73, 0x74, 0x12, 0x29, 0x0a, 0x03, 0x73, 0x72, 0x63, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x17, 0x2e, 0x67, 0x61, 0x6d, 0x65, 0x5f, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2e,
-	0x45, 0x66, 0x66, 0x65, 0x63, 0x74, 0x2e, 0x53, 0x72, 0x63, 0x52, 0x03, 0x73, 0x72, 0x63, 0x42,
-	0x0b, 0x0a, 0x09, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x9a, 0x01, 0x0a,
-	0x04, 0x52, 0x75, 0x6c, 0x65, 0x12, 0x31, 0x0a, 0x06, 0x73, 0x69, 0x6e, 0x67, 0x6c, 0x65, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x67, 0x61, 0x6d, 0x65, 0x5f, 0x65, 0x6e, 0x67,
-	0x69, 0x6e, 0x65, 0x2e, 0x53, 0x69, 0x6e, 0x67, 0x6c, 0x65, 0x52, 0x75, 0x6c, 0x65, 0x48, 0x00,
-	0x52, 0x06, 0x73, 0x69, 0x6e, 0x67, 0x6c, 0x65, 0x12, 0x29, 0x0a, 0x03, 0x61, 0x6e, 0x64, 0x18,
-	0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x15, 0x2e, 0x67, 0x61, 0x6d, 0x65, 0x5f, 0x65, 0x6e, 0x67,
-	0x69, 0x6e, 0x65, 0x2e, 0x41, 0x6e, 0x64, 0x52, 0x75, 0x6c, 0x65, 0x73, 0x48, 0x00, 0x52, 0x03,
-	0x61, 0x6e, 0x64, 0x12, 0x26, 0x0a, 0x02, 0x6f, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32,
-	0x14, 0x2e, 0x67, 0x61, 0x6d, 0x65, 0x5f, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2e, 0x4f, 0x72,
-	0x52, 0x75, 0x6c, 0x65, 0x73, 0x48, 0x00, 0x52, 0x02, 0x6f, 0x72, 0x42, 0x0c, 0x0a, 0x0a, 0x72,
-	0x75, 0x6c, 0x65, 0x5f, 0x66, 0x69, 0x65, 0x6c, 0x64, 0x22, 0xef, 0x02, 0x0a, 0x0a, 0x53, 0x69,
-	0x6e, 0x67, 0x6c, 0x65, 0x52, 0x75, 0x6c, 0x65, 0x12, 0x3c, 0x0a, 0x08, 0x6f, 0x70, 0x65, 0x72,
-	0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x20, 0x2e, 0x67, 0x61, 0x6d,
-	0x65, 0x5f, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2e, 0x53, 0x69, 0x6e, 0x67, 0x6c, 0x65, 0x52,
-	0x75, 0x6c, 0x65, 0x2e, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x52, 0x08, 0x6f, 0x70,
-	0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x33, 0x0a, 0x04, 0x6c, 0x65, 0x66, 0x74, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x67, 0x61, 0x6d, 0x65, 0x5f, 0x65, 0x6e, 0x67, 0x69,
-	0x6e, 0x65, 0x2e, 0x53, 0x69, 0x6e, 0x67, 0x6c, 0x65, 0x52, 0x75, 0x6c, 0x65, 0x2e, 0x4f, 0x70,
-	0x65, 0x72, 0x61, 0x6e, 0x64, 0x52, 0x04, 0x6c, 0x65, 0x66, 0x74, 0x12, 0x35, 0x0a, 0x05, 0x72,
-	0x69, 0x67, 0x68, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x67, 0x61, 0x6d,
-	0x65, 0x5f, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2e, 0x53, 0x69, 0x6e, 0x67, 0x6c, 0x65, 0x52,
-	0x75, 0x6c, 0x65, 0x2e, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x6e, 0x64, 0x52, 0x05, 0x72, 0x69, 0x67,
-	0x68, 0x74, 0x1a, 0x6d, 0x0a, 0x07, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x6e, 0x64, 0x12, 0x2a, 0x0a,
-	0x05, 0x66, 0x69, 0x65, 0x6c, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x67,
-	0x61, 0x6d, 0x65, 0x5f, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2e, 0x46, 0x69, 0x65, 0x6c, 0x64,
-	0x48, 0x00, 0x52, 0x05, 0x66, 0x69, 0x65, 0x6c, 0x64, 0x12, 0x2a, 0x0a, 0x05, 0x76, 0x61, 0x6c,
-	0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x67, 0x61, 0x6d, 0x65, 0x5f,
-	0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2e, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x48, 0x00, 0x52, 0x05,
-	0x76, 0x61, 0x6c, 0x75, 0x65, 0x42, 0x0a, 0x0a, 0x08, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74,
-	0x73, 0x22, 0x48, 0x0a, 0x08, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x09, 0x0a,
-	0x05, 0x4e, 0x4f, 0x5f, 0x4f, 0x50, 0x10, 0x00, 0x12, 0x06, 0x0a, 0x02, 0x45, 0x51, 0x10, 0x01,
-	0x12, 0x07, 0x0a, 0x03, 0x4e, 0x45, 0x51, 0x10, 0x02, 0x12, 0x06, 0x0a, 0x02, 0x4c, 0x54, 0x10,
-	0x03, 0x12, 0x07, 0x0a, 0x03, 0x4c, 0x54, 0x45, 0x10, 0x04, 0x12, 0x06, 0x0a, 0x02, 0x47, 0x54,
-	0x10, 0x05, 0x12, 0x07, 0x0a, 0x03, 0x47, 0x54, 0x45, 0x10, 0x06, 0x22, 0x33, 0x0a, 0x08, 0x41,
+	0x74, 0x65, 0x48, 0x00, 0x52, 0x06, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x1a, 0x58, 0x0a, 0x06,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x12, 0x26, 0x0a, 0x04, 0x64, 0x65, 0x73, 0x74, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x67, 0x61, 0x6d, 0x65, 0x5f, 0x65, 0x6e, 0x67, 0x69,
+	0x6e, 0x65, 0x2e, 0x46, 0x69, 0x65, 0x6c, 0x64, 0x52, 0x04, 0x64, 0x65, 0x73, 0x74, 0x12, 0x26,
+	0x0a, 0x03, 0x73, 0x72, 0x63, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x67, 0x61,
+	0x6d, 0x65, 0x5f, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2e, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x6e,
+	0x64, 0x52, 0x03, 0x73, 0x72, 0x63, 0x42, 0x0b, 0x0a, 0x09, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x22, 0x9a, 0x01, 0x0a, 0x04, 0x52, 0x75, 0x6c, 0x65, 0x12, 0x31, 0x0a, 0x06,
+	0x73, 0x69, 0x6e, 0x67, 0x6c, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x67,
+	0x61, 0x6d, 0x65, 0x5f, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2e, 0x53, 0x69, 0x6e, 0x67, 0x6c,
+	0x65, 0x52, 0x75, 0x6c, 0x65, 0x48, 0x00, 0x52, 0x06, 0x73, 0x69, 0x6e, 0x67, 0x6c, 0x65, 0x12,
+	0x29, 0x0a, 0x03, 0x61, 0x6e, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x15, 0x2e, 0x67,
+	0x61, 0x6d, 0x65, 0x5f, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2e, 0x41, 0x6e, 0x64, 0x52, 0x75,
+	0x6c, 0x65, 0x73, 0x48, 0x00, 0x52, 0x03, 0x61, 0x6e, 0x64, 0x12, 0x26, 0x0a, 0x02, 0x6f, 0x72,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x67, 0x61, 0x6d, 0x65, 0x5f, 0x65, 0x6e,
+	0x67, 0x69, 0x6e, 0x65, 0x2e, 0x4f, 0x72, 0x52, 0x75, 0x6c, 0x65, 0x73, 0x48, 0x00, 0x52, 0x02,
+	0x6f, 0x72, 0x42, 0x0c, 0x0a, 0x0a, 0x72, 0x75, 0x6c, 0x65, 0x5f, 0x66, 0x69, 0x65, 0x6c, 0x64,
+	0x22, 0xea, 0x01, 0x0a, 0x0a, 0x53, 0x69, 0x6e, 0x67, 0x6c, 0x65, 0x52, 0x75, 0x6c, 0x65, 0x12,
+	0x3c, 0x0a, 0x08, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x0e, 0x32, 0x20, 0x2e, 0x67, 0x61, 0x6d, 0x65, 0x5f, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2e,
+	0x53, 0x69, 0x6e, 0x67, 0x6c, 0x65, 0x52, 0x75, 0x6c, 0x65, 0x2e, 0x4f, 0x70, 0x65, 0x72, 0x61,
+	0x74, 0x6f, 0x72, 0x52, 0x08, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x28, 0x0a,
+	0x04, 0x6c, 0x65, 0x66, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x67, 0x61,
+	0x6d, 0x65, 0x5f, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2e, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x6e,
+	0x64, 0x52, 0x04, 0x6c, 0x65, 0x66, 0x74, 0x12, 0x2a, 0x0a, 0x05, 0x72, 0x69, 0x67, 0x68, 0x74,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x67, 0x61, 0x6d, 0x65, 0x5f, 0x65, 0x6e,
+	0x67, 0x69, 0x6e, 0x65, 0x2e, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x6e, 0x64, 0x52, 0x05, 0x72, 0x69,
+	0x67, 0x68, 0x74, 0x22, 0x48, 0x0a, 0x08, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x12,
+	0x09, 0x0a, 0x05, 0x4e, 0x4f, 0x5f, 0x4f, 0x50, 0x10, 0x00, 0x12, 0x06, 0x0a, 0x02, 0x45, 0x51,
+	0x10, 0x01, 0x12, 0x07, 0x0a, 0x03, 0x4e, 0x45, 0x51, 0x10, 0x02, 0x12, 0x06, 0x0a, 0x02, 0x4c,
+	0x54, 0x10, 0x03, 0x12, 0x07, 0x0a, 0x03, 0x4c, 0x54, 0x45, 0x10, 0x04, 0x12, 0x06, 0x0a, 0x02,
+	0x47, 0x54, 0x10, 0x05, 0x12, 0x07, 0x0a, 0x03, 0x47, 0x54, 0x45, 0x10, 0x06, 0x22, 0x6c, 0x0a,
+	0x07, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x6e, 0x64, 0x12, 0x2a, 0x0a, 0x05, 0x66, 0x69, 0x65, 0x6c,
+	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x67, 0x61, 0x6d, 0x65, 0x5f, 0x65,
+	0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2e, 0x46, 0x69, 0x65, 0x6c, 0x64, 0x48, 0x00, 0x52, 0x05, 0x66,
+	0x69, 0x65, 0x6c, 0x64, 0x12, 0x2a, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x67, 0x61, 0x6d, 0x65, 0x5f, 0x65, 0x6e, 0x67, 0x69, 0x6e,
+	0x65, 0x2e, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x48, 0x00, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65,
+	0x42, 0x09, 0x0a, 0x07, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x6e, 0x64, 0x22, 0x33, 0x0a, 0x08, 0x41,
 	0x6e, 0x64, 0x52, 0x75, 0x6c, 0x65, 0x73, 0x12, 0x27, 0x0a, 0x05, 0x72, 0x75, 0x6c, 0x65, 0x73,
 	0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x67, 0x61, 0x6d, 0x65, 0x5f, 0x65, 0x6e,
 	0x67, 0x69, 0x6e, 0x65, 0x2e, 0x52, 0x75, 0x6c, 0x65, 0x52, 0x05, 0x72, 0x75, 0x6c, 0x65, 0x73,
@@ -1068,53 +980,50 @@ func file_game_engine_proto_rawDescGZIP() []byte {
 }
 
 var file_game_engine_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_game_engine_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_game_engine_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_game_engine_proto_goTypes = []interface{}{
 	(SingleRule_Operator)(0),          // 0: game_engine.SingleRule.Operator
 	(*Action)(nil),                    // 1: game_engine.Action
 	(*Effect)(nil),                    // 2: game_engine.Effect
 	(*Rule)(nil),                      // 3: game_engine.Rule
 	(*SingleRule)(nil),                // 4: game_engine.SingleRule
-	(*AndRules)(nil),                  // 5: game_engine.AndRules
-	(*OrRules)(nil),                   // 6: game_engine.OrRules
-	(*Field)(nil),                     // 7: game_engine.Field
-	(*Value)(nil),                     // 8: game_engine.Value
-	(*Error)(nil),                     // 9: game_engine.Error
-	(*Effect_Src)(nil),                // 10: game_engine.Effect.Src
+	(*Operand)(nil),                   // 5: game_engine.Operand
+	(*AndRules)(nil),                  // 6: game_engine.AndRules
+	(*OrRules)(nil),                   // 7: game_engine.OrRules
+	(*Field)(nil),                     // 8: game_engine.Field
+	(*Value)(nil),                     // 9: game_engine.Value
+	(*Error)(nil),                     // 10: game_engine.Error
 	(*Effect_Update)(nil),             // 11: game_engine.Effect.Update
-	(*SingleRule_Operand)(nil),        // 12: game_engine.SingleRule.Operand
-	(*descriptor.ServiceOptions)(nil), // 13: google.protobuf.ServiceOptions
-	(*descriptor.MethodOptions)(nil),  // 14: google.protobuf.MethodOptions
-	(*descriptor.MessageOptions)(nil), // 15: google.protobuf.MessageOptions
+	(*descriptor.ServiceOptions)(nil), // 12: google.protobuf.ServiceOptions
+	(*descriptor.MethodOptions)(nil),  // 13: google.protobuf.MethodOptions
+	(*descriptor.MessageOptions)(nil), // 14: google.protobuf.MessageOptions
 }
 var file_game_engine_proto_depIdxs = []int32{
 	2,  // 0: game_engine.Action.effect:type_name -> game_engine.Effect
 	3,  // 1: game_engine.Action.rule:type_name -> game_engine.Rule
-	9,  // 2: game_engine.Action.error:type_name -> game_engine.Error
+	10, // 2: game_engine.Action.error:type_name -> game_engine.Error
 	11, // 3: game_engine.Effect.update:type_name -> game_engine.Effect.Update
 	4,  // 4: game_engine.Rule.single:type_name -> game_engine.SingleRule
-	5,  // 5: game_engine.Rule.and:type_name -> game_engine.AndRules
-	6,  // 6: game_engine.Rule.or:type_name -> game_engine.OrRules
+	6,  // 5: game_engine.Rule.and:type_name -> game_engine.AndRules
+	7,  // 6: game_engine.Rule.or:type_name -> game_engine.OrRules
 	0,  // 7: game_engine.SingleRule.operator:type_name -> game_engine.SingleRule.Operator
-	12, // 8: game_engine.SingleRule.left:type_name -> game_engine.SingleRule.Operand
-	12, // 9: game_engine.SingleRule.right:type_name -> game_engine.SingleRule.Operand
-	3,  // 10: game_engine.AndRules.rules:type_name -> game_engine.Rule
-	3,  // 11: game_engine.OrRules.rules:type_name -> game_engine.Rule
-	7,  // 12: game_engine.Effect.Src.field:type_name -> game_engine.Field
-	8,  // 13: game_engine.Effect.Src.value:type_name -> game_engine.Value
-	7,  // 14: game_engine.Effect.Update.dest:type_name -> game_engine.Field
-	10, // 15: game_engine.Effect.Update.src:type_name -> game_engine.Effect.Src
-	7,  // 16: game_engine.SingleRule.Operand.field:type_name -> game_engine.Field
-	8,  // 17: game_engine.SingleRule.Operand.value:type_name -> game_engine.Value
-	13, // 18: game_engine.is_action_service:extendee -> google.protobuf.ServiceOptions
-	14, // 19: game_engine.action:extendee -> google.protobuf.MethodOptions
-	15, // 20: game_engine.is_game_state:extendee -> google.protobuf.MessageOptions
-	1,  // 21: game_engine.action:type_name -> game_engine.Action
-	22, // [22:22] is the sub-list for method output_type
-	22, // [22:22] is the sub-list for method input_type
-	21, // [21:22] is the sub-list for extension type_name
-	18, // [18:21] is the sub-list for extension extendee
-	0,  // [0:18] is the sub-list for field type_name
+	5,  // 8: game_engine.SingleRule.left:type_name -> game_engine.Operand
+	5,  // 9: game_engine.SingleRule.right:type_name -> game_engine.Operand
+	8,  // 10: game_engine.Operand.field:type_name -> game_engine.Field
+	9,  // 11: game_engine.Operand.value:type_name -> game_engine.Value
+	3,  // 12: game_engine.AndRules.rules:type_name -> game_engine.Rule
+	3,  // 13: game_engine.OrRules.rules:type_name -> game_engine.Rule
+	8,  // 14: game_engine.Effect.Update.dest:type_name -> game_engine.Field
+	5,  // 15: game_engine.Effect.Update.src:type_name -> game_engine.Operand
+	12, // 16: game_engine.is_action_service:extendee -> google.protobuf.ServiceOptions
+	13, // 17: game_engine.action:extendee -> google.protobuf.MethodOptions
+	14, // 18: game_engine.is_game_state:extendee -> google.protobuf.MessageOptions
+	1,  // 19: game_engine.action:type_name -> game_engine.Action
+	20, // [20:20] is the sub-list for method output_type
+	20, // [20:20] is the sub-list for method input_type
+	19, // [19:20] is the sub-list for extension type_name
+	16, // [16:19] is the sub-list for extension extendee
+	0,  // [0:16] is the sub-list for field type_name
 }
 
 func init() { file_game_engine_proto_init() }
@@ -1172,7 +1081,7 @@ func file_game_engine_proto_init() {
 			}
 		}
 		file_game_engine_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AndRules); i {
+			switch v := v.(*Operand); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1184,7 +1093,7 @@ func file_game_engine_proto_init() {
 			}
 		}
 		file_game_engine_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*OrRules); i {
+			switch v := v.(*AndRules); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1196,7 +1105,7 @@ func file_game_engine_proto_init() {
 			}
 		}
 		file_game_engine_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Field); i {
+			switch v := v.(*OrRules); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1208,7 +1117,7 @@ func file_game_engine_proto_init() {
 			}
 		}
 		file_game_engine_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Value); i {
+			switch v := v.(*Field); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1220,7 +1129,7 @@ func file_game_engine_proto_init() {
 			}
 		}
 		file_game_engine_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Error); i {
+			switch v := v.(*Value); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1232,7 +1141,7 @@ func file_game_engine_proto_init() {
 			}
 		}
 		file_game_engine_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Effect_Src); i {
+			switch v := v.(*Error); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1255,18 +1164,6 @@ func file_game_engine_proto_init() {
 				return nil
 			}
 		}
-		file_game_engine_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SingleRule_Operand); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
 	}
 	file_game_engine_proto_msgTypes[1].OneofWrappers = []interface{}{
 		(*Effect_Update_)(nil),
@@ -1276,19 +1173,15 @@ func file_game_engine_proto_init() {
 		(*Rule_And)(nil),
 		(*Rule_Or)(nil),
 	}
-	file_game_engine_proto_msgTypes[7].OneofWrappers = []interface{}{
+	file_game_engine_proto_msgTypes[4].OneofWrappers = []interface{}{
+		(*Operand_Field)(nil),
+		(*Operand_Value)(nil),
+	}
+	file_game_engine_proto_msgTypes[8].OneofWrappers = []interface{}{
 		(*Value_BoolValue)(nil),
 		(*Value_IntegerValue)(nil),
 		(*Value_FloatValue)(nil),
 		(*Value_StringValue)(nil),
-	}
-	file_game_engine_proto_msgTypes[9].OneofWrappers = []interface{}{
-		(*Effect_Src_Field)(nil),
-		(*Effect_Src_Value)(nil),
-	}
-	file_game_engine_proto_msgTypes[11].OneofWrappers = []interface{}{
-		(*SingleRule_Operand_Field)(nil),
-		(*SingleRule_Operand_Value)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -1296,7 +1189,7 @@ func file_game_engine_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_game_engine_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   12,
+			NumMessages:   11,
 			NumExtensions: 3,
 			NumServices:   0,
 		},

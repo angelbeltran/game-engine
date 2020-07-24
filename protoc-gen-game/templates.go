@@ -164,7 +164,7 @@ func printRule(prefix string, rule *pb.Rule) (string, error) {
 	return "", fmt.Errorf("empty rule definition")
 }
 
-func encodeOperandWithNilChecks(prefix string, op *pb.SingleRule_Operand) (string, error) {
+func encodeOperandWithNilChecks(prefix string, op *pb.Operand) (string, error) {
 	if f := op.GetField(); f != nil {
 		allButLast := f.Name[:len(f.Name)-1]
 

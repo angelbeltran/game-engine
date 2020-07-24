@@ -34,8 +34,12 @@ func validateEffect(state types.Type, effect *pb.Effect) error {
 	if up := effect.GetUpdate(); up != nil {
 		var srcType types.Type
 
-		switch src := up.Src.GetSrc().(type) {
-		case *pb.Effect_Src_Field:
+		if up.Src == nil {
+			return fmt.Errorf("missing destination on update effect")
+		}
+
+		switch src := up.Src.GetOperand().(type) {
+		case *pb.Operand_Field:
 			if src.Field == nil {
 				return fmt.Errorf("empty effect source field on update effect")
 			}
@@ -45,7 +49,7 @@ func validateEffect(state types.Type, effect *pb.Effect) error {
 				return fmt.Errorf("update effect source field '%s' does not exist", strings.Join(src.Field.Name, "."))
 			}
 
-		case *pb.Effect_Src_Value:
+		case *pb.Operand_Value:
 			if src.Value == nil {
 				return fmt.Errorf("empty effect source value on update effect")
 			}
@@ -142,7 +146,7 @@ func validateRule(state types.Type, rule *pb.Rule) error {
 	return fmt.Errorf("rule with no conditions found")
 }
 
-func getOperandType(state types.Type, o *pb.SingleRule_Operand) (types.Type, error) {
+func getOperandType(state types.Type, o *pb.Operand) (types.Type, error) {
 
 	if v := o.GetValue(); v != nil {
 		return getValueType(v)
