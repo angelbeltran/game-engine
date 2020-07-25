@@ -44,7 +44,7 @@ type gameEngine struct {
 {{$responseType := .Response.GetName}}
 {{range $_, $bundle := .Methods}}
 func (e *gameEngine) {{$bundle.Method.GetName}}(ctx context.Context, in *{{$bundle.Method.GetInputType.GetName}}) (*{{$responseType}}, error) {
-	{{with $action := $bundle.Action}}
+	{{- with $action := $bundle.Action -}}
 		state.Lock()
 		defer state.Unlock()
 
@@ -75,7 +75,7 @@ func (e *gameEngine) {{$bundle.Method.GetName}}(ctx context.Context, in *{{$bund
 
 		return &res, nil
 
-	{{else}}
+	{{- else -}}
 
 		return &{{$responseType}}{
 			{{$responseErrorFieldName}}: &game_engine_pb.Error{
@@ -83,7 +83,7 @@ func (e *gameEngine) {{$bundle.Method.GetName}}(ctx context.Context, in *{{$bund
 			},
 		}, nil
 
-	{{end}}
+	{{- end -}}
 }
 {{end}}
 
