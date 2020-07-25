@@ -27,12 +27,12 @@ type gameEngine struct {
 }
 
 func (e *gameEngine) SetPlayers(ctx context.Context, in *Count) (*Response, error) {
-
 	state.Lock()
 	defer state.Unlock()
 
 	// Enforce the rules
 	allowed := true == true
+
 	if !allowed {
 		return &Response{
 			Error: &game_engine_pb.Error{
@@ -94,16 +94,15 @@ func (e *gameEngine) SetPlayers(ctx context.Context, in *Count) (*Response, erro
 	res.State.Players.Player_3.Buildings = state.Players.Player_3.Buildings
 
 	return &res, nil
-
 }
 
 func (e *gameEngine) Start(ctx context.Context, in *EmptyMsg) (*Response, error) {
-
 	state.Lock()
 	defer state.Unlock()
 
 	// Enforce the rules
 	allowed := (state.Started == false) && (state.Players != nil && state.Players.Player_1 != nil && state.Players.Player_1.Present == true) && (state.Players != nil && state.Players.Player_2 != nil && state.Players.Player_2.Present == true) && (state.Players != nil && state.Players.Player_3 != nil && state.Players.Player_3.Present == true) && ((state.Players != nil && state.Players.Player_4 != nil && state.Players.Player_4.Present == true) || (state.Players != nil && state.Players.Player_5 != nil && state.Players.Player_5.Present == false))
+
 	if !allowed {
 		return &Response{
 			Error: &game_engine_pb.Error{
@@ -123,157 +122,126 @@ func (e *gameEngine) Start(ctx context.Context, in *EmptyMsg) (*Response, error)
 	}
 
 	return &res, nil
-
 }
 
 func (e *gameEngine) Accept(ctx context.Context, in *RoleChoice) (*Response, error) {
-
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
-
 }
 
 func (e *gameEngine) Purchase(ctx context.Context, in *BuildingChoice) (*Response, error) {
-
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
-
 }
 
 func (e *gameEngine) Load(ctx context.Context, in *GoodToShip) (*Response, error) {
-
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
-
 }
 
 func (e *gameEngine) Craft(ctx context.Context, in *EmptyMsg) (*Response, error) {
-
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
-
 }
 
 func (e *gameEngine) CraftExtra(ctx context.Context, in *GoodChoice) (*Response, error) {
-
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
-
 }
 
 func (e *gameEngine) WelcomeColonist(ctx context.Context, in *EmptyMsg) (*Response, error) {
-
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
-
 }
 
 func (e *gameEngine) WelcomeColonistFromSupply(ctx context.Context, in *EmptyMsg) (*Response, error) {
-
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
-
 }
 
 func (e *gameEngine) ApplyColonistToBuilding(ctx context.Context, in *BuildingChoice) (*Response, error) {
-
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
-
 }
 
 func (e *gameEngine) ApplyColonistToPlantation(ctx context.Context, in *PlantationChoice) (*Response, error) {
-
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
-
 }
 
 func (e *gameEngine) ApplyColonistToQuarry(ctx context.Context, in *EmptyMsg) (*Response, error) {
-
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
-
 }
 
 func (e *gameEngine) RefillColonistShip(ctx context.Context, in *EmptyMsg) (*Response, error) {
-
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
-
 }
 
 func (e *gameEngine) Settle(ctx context.Context, in *PlantationChoice) (*Response, error) {
-
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
-
 }
 
 func (e *gameEngine) ConstructQuarry(ctx context.Context, in *EmptyMsg) (*Response, error) {
-
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
-
 }
 
 func (e *gameEngine) Trade(ctx context.Context, in *GoodChoice) (*Response, error) {
-
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
-
 }
 
 func (e *gameEngine) EndAction(ctx context.Context, in *PlayerChoice) (*Response, error) {
-
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
-
 }
 
 var state struct {

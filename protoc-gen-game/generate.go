@@ -7,58 +7,51 @@ import (
 	"io"
 	"io/ioutil"
 	"strings"
-	"text/template"
 
-	"github.com/jhump/goprotoc/plugins"
 	"github.com/jhump/protoreflect/desc"
 
 	pb "github.com/angelbeltran/game-engine/protoc-gen-game/game_engine_pb"
 	"github.com/angelbeltran/game-engine/protoc-gen-game/types"
 )
 
-func generateService(w io.Writer, opts generationOptions) error {
+func generateService(w io.Writer, opts serviceParameters) error {
 
-	// Load template functions.
+	// Load templates.
 
-	tmpl := template.New("service").Funcs(template.FuncMap{
-		"printRule":                     printRule,
-		"printEffect":                   printEffect,
-		"printResponseAppendExpression": printResponseAppendExpression,
-	})
-
-	// Parse templates.
-
-	tmpl, err := tmpl.Parse(serviceTemplate)
+	templates, err := parseDefinition(nil, definitions)
 	if err != nil {
-		return fmt.Errorf("failed to parse service template: %w", err)
+		return fmt.Errorf("failed to parse template definitions: %w", err)
 	}
 
 	// Apply runtime parameters.
 
 	out := bytes.NewBuffer([]byte{})
 
-	if tmpl.Execute(out, opts); err != nil {
-		return err
+	if err := templates["service"].Execute(out, opts); err != nil {
+		return fmt.Errorf("failed to execute service template: %w", err)
 	}
 
 	// Format and write to file.
 
 	b, err := ioutil.ReadAll(out)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to read unformated templates: %w", err)
 	}
 
 	b, err = format.Source(b)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to format generated templates: %w", err)
 	}
 
-	_, err = w.Write(b)
-	return err
+	if _, err := w.Write(b); err != nil {
+		return fmt.Errorf("failed to write out formatted templates: %w", err)
+	}
+
+	return nil
 }
 
 type (
-	generationOptions struct {
+	serviceParameters struct {
 		Package   string
 		Service   *desc.ServiceDescriptor
 		Methods   []methodInfo
@@ -74,7 +67,7 @@ type (
 	}
 )
 
-func (generationOptions) Imports() []string {
+func (serviceParameters) Imports() []string {
 	return []string{
 		"context",
 		"fmt",
@@ -85,92 +78,23 @@ func (generationOptions) Imports() []string {
 	}
 }
 
-func (generationOptions) ResponseFieldName() string {
+func (serviceParameters) ResponseFieldName() string {
 	return goNames.CamelCase(responseFieldName)
 }
 
-func (generationOptions) ResponseStateFieldName() string {
+func (serviceParameters) ResponseStateFieldName() string {
 	return goNames.CamelCase(responseStateFieldName)
 }
 
-func (generationOptions) ResponseErrorFieldName() string {
+func (serviceParameters) ResponseErrorFieldName() string {
 	return goNames.CamelCase(responseErrorFieldName)
-}
-
-var goNames plugins.GoNames
-
-func printRule(statePrefix, inputPrefix string, rule *pb.Rule) (string, error) {
-	if s := rule.GetSingle(); s != nil {
-		var op string
-
-		switch v := s.GetOperator(); v {
-		case pb.Rule_Single_EQ:
-			op = "=="
-		case pb.Rule_Single_NEQ:
-			op = "!="
-		case pb.Rule_Single_LT:
-			op = "<"
-		case pb.Rule_Single_LTE:
-			op = "<="
-		case pb.Rule_Single_GT:
-			op = ">"
-		case pb.Rule_Single_GTE:
-			op = ">="
-		default:
-			return "", fmt.Errorf("unexpected operator: %s", v)
-		}
-
-		lh, err := printOperandWithNilChecks(statePrefix, inputPrefix, s.GetLeft())
-		if err != nil {
-			return "", err
-		}
-
-		rh, err := printOperandWithNilChecks(statePrefix, inputPrefix, s.GetRight())
-		if err != nil {
-			return "", err
-		}
-
-		return fmt.Sprintf("%s %s %s", lh, op, rh), nil
-	}
-
-	if and := rule.GetAnd(); and != nil {
-		printed := make([]string, len(and.Rules))
-
-		for i, r := range and.Rules {
-			str, err := printRule(statePrefix, inputPrefix, r)
-			if err != nil {
-				return "", err
-			}
-
-			printed[i] = "(" + str + ")"
-		}
-
-		return strings.Join(printed, " && "), nil
-	}
-
-	if or := rule.GetOr(); or != nil {
-		printed := make([]string, len(or.Rules))
-
-		for i, r := range or.Rules {
-			str, err := printRule(statePrefix, inputPrefix, r)
-			if err != nil {
-				return "", err
-			}
-
-			printed[i] = "(" + str + ")"
-		}
-
-		return strings.Join(printed, " || "), nil
-	}
-
-	return "", fmt.Errorf("empty rule definition")
 }
 
 func printOperandWithNilChecks(statePrefix, inputPrefix string, op *pb.Operand) (string, error) {
 	if v := op.GetValue(); v != nil {
 		_, val, err := extractValue(v)
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("failed to extract value from operand: %w", err)
 		}
 
 		return fmt.Sprint(val), nil
@@ -203,7 +127,12 @@ func printOperandWithNilChecks(statePrefix, inputPrefix string, op *pb.Operand) 
 
 func printEffect(statePrefix, inputPrefix string, state *desc.MessageDescriptor, effect *pb.Effect) (string, error) {
 	if up := effect.GetUpdate(); up != nil {
-		return printUpdateEffect(statePrefix, inputPrefix, state, up)
+		res, err := printUpdateEffect(statePrefix, inputPrefix, state, up)
+		if err != nil {
+			return "", fmt.Errorf("failed to print update effect: %w", err)
+		}
+
+		return res, nil
 	}
 
 	return "", fmt.Errorf("no effect specified")
@@ -222,7 +151,7 @@ func printUpdateEffect(statePrefix, inputPrefix string, state *desc.MessageDescr
 
 	dst := up.GetDest()
 	if dst == nil {
-		return "", fmt.Errorf("no property specified to be set in update")
+		return "", fmt.Errorf("no property specified to be set")
 	}
 
 	initializations, err := printInitializeStatePropertyExpression(statePrefix, state, dst.Path)
@@ -236,13 +165,13 @@ func printUpdateEffect(statePrefix, inputPrefix string, state *desc.MessageDescr
 
 	src := up.GetSrc()
 	if src == nil {
-		return "", fmt.Errorf("no source specified to update with")
+		return "", fmt.Errorf("no source specified")
 	}
 
 	if v := src.GetValue(); v != nil {
 		_, val, err := extractValue(v)
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("failed to extract value: %w", err)
 		}
 
 		rh = fmt.Sprint(val)
