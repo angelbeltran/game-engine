@@ -1,4 +1,0 @@
-- enum support
-- reference input in rules
-- support binding errors per rule at anywhere in the rule tree
-- multiple effects (list)
