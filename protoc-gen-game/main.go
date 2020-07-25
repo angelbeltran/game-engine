@@ -8,7 +8,7 @@ import (
 
 	"github.com/jhump/goprotoc/plugins"
 
-	"angelbeltran/game-engine/protoc-gen-game/types"
+	"github.com/angelbeltran/game-engine/protoc-gen-game/types"
 )
 
 //go:generate protoc -I=. --go_out=$GOPATH/src game_engine.proto

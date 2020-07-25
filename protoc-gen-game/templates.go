@@ -8,7 +8,7 @@ import (
 	"github.com/jhump/goprotoc/plugins"
 	"github.com/jhump/protoreflect/desc"
 
-	pb "angelbeltran/game-engine/protoc-gen-game/game_engine_pb"
+	pb "github.com/angelbeltran/game-engine/protoc-gen-game/game_engine_pb"
 )
 
 type mainTemplateParameters struct {

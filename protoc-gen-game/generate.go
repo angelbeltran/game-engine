@@ -8,8 +8,8 @@ import (
 
 	"github.com/jhump/protoreflect/desc"
 
-	pb "angelbeltran/game-engine/protoc-gen-game/game_engine_pb"
-	"angelbeltran/game-engine/protoc-gen-game/types"
+	pb "github.com/angelbeltran/game-engine/protoc-gen-game/game_engine_pb"
+	"github.com/angelbeltran/game-engine/protoc-gen-game/types"
 )
 
 type (

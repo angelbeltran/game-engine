@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	pb "angelbeltran/game-engine/protoc-gen-game/game_engine_pb"
-	"angelbeltran/game-engine/protoc-gen-game/types"
+	pb "github.com/angelbeltran/game-engine/protoc-gen-game/game_engine_pb"
+	"github.com/angelbeltran/game-engine/protoc-gen-game/types"
 )
 
 func validateAction(state, input types.Type, msg *pb.Action) error {

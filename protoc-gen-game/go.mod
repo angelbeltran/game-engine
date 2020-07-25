@@ -1,4 +1,4 @@
-module angelbeltran/game-engine/protoc-gen-game
+module github.com/angelbeltran/game-engine/protoc-gen-game
 
 go 1.14
 

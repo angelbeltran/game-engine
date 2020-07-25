@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	pb "angelbeltran/game-engine/protoc-gen-game/game_engine_pb"
-	"angelbeltran/game-engine/protoc-gen-game/types"
+	pb "github.com/angelbeltran/game-engine/protoc-gen-game/game_engine_pb"
+	"github.com/angelbeltran/game-engine/protoc-gen-game/types"
 )
 
 func extractValue(msg *pb.Value) (types.Type, interface{}, error) {
