@@ -1,0 +1,110 @@
+syntax = "proto3";
+package puerto_rico_game;
+
+import "google/protobuf/descriptor.proto";
+import "github.com/angelbeltran/game-engine/examples/puerto-rico/cargo_ship.proto";
+import "github.com/angelbeltran/game-engine/examples/puerto-rico/plantation.proto";
+import "github.com/angelbeltran/game-engine/examples/puerto-rico/player.proto";
+import "github.com/angelbeltran/game-engine/examples/puerto-rico/role.proto";
+import "github.com/angelbeltran/game-engine/protoc-gen-game/game_engine.proto";
+
+option go_package = "github.com/angelbeltran/game-engine/examples/puerto-rico/puerto_rico_pb";
+
+message State {
+  option (game_engine.is_game_state) = true;
+
+  message Players {
+    Player player_1 = 1;
+    Player player_2 = 2;
+    Player player_3 = 3;
+    Player player_4 = 4;
+    Player player_5 = 5;
+  }
+
+  message Roles {
+    Role prospector1 = 1;
+    Role prospector2 = 2;
+    Role builder = 3;
+    Role captain = 4;
+    Role craftsman = 5;
+    Role mayor = 6;
+    Role settler = 7;
+    Role trader = 8;
+  }
+
+  message Plantations {
+    message Displayed {
+      PlantationID tile_1 = 1;
+      PlantationID tile_2 = 2;
+      PlantationID tile_3 = 3;
+      PlantationID tile_4 = 4;
+      PlantationID tile_5 = 5;
+    }
+
+    message Counts {
+      uint32 corn = 1;
+      uint32 indigo = 2;
+      uint32 sugar = 3;
+      uint32 tobacco = 4;
+      uint32 coffee = 5;
+    }
+
+    Displayed displayed = 1;
+    Counts facedown = 2;
+    Counts discarded = 3;
+  }
+
+  message Goods {
+    uint32 corn = 1;
+    uint32 indigo = 2;
+    uint32 sugar = 3;
+    uint32 tobacco = 4;
+    uint32 coffee = 5;
+  }
+
+  message Buildings {
+    uint32 small_indigo_plant = 1;
+    uint32 small_sugar_mill = 2;
+    uint32 small_market = 3;
+    uint32 hacienda = 4;
+    uint32 construction_hut = 5;
+    uint32 small_warehouse = 6;
+    uint32 indigo_plant = 7;
+    uint32 sugar_mill = 8;
+    uint32 hospice = 9;
+    uint32 office = 10;
+    uint32 large_market = 11;
+    uint32 large_warhouse = 12;
+    uint32 tobacco_storage = 13;
+    uint32 coffee_roaster = 14;
+    uint32 factory = 15;
+    uint32 university = 16;
+    uint32 harbor = 17;
+    uint32 wharf = 18;
+    uint32 build_hall = 19;
+    uint32 residence = 20;
+    uint32 fortress = 21;
+  }
+
+  message CargoShips {
+    CargoShip ship_4 = 4;
+    CargoShip ship_5 = 5;
+    CargoShip ship_6 = 6;
+    CargoShip ship_7 = 7;
+    CargoShip ship_8 = 8;
+  }
+
+  bool started = 1;
+  PlayerID turn = 2;
+  PlayerID governor = 3;
+  Players players = 4;
+  Roles roles = 5;
+  uint32 quarries = 6;
+  Plantations plantations = 7;
+  Goods goods = 8;
+  Buildings buildings = 9;
+  CargoShips cargo_ships = 10;
+  uint32 colonist_ship = 11;
+  uint32 colonists_available = 12;
+  uint32 victory_points_remaining = 13;
+}

@@ -1,0 +1,29 @@
+syntax = "proto3";
+package puerto_rico_game;
+
+option go_package = "github.com/angelbeltran/game-engine/examples/puerto-rico/puerto_rico_pb";
+
+enum Building {
+  NO_BUILDING = 0;
+  SMALL_INDIGO_PLANT = 1;
+  SMALL_SUGAR_MILL = 2;
+  SMALL_MARKET = 3;
+  HACIENDA = 4;
+  CONSTRUCTION_HUT = 5;
+  SMALL_WAREHOUSE = 6;
+  INDIGO_PLANT = 7;
+  SUGAR_MILL = 8;
+  HOSPICE = 9;
+  OFFICE = 10;
+  LARGE_MARKET = 11;
+  LARGE_WARHOUSE = 12;
+  TOBACCO_STORAGE = 13;
+  COFFEE_ROASTER = 14;
+  FACTORY = 15;
+  UNIVERSITY = 16;
+  HARBOR = 17;
+  WHARF = 18;
+  BUILD_HALL = 19;
+  RESIDENCE = 20;
+  FORTRESS = 21;
+}

@@ -1,0 +1,13 @@
+syntax = "proto3";
+package puerto_rico_game;
+
+option go_package = "github.com/angelbeltran/game-engine/examples/puerto-rico/puerto_rico_pb";
+
+enum PlantationID {
+  NO_PLANTATION = 0;
+  CORN_PLANTATION = 1;
+  INDIGO_PLANTATION = 2;
+  SUGAR_PLANTATION = 3;
+  TOBACCO_PLANTATION = 4;
+  COFFEE_PLANTATION = 5;
+}

@@ -1,0 +1,67 @@
+syntax = "proto3";
+package puerto_rico_game;
+
+option go_package = "github.com/angelbeltran/game-engine/examples/puerto-rico/puerto_rico_pb";
+
+import "github.com/angelbeltran/game-engine/examples/puerto-rico/role.proto";
+
+enum PlayerID {
+  NO_PLAYER = 0;
+  PLAYER_1 = 1;
+  PLAYER_2 = 2;
+  PLAYER_3 = 3;
+  PLAYER_4 = 4;
+  PLAYER_5 = 5;
+}
+
+message Player {
+  message Buildings {
+    bool small_indigo_plant = 1;
+    bool small_sugar_mill = 2;
+    bool small_market = 3;
+    bool hacienda = 4;
+    bool construction_hut = 5;
+    bool small_warehouse = 6;
+    bool indigo_plant = 7;
+    bool sugar_mill = 8;
+    bool hospice = 9;
+    bool office = 10;
+    bool large_market = 11;
+    bool large_warhouse = 12;
+    bool tobacco_storage = 13;
+    bool coffee_roaster = 14;
+    bool factory = 15;
+    bool university = 16;
+    bool harbor = 17;
+    bool wharf = 18;
+    bool build_hall = 19;
+    bool residence = 20;
+    bool fortress = 21;
+  }
+
+  message Plantations {
+    uint32 corn = 1;
+    uint32 indigo = 2;
+    uint32 sugar = 3;
+    uint32 tobacco = 4;
+    uint32 coffee = 5;
+  }
+
+  message Goods {
+    uint32 corn = 1;
+    uint32 indigo = 2;
+    uint32 sugar = 3;
+    uint32 tobacco = 4;
+    uint32 coffee = 5;
+  }
+
+  bool present = 1;
+  RoleID role = 2;
+  uint32 doubloons = 3;
+  uint32 victory_points = 4;
+  Buildings buildings = 5;
+  uint32 quarries = 6;
+  Plantations plantations = 7;
+  Goods goods = 8;
+  uint32 extra_colonists = 9;
+}

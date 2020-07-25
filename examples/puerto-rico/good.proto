@@ -1,0 +1,13 @@
+syntax = "proto3";
+package puerto_rico_game;
+
+option go_package = "github.com/angelbeltran/game-engine/examples/puerto-rico/puerto_rico_pb";
+
+enum GoodID {
+  NO_GOOD = 0;
+  CORN = 1;
+  INDIGO = 2;
+  SUGAR = 3;
+  TOBACCO = 4;
+  COFFEE = 5;
+}

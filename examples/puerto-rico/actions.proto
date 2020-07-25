@@ -1,0 +1,203 @@
+syntax = "proto3";
+package puerto_rico_game;
+
+import "google/protobuf/descriptor.proto";
+import "github.com/angelbeltran/game-engine/protoc-gen-game/game_engine.proto";
+import "github.com/angelbeltran/game-engine/examples/puerto-rico/role.proto";
+import "github.com/angelbeltran/game-engine/examples/puerto-rico/building.proto";
+import "github.com/angelbeltran/game-engine/examples/puerto-rico/good.proto";
+import "github.com/angelbeltran/game-engine/examples/puerto-rico/player.proto";
+import "github.com/angelbeltran/game-engine/examples/puerto-rico/plantation.proto";
+import "github.com/angelbeltran/game-engine/examples/puerto-rico/cargo_ship.proto";
+import "github.com/angelbeltran/game-engine/examples/puerto-rico/state.proto";
+
+option go_package = "github.com/angelbeltran/game-engine/examples/puerto-rico/puerto_rico_pb";
+
+service Actions {
+  option (game_engine.is_action_service) = true;
+
+  // Game start
+
+  // TODO: test enums
+  rpc SetPlayers(Count) returns (Response) {
+    option (game_engine.action).effect = {
+      update: {
+        dest: { path: [ 'players', 'player_1', 'present' ] }
+        src: { value: { bool: true } }
+      }
+    };
+    option (game_engine.action).effect = {
+      update: {
+        dest: { path: [ 'quarries' ] }
+        src: { input: { path: [ 'count' ] } }
+      }
+    };
+    option (game_engine.action).rule = {
+      single: {
+        left: { value: { bool: true } }
+        operator: EQ
+        right: { value: { bool: true } }
+      }
+    };
+    option (game_engine.action).response = {
+      path: [ 'started' ]
+    };
+    option (game_engine.action).response = {
+      path: [ 'players', 'player_1', 'present' ]
+    };
+    option (game_engine.action).response = {
+      path: [ 'players', 'player_2', 'present' ]
+    };
+    option (game_engine.action).response = {
+      path: [ 'players', 'player_3', 'buildings' ]
+    };
+    option (game_engine.action).error = {
+      code: "826de622-ad54-4b65-3395-bb4d3828e67b"
+      msg: "dummy error"
+    };
+  };
+
+  rpc Start(EmptyMsg) returns (Response) {
+    option (game_engine.action).effect = {
+      update: {
+        dest: { path: [ 'started' ] }
+        src: { value: { bool: true } }
+      }
+    };
+    option (game_engine.action).rule = {
+      and: {
+        rules: [
+          {
+            single: {
+              left: { prop: { path: [ 'started' ] } }
+              operator: EQ
+              right: { value: { bool: false } }
+            }
+          },
+          {
+            single: {
+              left: { prop: { path: [ 'players', 'player_1', 'present' ] } }
+              operator: EQ
+              right: { value: { bool: true } }
+            }
+          },
+          {
+            single: {
+              left: { prop: { path: [ 'players', 'player_2', 'present' ] } }
+              operator: EQ
+              right: { value: { bool: true } }
+            }
+          },
+          {
+            single: {
+              left: { prop: { path: [ 'players', 'player_3', 'present' ] } }
+              operator: EQ
+              right: { value: { bool: true } }
+            }
+          },
+          {
+            or: {
+              rules: [
+                {
+                  single: {
+                    left: {
+                      prop: { path: [ 'players', 'player_4', 'present' ] }
+                    }
+                    operator: EQ
+                    right: { value: { bool: true } }
+                  }
+                },
+                {
+                  single: {
+                    left: {
+                      prop: { path: [ 'players', 'player_5', 'present' ] }
+                    }
+                    operator: EQ
+                    right: { value: { bool: false } }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    };
+    option (game_engine.action).error = {
+      code: "57e0c77b-3e2b-431c-c5ed-ee81a89d5ee6"
+      msg: "game has already started"
+    };
+  };
+
+  // General gameplay
+
+  rpc Accept(RoleChoice) returns (Response);
+
+  // Action: Builder
+  rpc Purchase(BuildingChoice) returns (Response);
+
+  // Action: Captain
+  rpc Load(GoodToShip) returns (Response);
+
+  // Action: Craftsman
+  rpc Craft(EmptyMsg) returns (Response);
+  rpc CraftExtra(GoodChoice) returns (Response);
+
+  // Action: Mayor
+  rpc WelcomeColonist(EmptyMsg) returns (Response);
+  rpc WelcomeColonistFromSupply(EmptyMsg) returns (Response);
+  rpc ApplyColonistToBuilding(BuildingChoice) returns (Response);
+  rpc ApplyColonistToPlantation(PlantationChoice) returns (Response);
+  rpc ApplyColonistToQuarry(EmptyMsg) returns (Response);
+  rpc RefillColonistShip(EmptyMsg) returns (Response);
+
+  // Action: Settler
+  rpc Settle(PlantationChoice) returns (Response);
+  rpc ConstructQuarry(EmptyMsg) returns (Response);
+
+  // Action: Trademan
+  rpc Trade(GoodChoice) returns (Response);
+
+  rpc EndAction(PlayerChoice) returns (Response);
+}
+
+// TODO: dev
+message Response {
+  option (game_engine.is_action_service_response) = true;
+
+  State state = 1;
+  game_engine.Error error = 2;
+}
+// TODO: end of dev
+
+// Action messages
+
+message EmptyMsg {}
+
+message Count {
+  uint32 count = 1;
+}
+
+message RoleChoice {
+  RoleID role = 1;
+}
+
+message BuildingChoice {
+  Building building = 1;
+}
+
+message GoodToShip {
+  GoodID good = 1;
+  CargoShipID ship = 2;
+}
+
+message GoodChoice {
+  GoodID good = 1;
+}
+
+message PlantationChoice {
+  PlantationID plantation = 1;
+}
+
+message PlayerChoice {
+  PlayerID player = 1;
+}

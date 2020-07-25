@@ -1,0 +1,21 @@
+syntax = "proto3";
+package puerto_rico_game;
+
+import "github.com/angelbeltran/game-engine/examples/puerto-rico/good.proto";
+
+option go_package = "github.com/angelbeltran/game-engine/examples/puerto-rico/puerto_rico_pb";
+
+enum CargoShipID {
+  NO_SHIP = 0;
+  WHARF_SHIP = 1;
+  SHIP_4_SLOTS = 4;
+  SHIP_5_SLOTS = 5;
+  SHIP_6_SLOTS = 6;
+  SHIP_7_SLOTS = 7;
+  SHIP_8_SLOTS = 8;
+}
+
+message CargoShip {
+  GoodID good = 1;
+  uint32 quantity = 2;
+}

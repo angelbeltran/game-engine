@@ -1,0 +1,21 @@
+syntax = "proto3";
+package puerto_rico_game;
+
+option go_package = "github.com/angelbeltran/game-engine/examples/puerto-rico/puerto_rico_pb";
+
+enum RoleID {
+  NO_ROLE = 0;
+  PROSPECTOR_1 = 1;
+  PROSPECTOR_2 = 2;
+  BUILDER = 3;
+  CAPTAIN = 4;
+  CRAFTSMAN = 5;
+  MAYOR = 6;
+  SETTLER = 7;
+  TRADER = 8;
+}
+
+message Role {
+  bool available = 1;
+  uint32 doubloons = 2;
+}
