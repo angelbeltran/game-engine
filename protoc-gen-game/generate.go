@@ -24,6 +24,7 @@ type (
 		Service   *desc.ServiceDescriptor
 		Methods   []methodBundle
 		State     *desc.MessageDescriptor
+		Response  *desc.MessageDescriptor
 		StateType types.Type
 	}
 	run func() error
@@ -33,11 +34,12 @@ func generateAll(w io.Writer, opts generationOptions) error {
 	out := bytes.NewBuffer([]byte{})
 
 	if err := mainTemplate.Execute(out, mainTemplateParameters{
-		Package: opts.Package,
-		Imports: defaultMethodImports,
-		Service: opts.Service,
-		Methods: opts.Methods,
-		State:   opts.State,
+		Package:  opts.Package,
+		Imports:  defaultMethodImports,
+		Service:  opts.Service,
+		Methods:  opts.Methods,
+		State:    opts.State,
+		Response: opts.Response,
 	}); err != nil {
 		return err
 	}

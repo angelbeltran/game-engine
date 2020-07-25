@@ -11,8 +11,6 @@ import (
 	"angelbeltran/game-engine/protoc-gen-game/types"
 )
 
-// -- go:generate protoc -I=protos --go_out=$GOPATH/src game_engine.proto
-// TODO
 //go:generate protoc -I=. --go_out=$GOPATH/src game_engine.proto
 //go:generate go mod vendor
 
@@ -55,11 +53,28 @@ func entrypoint(req *plugins.CodeGenRequest, resp *plugins.CodeGenResponse) erro
 
 	state := types.FromMessage(sd)
 
+	// Find and parse the "response" message
+
+	rd, err := getResponseDescriptor(req.Files)
+	if err != nil {
+		return err
+	}
+
+	if err := validateResponseMessage(sd, rd); err != nil {
+		return fmt.Errorf("invalid response message: %w", err)
+	}
+
 	// Find and validate the "action" options defined on rpc methods.
 
 	var methods []methodBundle
+	responseMessageName := rd.GetFullyQualifiedName()
 
 	for _, method := range srv.GetMethods() {
+		name := method.GetOutputType().GetFullyQualifiedName()
+		if name != responseMessageName {
+			return fmt.Errorf("all rpc methods must output the defined response message type, '%s'. '%s' has '%s' as its output type", responseMessageName, method.GetName(), name)
+		}
+
 		// Load the action option field.
 
 		action, err := loadActionOptionMessage(method, actionExtensionFieldNumber)
@@ -86,13 +101,14 @@ func entrypoint(req *plugins.CodeGenRequest, resp *plugins.CodeGenResponse) erro
 		})
 	}
 
-	w := resp.OutputFile("engine.pb.go")
+	w := resp.OutputFile("engine.game.pb.go")
 
 	if err := generateAll(w, generationOptions{
 		Package:   pkgName,
 		Service:   srv,
 		Methods:   methods,
 		State:     sd,
+		Response:  rd,
 		StateType: state,
 	}); err != nil {
 		return fmt.Errorf("failed to generate files: %w", err)

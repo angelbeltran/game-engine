@@ -1,10 +1,14 @@
 package main
 
 const (
-	isActionSetExtensionFieldNumber = 50000
-	actionExtensionFieldNumber      = 50001
-	isGameStateExtensionFieldNumber = 50002
+	isActionSetExtensionFieldNumber             = 50000
+	actionExtensionFieldNumber                  = 50001
+	isGameStateExtensionFieldNumber             = 50002
+	isActionServiceResponseExtensionFieldNumber = 50003
 
-	protoPackageName = "game_engine"
+	protoPackageName       = "game_engine"
+	responseFieldName      = "response"
+	responseStateFieldName = "state"
+	responseErrorFieldName = "error"
+	errorTypeName          = "Error"
 )
-

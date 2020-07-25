@@ -4,7 +4,8 @@ Pet project. Defining game rules and dynamics via Protobufs in Go.
 # Roadmap
 - [x] reference input in rules
 - [x] multiple effects (list)
-- [ ] define responses (not just errors)
+- [x] define responses (not just errors)
+- [ ] fail effects if input or state field is not initialized
 - [ ] support binding errors per rule at anywhere in the rule tree
 - [ ] initialize state per game
     - [ ] require a new special 'new game' action
@@ -26,3 +27,6 @@ Pet project. Defining game rules and dynamics via Protobufs in Go.
     - [ ] various numerical types
     - [ ] bytes
     - [ ] others?
+
+## Dev niceties
+- [ ] replace as many template functions with templates.

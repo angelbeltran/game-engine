@@ -7,22 +7,25 @@ option go_package = "angelbeltran/game-engine/protoc-gen-game/game_engine_pb";
 
 // Action extensions
 
+// TODO: deliberate the extension numbers
 extend google.protobuf.ServiceOptions {
-  optional bool is_action_service = 50000;  // TODO: deliberate these numbers
+  optional bool is_action_service = 50000;
 }
 
 extend google.protobuf.MethodOptions {
-  optional Action action = 50001;  // TODO: deliberate these numbers
+  optional Action action = 50001;
 }
 
 extend google.protobuf.MessageOptions {
-  optional bool is_game_state = 50002;  // TODO: deliberate these numbers
+  optional bool is_game_state = 50002;
+  optional bool is_action_service_response = 50003;
 }
 
 message Action {
   repeated Effect effect = 1;
   Rule rule = 2;
-  Error error = 3;
+  repeated Path response = 3;
+  Error error = 4;
 }
 
 message Effect {

@@ -9,22 +9,28 @@ import (
 )
 
 func validateAction(state, input types.Type, msg *pb.Action) error {
-	if msg.Error == nil || (len(msg.Error.Code)+len(msg.Error.Msg) == 0) {
-		return fmt.Errorf("no error defined on action")
+	if msg.Effect == nil {
+		return fmt.Errorf("no effect defined on action")
 	}
 	if msg.Rule == nil {
 		return fmt.Errorf("no rule defined on action")
 	}
-	if msg.Effect == nil {
-		return fmt.Errorf("no effect defined on action")
+	if msg.Error == nil || (len(msg.Error.Code)+len(msg.Error.Msg) == 0) {
+		return fmt.Errorf("no error defined on action")
 	}
-	if err := validateRule(state, input, msg.Rule); err != nil {
-		return fmt.Errorf("invalid rule: %w", err)
-	}
+
 	for _, effect := range msg.Effect {
 		if err := validateEffect(state, input, effect); err != nil {
 			return fmt.Errorf("invalid effect: %w", err)
 		}
+	}
+
+	if err := validateRule(state, input, msg.Rule); err != nil {
+		return fmt.Errorf("invalid rule: %w", err)
+	}
+
+	if err := validateResponse(state, msg.Response); err != nil {
+		return fmt.Errorf("invalid response: %w", err)
 	}
 
 	return nil
@@ -154,6 +160,20 @@ func validateRule(state, input types.Type, rule *pb.Rule) error {
 	}
 
 	return fmt.Errorf("rule with no conditions found")
+}
+
+func validateResponse(state types.Type, res []*pb.Path) error {
+	for _, p := range res {
+		if p == nil {
+			continue
+		}
+
+		if _, exists := resolvePath(state, p.Path); !exists {
+			return fmt.Errorf("property '%s' does not exist", strings.Join(p.Path, "."))
+		}
+	}
+
+	return nil
 }
 
 func resolveOperandType(state, input types.Type, o *pb.Operand) (types.Type, error) {
