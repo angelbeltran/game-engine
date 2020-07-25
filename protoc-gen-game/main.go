@@ -66,7 +66,7 @@ func entrypoint(req *plugins.CodeGenRequest, resp *plugins.CodeGenResponse) erro
 
 	// Find and validate the "action" options defined on rpc methods.
 
-	var methods []methodBundle
+	var methods []methodInfo
 	responseMessageName := rd.GetFullyQualifiedName()
 
 	for _, method := range srv.GetMethods() {
@@ -82,7 +82,7 @@ func entrypoint(req *plugins.CodeGenRequest, resp *plugins.CodeGenResponse) erro
 			return err
 		}
 		if action == nil {
-			methods = append(methods, methodBundle{Method: method})
+			methods = append(methods, methodInfo{Method: method})
 			continue
 		}
 
@@ -94,7 +94,7 @@ func entrypoint(req *plugins.CodeGenRequest, resp *plugins.CodeGenResponse) erro
 			return err
 		}
 
-		methods = append(methods, methodBundle{
+		methods = append(methods, methodInfo{
 			Method: method,
 			Input:  input,
 			Action: action,
@@ -103,7 +103,7 @@ func entrypoint(req *plugins.CodeGenRequest, resp *plugins.CodeGenResponse) erro
 
 	w := resp.OutputFile("engine.game.pb.go")
 
-	if err := generateAll(w, generationOptions{
+	if err := generateService(w, generationOptions{
 		Package:   pkgName,
 		Service:   srv,
 		Methods:   methods,

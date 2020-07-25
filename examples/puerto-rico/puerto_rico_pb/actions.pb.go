@@ -27,7 +27,6 @@ const (
 // of the legacy proto package is being used.
 const _ = proto.ProtoPackageIsVersion4
 
-// TODO: dev
 type Response struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
