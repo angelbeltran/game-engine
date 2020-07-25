@@ -160,14 +160,12 @@ service Actions {
   rpc EndAction(PlayerChoice) returns (Response);
 }
 
-// TODO: dev
 message Response {
   option (game_engine.is_action_service_response) = true;
 
   State state = 1;
   game_engine.Error error = 2;
 }
-// TODO: end of dev
 
 // Action messages
 
