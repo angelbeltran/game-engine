@@ -38,7 +38,7 @@ var defaultMethodImports = []string{
 	"net",
 	"sync",
 	"google.golang.org/grpc",
-	"angelbeltran/game-engine/protoc-gen-game/game_engine_pb",
+	"github.com/angelbeltran/game-engine/protoc-gen-game/game_engine_pb",
 }
 
 var mainTemplate = template.Must(template.New("main").Funcs(template.FuncMap{
