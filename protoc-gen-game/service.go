@@ -14,7 +14,7 @@ func getActionServices(files []*desc.FileDescriptor) ([]*desc.ServiceDescriptor,
 		if opts := srv.GetServiceOptions(); opts != nil {
 			extensions, err := proto.ExtensionDescs(opts)
 			if err != nil {
-				return nil, fmt.Errorf("failed to examine service extensions:", err)
+				return nil, fmt.Errorf("failed to examine service extensions: %w", err)
 			}
 
 			for _, ext := range extensions {
