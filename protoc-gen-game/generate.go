@@ -17,17 +17,33 @@ import (
 )
 
 func generateService(w io.Writer, opts generationOptions) error {
-	out := bytes.NewBuffer([]byte{})
 
-	if err := template.Must(template.New("service").Funcs(template.FuncMap{
+	// Load template functions.
+
+	tmpl := template.New("service").Funcs(template.FuncMap{
 		"printRule":                     printRule,
 		"printEffect":                   printEffect,
 		"printResponseAppendExpression": printResponseAppendExpression,
-	}).Parse(serviceTemplate)).Execute(out, opts); err != nil {
+	})
+
+	// Parse templates.
+
+	tmpl, err := tmpl.Parse(serviceTemplate)
+	if err != nil {
+		return fmt.Errorf("failed to parse service template: %w", err)
+	}
+
+	// Apply runtime parameters.
+
+	out := bytes.NewBuffer([]byte{})
+
+	if tmpl.Execute(out, opts); err != nil {
 		return err
 	}
 
-	b, err := ioutil.ReadAll(io.MultiReader(out))
+	// Format and write to file.
+
+	b, err := ioutil.ReadAll(out)
 	if err != nil {
 		return err
 	}
