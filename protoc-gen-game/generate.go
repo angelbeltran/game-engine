@@ -90,41 +90,6 @@ func (serviceParameters) ResponseErrorFieldName() string {
 	return goNames.CamelCase(responseErrorFieldName)
 }
 
-func printOperandWithNilChecks(statePrefix, inputPrefix string, op *pb.Operand) (string, error) {
-	if v := op.GetValue(); v != nil {
-		_, val, err := extractValue(v)
-		if err != nil {
-			return "", fmt.Errorf("failed to extract value from operand: %w", err)
-		}
-
-		return fmt.Sprint(val), nil
-	}
-
-	if p := op.GetProp(); p != nil {
-		allButLast := p.Path[:len(p.Path)-1]
-
-		nilChecks := make([]string, len(allButLast))
-		for i := range allButLast {
-			nilChecks[i] = fmt.Sprintf("%s.%s != nil", statePrefix, joinCamelCase(p.Path[:i+1]))
-		}
-
-		return strings.Join(append(nilChecks, fmt.Sprintf("%s.%s", statePrefix, joinCamelCase(p.Path))), " && "), nil
-	}
-
-	if in := op.GetInput(); in != nil {
-		allButLast := in.Path[:len(in.Path)-1]
-
-		nilChecks := make([]string, len(allButLast))
-		for i := range allButLast {
-			nilChecks[i] = fmt.Sprintf("%s.%s != nil", inputPrefix, joinCamelCase(in.Path[:i+1]))
-		}
-
-		return strings.Join(append(nilChecks, fmt.Sprintf("%s.%s", inputPrefix, joinCamelCase(in.Path))), " && "), nil
-	}
-
-	return "", fmt.Errorf("undefined operand")
-}
-
 func printEffect(statePrefix, inputPrefix string, state *desc.MessageDescriptor, effect *pb.Effect) (string, error) {
 	if up := effect.GetUpdate(); up != nil {
 		res, err := printUpdateEffect(statePrefix, inputPrefix, state, up)

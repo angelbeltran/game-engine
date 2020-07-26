@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"text/template"
+
+	pb "github.com/angelbeltran/game-engine/protoc-gen-game/game_engine_pb"
 )
 
 //
@@ -19,7 +21,6 @@ var definitions = definition{
 	Definitions: []definition{{
 		Name: "rule",
 		Funcs: template.FuncMap{
-			"printOperandWithNilChecks": printOperandWithNilChecks,
 			"unexpectedOperator": func(op interface{}) (interface{}, error) {
 				return nil, fmt.Errorf("unexpected operator: %s", op)
 			},
@@ -28,6 +29,23 @@ var definitions = definition{
 			},
 		},
 		Template: ruleTemplate,
+		Definitions: []definition{{
+			Name: "operandWithNilCheck",
+			Funcs: template.FuncMap{
+				"inc": func(i int) int {
+					return i + 1
+				},
+				"printValue": func(msg *pb.Value) (interface{}, error) {
+					_, v, err := extractValue(msg)
+					return v, err
+				},
+				"joinCamelCase": joinCamelCase,
+				"errUndefinedOperand": func() (interface{}, error) {
+					return nil, fmt.Errorf("undefined operand")
+				},
+			},
+			Template: operandWithNilCheckTemplate,
+		}},
 	}},
 }
 
@@ -170,10 +188,7 @@ const ruleTemplate = `
 {{end}}
 
 {{- define "single"}}
-	{{- $lh := printOperandWithNilChecks "` + stateVariable + `" "` + inputVariable + `" .Left}}
-	{{- $rh := printOperandWithNilChecks "` + stateVariable + `" "` + inputVariable + `" .Right}}
-
-	{{- $lh}} {{template "operator" .}} {{$rh -}}
+	{{- template "operandWithNilCheck" .Left }} {{template "operator" .}} {{- template "operandWithNilCheck" .Right -}}
 {{end}}
 
 {{- define "general"}}
@@ -196,4 +211,39 @@ const ruleTemplate = `
 {{- end}}
 
 {{- template "general" . }}
+`
+
+// expected *pb.Operand
+const operandWithNilCheckTemplate = `
+{{- define "stateNilChecks" }}
+	{{- $path := . }}
+
+	{{- range $i, $_ := $path -}}
+		` + stateVariable + `.{{- joinCamelCase (slice $path 0 (inc $i)) }}
+		{{- if (lt (inc $i) (len $path)) }} != nil && {{ end }}
+	{{- end }}
+{{- end}}
+
+{{- define "inputNilChecks" }}
+	{{- $path := . }}
+
+	{{- range $i, $_ := $path -}}
+		` + inputVariable + `.{{- joinCamelCase (slice $path 0 inc $i) }}
+		{{- if (lt (inc $i) (len $path)) }} != nil && {{ end }}
+	{{- end }}
+{{- end}}
+
+	{{- if .GetValue }}
+		{{- printValue .GetValue }}
+
+	{{- else if .GetProp }}
+		{{- template "stateNilChecks" .GetProp.Path }}
+
+	{{- else if .GetInput }}
+		{{- template "inputNilChecks" .GetInput.Path }}
+
+	{{- else }}
+		{{- errUndefinedOperand }}
+
+	{{- end -}}
 `
