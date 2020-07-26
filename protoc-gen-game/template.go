@@ -322,7 +322,7 @@ const effectTemplate = `
 
 	{{- /* Initialize state properties, as needed  */}}
 
-	{{- template "initializeStateProperty" (newInitializeStatePropertyExpressionParams $dst.Path "` + stateVariable + `" .State) }}
+	{{- template "initializeStateProperty" newInitializeStatePropertyExpressionParams $dst.Path "` + stateVariable + `" .State }}
 
 	{{- /* Build the right-hand side expression. */}}
 
@@ -384,13 +384,16 @@ const effectTemplate = `
 {{- end }}
 `
 
+// expects a responseAppendExpressionTemplateParams.
 var responseAppendExpressionTemplate = `
 	{{- $prefix := "` + responseVariable + `.` + responseStateFieldNameCamelCase + `" }}
 
+	{{- template "initializeStateProperty" newInitializeStatePropertyExpressionParams .Path "` + stateVariable + `" .State }}
 	{{- template "initializeStateProperty" newInitializeStatePropertyExpressionParams .Path $prefix .State }}
 	{{- $prefix }}.{{ joinCamelCase .Path }} = ` + stateVariable + `.{{ joinCamelCase .Path }}
 `
 
+// expects a initializeStatePropertyExpressionParams.
 const initializeStatePropertyExpression = `
 	{{- $path := .Path}}
 	{{- $identifier := .Identifier}}

@@ -61,6 +61,13 @@ func (e *gameEngine) SetPlayers(ctx context.Context, in *Count) (*Response, erro
 
 	res.State.Started = state.Started
 
+	if state.Players == nil {
+		state.Players = &State_Players{}
+	}
+	if state.Players.Player_1 == nil {
+		state.Players.Player_1 = &Player{}
+	}
+
 	if res.State.Players == nil {
 		res.State.Players = &State_Players{}
 	}
@@ -69,6 +76,13 @@ func (e *gameEngine) SetPlayers(ctx context.Context, in *Count) (*Response, erro
 	}
 	res.State.Players.Player_1.Present = state.Players.Player_1.Present
 
+	if state.Players == nil {
+		state.Players = &State_Players{}
+	}
+	if state.Players.Player_2 == nil {
+		state.Players.Player_2 = &Player{}
+	}
+
 	if res.State.Players == nil {
 		res.State.Players = &State_Players{}
 	}
@@ -76,6 +90,13 @@ func (e *gameEngine) SetPlayers(ctx context.Context, in *Count) (*Response, erro
 		res.State.Players.Player_2 = &Player{}
 	}
 	res.State.Players.Player_2.Present = state.Players.Player_2.Present
+
+	if state.Players == nil {
+		state.Players = &State_Players{}
+	}
+	if state.Players.Player_3 == nil {
+		state.Players.Player_3 = &Player{}
+	}
 
 	if res.State.Players == nil {
 		res.State.Players = &State_Players{}
