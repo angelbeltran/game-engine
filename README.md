@@ -29,7 +29,7 @@ Pet project. Defining game rules and dynamics via Protobufs in Go.
     - [ ] others?
 
 ## Dev niceties
-- [ ] replace as many template functions with templates.
+- [x] replace as many template functions with templates.
 
 ## Examples
 
