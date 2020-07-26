@@ -47,11 +47,9 @@ func (e *gameEngine) SetPlayers(ctx context.Context, in *Count) (*Response, erro
 	if state.Players == nil {
 		state.Players = &State_Players{}
 	}
-
 	if state.Players.Player_1 == nil {
 		state.Players.Player_1 = &Player{}
 	}
-
 	state.Players.Player_1.Present = true
 
 	state.Quarries = in.Count
@@ -66,31 +64,25 @@ func (e *gameEngine) SetPlayers(ctx context.Context, in *Count) (*Response, erro
 	if res.State.Players == nil {
 		res.State.Players = &State_Players{}
 	}
-
 	if res.State.Players.Player_1 == nil {
 		res.State.Players.Player_1 = &Player{}
 	}
-
 	res.State.Players.Player_1.Present = state.Players.Player_1.Present
 
 	if res.State.Players == nil {
 		res.State.Players = &State_Players{}
 	}
-
 	if res.State.Players.Player_2 == nil {
 		res.State.Players.Player_2 = &Player{}
 	}
-
 	res.State.Players.Player_2.Present = state.Players.Player_2.Present
 
 	if res.State.Players == nil {
 		res.State.Players = &State_Players{}
 	}
-
 	if res.State.Players.Player_3 == nil {
 		res.State.Players.Player_3 = &Player{}
 	}
-
 	res.State.Players.Player_3.Buildings = state.Players.Player_3.Buildings
 
 	return &res, nil

@@ -103,7 +103,7 @@ func entrypoint(req *plugins.CodeGenRequest, resp *plugins.CodeGenResponse) erro
 
 	w := resp.OutputFile("engine.game.pb.go")
 
-	if err := generateService(w, serviceParameters{
+	if err := generateService(w, serviceParams{
 		Package:   pkgName,
 		Service:   srv,
 		Methods:   methods,

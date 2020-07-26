@@ -16,8 +16,15 @@ const (
 	responseErrorFieldName = "error"
 	errorTypeName          = "Error"
 
-	stateVariable = "state"
-	inputVariable = "in"
+	stateVariable    = "state"
+	inputVariable    = "in"
+	responseVariable = "res"
 )
 
-var goNames plugins.GoNames
+var (
+	goNames plugins.GoNames
+
+	responseFieldNameCamelCase      = goNames.CamelCase(responseFieldName)
+	responseStateFieldNameCamelCase = goNames.CamelCase(responseStateFieldName)
+	responseErrorFieldNameCamelCase = goNames.CamelCase(responseErrorFieldName)
+)
