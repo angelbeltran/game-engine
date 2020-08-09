@@ -54,6 +54,12 @@ func GenerateService(w io.Writer, opts TemplateParams) error {
 		{{- end }}
 		{{- end }}
 		{{- end }}
+		{{- range $_, $domain := $types }}
+		{{- range $_, $codomain := $types }}
+		{{- $ident := printf "New%ssTo%sFunctionParams" (capitalize $domain) (capitalize $codomain) }}
+		"{{ $ident }}": {{ $ident }},
+		{{- end }}
+		{{- end }}
 		{{- range $type := $types }}
 		{{- $ifType := printf "%sValueIf" (capitalize $type) }}
 		{{- $ident := printf "New%sParams" $ifType }}
@@ -302,12 +308,14 @@ func NewResponse() {{ $responseType }} {
 {{ "{{-" }} if .Value.GetInput {{ "}}{{" }} template "Reference" NewReferenceParams .InputVariable .Value.GetInput {{ "}}" }}
 {{ "{{-" }} else if .Value.GetState {{ "}}{{" }} template "Reference" NewReferenceParams .StateVariable .Value.GetState {{ "}}" }}
 
+{{- /* Unary function output at input */}}
 {{- range $_, $domain := $types }}
 {{- $domain = capitalize $domain }}
 {{- $getter := printf ".Value.Get%sFunc" $domain }}
 {{ "{{-" }} else if {{ $getter }} {{ "}}{{" }} template "{{ $domain }}To{{ $type }}Function" New{{ $domain }}To{{ $type }}FunctionParams {{ $getter }} .InputVariable .StateVariable {{ "}}" }}
 {{- end }}
 
+{{- /* Binary function output at input */}}
 {{- range $_, $domain1 := $types }}
 {{- $domain1 = capitalize $domain1 }}
 {{- range $_, $domain2 := $types }}
@@ -315,6 +323,14 @@ func NewResponse() {{ $responseType }} {
 {{ "{{-" }} else if .Value.Get{{ $domain1 }}{{ $domain2 }}Func {{ "}}{{" }} template "{{ $domain1 }}And{{ $domain2 }}To{{ $type }}Function" New{{ $domain1 }}And{{ $domain2 }}To{{ $type }}FunctionParams .Value.Get{{ $domain1 }}{{ $domain2 }}Func .InputVariable .StateVariable {{ "}}" }}
 {{- end }}
 {{- end }}
+
+{{- /* N-ary function output at input */}}
+{{- range $_, $domain := $types }}
+{{- $domain = capitalize $domain }}
+{{- $getter := printf ".Value.Get%ssFunc" $domain }}
+{{ "{{-" }} else if {{ $getter }} {{ "}}{{" }} template "{{ $domain }}sTo{{ $type }}Function" New{{ $domain }}sTo{{ $type }}FunctionParams {{ $getter }} .InputVariable .StateVariable {{ "}}" }}
+{{- end }}
+
 {{ `{{-` }} else if .Value.GetIf {{ `}}{{` }} template "{{ $type }}ValueIf" New{{ $type }}ValueIfParams .Value.GetIf .InputVariable .StateVariable {{ `}}` }}
 {{ "{{-" }} else {{ "}}{{" }} printf "%v" .Value.GetConstant {{ "}}" }}
 {{`{{- end }}`}}
@@ -357,6 +373,15 @@ go_func.{{- $domain }}To{{ $codomain }}_{{ `{{- camelCase .Function.Name.String 
 	{{- $getter := printf ".Function.Get%s" $funcFieldName }}
 	{{ `{{-` }} else if {{ $getter }} {{ `}}{{` }} template "{{ $nestedFuncTypeName }}" New{{ $nestedFuncTypeName }}Params {{ $getter }} .InputVariable .StateVariable {{ `}}` }}
 	{{- end }}
+	{{- end }}
+
+	{{- /* N-ary function output at input */}}
+	{{- range $fieldDomain := $types }}
+	{{- $fieldDomain = capitalize $fieldDomain }}
+	{{- $funcFieldName := printf "%ssFunc" $fieldDomain }}
+	{{- $nestedFuncTypeName := printf "%ssTo%sFunction" $fieldDomain $domain }}
+	{{- $getter := printf ".Function.Get%s" $funcFieldName }}
+	{{ `{{-` }} else if {{ $getter }} {{ `}}{{` }} template "{{ $nestedFuncTypeName }}" New{{ $nestedFuncTypeName }}Params {{ $getter }} .InputVariable .StateVariable {{ `}}` }}
 	{{- end }}
 
 	{{ `{{-` }} else if .If {{ `}}{{` }} template "{{ $domain }}ValueIf" New{{ $domain }}ValueIfParams .If .InputVariable .StateVariable {{ `}}` }}
@@ -407,6 +432,15 @@ go_func.{{- $domain1 }}And{{ $domain2 }}To{{ $codomain }}_{{ `{{- camelCase .Fun
 	{{- end }}
 	{{- end }}
 
+	{{- /* N-ary function output at input 1 */}}
+	{{- range $fieldDomain := $types }}
+	{{- $fieldDomain = capitalize $fieldDomain }}
+	{{- $funcFieldName := printf "%ssFunc" $fieldDomain }}
+	{{- $nestedFuncTypeName := printf "%ssTo%sFunction" $fieldDomain $domain1 }}
+	{{- $getter := printf ".Function.Get%s_1" $funcFieldName }}
+	{{ `{{-` }} else if {{ $getter }} {{ `}}{{` }} template "{{ $nestedFuncTypeName }}" New{{ $nestedFuncTypeName }}Params {{ $getter }} .InputVariable .StateVariable {{ `}}` }}
+	{{- end }}
+
 	{{ `{{-` }} else if .Function.GetIf_1 {{ `}}{{` }} template "{{ $domain1 }}ValueIf" New{{ $domain1 }}ValueIfParams .Function.GetIf_1 .InputVariable .StateVariable {{ `}}` }}
 
 	{{ `{{-` }} else {{ `}}{{` }} printf "%v" .Function.GetConstant_1 {{ `}}` }}
@@ -437,6 +471,15 @@ go_func.{{- $domain1 }}And{{ $domain2 }}To{{ $codomain }}_{{ `{{- camelCase .Fun
 	{{- end }}
 	{{- end }}
 
+	{{- /* N-ary function output at input 2 */}}
+	{{- range $fieldDomain := $types }}
+	{{- $fieldDomain = capitalize $fieldDomain }}
+	{{- $funcFieldName := printf "%ssFunc" $fieldDomain }}
+	{{- $nestedFuncTypeName := printf "%ssTo%sFunction" $fieldDomain $domain2 }}
+	{{- $getter := printf ".Function.Get%s_2" $funcFieldName }}
+	{{ `{{-` }} else if {{ $getter }} {{ `}}{{` }} template "{{ $nestedFuncTypeName }}" New{{ $nestedFuncTypeName }}Params {{ $getter }} .InputVariable .StateVariable {{ `}}` }}
+	{{- end }}
+
 	{{ `{{-` }} else if .Function.GetIf_2 {{ `}}{{` }} template "{{ $domain2 }}ValueIf" New{{ $domain2 }}ValueIfParams .Function.GetIf_2 .InputVariable .StateVariable {{ `}}` }}
 
 	{{ `{{-` }} end {{ `}}` }}),
@@ -445,6 +488,69 @@ go_func.{{- $domain1 }}And{{ $domain2 }}To{{ $codomain }}_{{ `{{- camelCase .Fun
 {{ end }}
 {{ end }}
 {{- end }}
+
+
+{{ `{{- /* N-ary Function Templates */}}` }}
+
+{{ range $_, $domain := $types }}
+{{- $domainGoType := index $typesToGoTypes $domain }}
+{{- $domain = capitalize $domain }}
+{{- range $_, $codomain := $types }}
+{{- $codomain = capitalize $codomain }}
+{{- $funcTypeName := printf "%ssTo%sFunction" $domain $codomain }}
+{{ `{{-` }} define "{{ $funcTypeName }}" {{ `-}}` }}
+{{ `{{- /*`}} Expects a {{ $funcTypeName }}Params {{ `*/}}` }}
+{{ `{{-` }} if not .Function.Name {{ `}}{{` }} failNoFunctionName "{{ $funcTypeName }}" {{ `}}{{` }} end {{ `}}` -}}
+go_func.{{ $domain }}sTo{{ $codomain }}_{{ `{{- camelCase .Function.Name.String }}(` }}
+{{ `{{-` }} $inputVariable := .InputVariable {{ `}}` }}
+{{ `{{-` }} $stateVariable := .StateVariable {{ `}}` }}
+{{ `{{-` }} range $arg := .Function.Arguments {{ `}}` }}
+
+{{- $domainGoType }}(
+	{{ `{{-` }} if $arg.GetInput {{ `}}{{` }} template "Reference" NewReferenceParams $inputVariable $arg.GetInput {{ `}}` }}
+	{{ `{{-` }} else if $arg.GetState {{ `}}{{` }} template "Reference" NewReferenceParams $stateVariable $arg.GetState {{ `}}` }}
+
+	{{- /* Unary function output at input */}}
+	{{- range $fieldDomain := $types }}
+	{{- $fieldDomain = capitalize $fieldDomain }}
+	{{- $funcFieldName := printf "%sFunc" $fieldDomain }}
+	{{- $nestedFuncTypeName := printf "%sTo%sFunction" $fieldDomain $domain }}
+	{{- $getter := printf "$arg.Get%s" $funcFieldName }}
+	{{ `{{-` }} else if {{ $getter }} {{ `}}{{` }} template "{{ $nestedFuncTypeName }}" New{{ $nestedFuncTypeName }}Params {{ $getter }} $inputVariable $stateVariable {{ `}}` }}
+	{{- end }}
+
+	{{- /* Binary function output at input */}}
+	{{- range $fieldDomain1 := $types }}
+	{{- $fieldDomain1 = capitalize $fieldDomain1 }}
+	{{- range $fieldDomain2 := $types }}
+	{{- $fieldDomain2 = capitalize $fieldDomain2 }}
+	{{- $funcFieldName := printf "%s%sFunc" $fieldDomain1 $fieldDomain2 }}
+	{{- $nestedFuncTypeName := printf "%sAnd%sTo%sFunction" $fieldDomain1 $fieldDomain2 $domain }}
+	{{- $getter := printf "$arg.Get%s" $funcFieldName }}
+	{{ `{{-` }} else if {{ $getter }} {{ `}}{{` }} template "{{ $nestedFuncTypeName }}" New{{ $nestedFuncTypeName }}Params {{ $getter }} $inputVariable $stateVariable {{ `}}` }}
+	{{- end }}
+	{{- end }}
+
+	{{- /* N-ary function output at input */}}
+	{{- range $fieldDomain := $types }}
+	{{- $fieldDomain = capitalize $fieldDomain }}
+	{{- $funcFieldName := printf "%ssFunc" $fieldDomain }}
+	{{- $nestedFuncTypeName := printf "%ssTo%sFunction" $fieldDomain $domain }}
+	{{- $getter := printf "$arg.Get%s" $funcFieldName }}
+	{{ `{{-` }} else if {{ $getter }} {{ `}}{{` }} template "{{ $nestedFuncTypeName }}" New{{ $nestedFuncTypeName }}Params {{ $getter }} $inputVariable $stateVariable {{ `}}` }}
+	{{- end }}
+
+	{{ `{{-` }} else if $arg.GetIf {{ `}}{{` }} template "{{ $domain }}ValueIf" New{{ $domain }}ValueIfParams $arg.GetIf $inputVariable $stateVariable {{ `}}` }}
+
+	{{ `{{-` }} else {{ `}}{{` }} printf "%v" $arg.GetConstant {{ `}}` }}
+
+	{{ `{{-` }} end {{ `}}` }},
+{{ `),{{-` }} end {{ `}}` }}
+{{ `)` }}
+{{ `{{-` }} end {{ `}}` }}
+{{ end }}
+{{- end }}
+
 
 {{- /* If-Else control structures */}}
 
@@ -558,6 +664,30 @@ func New{{ $funcType }}Params(function *pb.{{ $funcType }}, input, state string)
 	}
 }
 {{- end }}
+{{- end }}
+{{- end }}
+
+// N-ary Functions
+
+{{- range $_, $domain := $types }}
+{{- $domain = capitalize $domain }}
+{{- range $_, $codomain := $types }}
+{{- $codomain = capitalize $codomain }}
+{{- $funcType := printf "%ssTo%sFunction" $domain $codomain }}
+
+type {{ $funcType }}Params struct {
+	Function *pb.{{ $funcType }}
+	InputVariable string
+	StateVariable string
+}
+
+func New{{ $funcType }}Params(function *pb.{{ $funcType }}, input, state string) {{ $funcType }}Params {
+	return {{ $funcType }}Params{
+		Function: function,
+		InputVariable: input,
+		StateVariable: state,
+	}
+}
 {{- end }}
 {{- end }}
 

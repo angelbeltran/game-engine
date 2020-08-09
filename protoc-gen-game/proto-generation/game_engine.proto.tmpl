@@ -92,8 +92,11 @@ message {{ capitalize $type }}Value {
     {{ capitalize $domain1 }}And{{ capitalize $domain2 }}To{{ capitalize $type }}Function {{ $domain1 }}_{{ $domain2 }}_func = {{ add 100 (multiply 10 $i) $j }};
 {{- end }}
 {{- end }}
+{{ range $i, $domain := $types }}
+    {{ capitalize $domain }}sTo{{ capitalize $type }}Function {{ $domain }}s_func = {{ add 200 $i }};
+{{- end }}
 
-    {{ capitalize $type }}ValueIf if = 200;
+    {{ capitalize $type }}ValueIf if = 300;
   }
 }
 {{- end }}
@@ -129,6 +132,9 @@ message {{ capitalize $domain }}To{{ capitalize $codomain }}Function {
 {{ range $l, $domain2 := $types }}
     {{ capitalize $domain1 }}And{{ capitalize $domain2 }}To{{ capitalize $messageDomain }}Function {{ $domain1 }}_{{ $domain2 }}_func = {{ add 100 (multiply 10 $k) $l }};
 {{- end }}
+{{- end }}
+{{ range $i, $domain := $types }}
+    {{ capitalize $domain }}sTo{{ capitalize $messageDomain }}Function {{ $domain }}s_func = {{ add 200 $i }};
 {{- end }}
 
     {{ capitalize $domain }}ValueIf if = 1000;
@@ -175,6 +181,9 @@ message {{ capitalize $domain1 }}And{{ capitalize $domain2 }}To{{ capitalize $co
     {{ capitalize $domain1 }}And{{ capitalize $domain2 }}To{{ capitalize $messageDomain1 }}Function {{ $domain1 }}_{{ $domain2 }}_func_1 = {{ add 100 (multiply 10 $l) $m }};
 {{- end }}
 {{- end }}
+{{ range $i, $domain := $types }}
+    {{ capitalize $domain }}sTo{{ capitalize $messageDomain1 }}Function {{ $domain }}s_func_1 = {{ add 200 $i }};
+{{- end }}
 
     {{ capitalize $domain1 }}ValueIf if_1 = 1000;
   }
@@ -192,11 +201,61 @@ message {{ capitalize $domain1 }}And{{ capitalize $domain2 }}To{{ capitalize $co
     {{ capitalize $domain1 }}And{{ capitalize $domain2 }}To{{ capitalize $messageDomain2 }}Function {{ $domain1 }}_{{ $domain2 }}_func_2 = {{ add 2000 100 (multiply 10 $l) $m }};
 {{- end }}
 {{- end }}
+{{ range $i, $domain := $types }}
+    {{ capitalize $domain }}sTo{{ capitalize $messageDomain2 }}Function {{ $domain }}s_func_2 = {{ add 2000 200 $i }};
+{{- end }}
 
     {{ capitalize $domain2 }}ValueIf if_2 = 3000;
   }
 }
 {{- end }}
+{{- end }}
+{{- end }}
+
+// N-ary Functions
+{{- $functions := .Functions }}
+{{- range $i, $domain := $types }}
+{{- range $j, $codomain := $types }}
+
+message {{ capitalize $domain }}sTo{{ capitalize $codomain }}Function {
+  enum ID {
+    UNDEFINED = 0;
+{{- if index $functions.Nary $domain }}
+{{- if index $functions.Nary $domain $codomain }}
+{{- range $k, $name := index $functions.Nary $domain $codomain }}
+    {{ toUpper $name }} = {{ add 1 $k }};
+{{- end }}
+{{- end }}
+{{- end }}
+  }
+
+  ID name = 1;
+
+  message Argument {
+    oneof argument {
+      {{ index $typesToProtobufTypes $domain }} constant = 1;
+      Reference input = 2;
+      Reference state = 3;
+
+{{- $messageDomain := $domain }}
+{{ range $k, $domain := $types }}
+      {{ capitalize $domain }}To{{ capitalize $messageDomain }}Function {{ $domain }}_func = {{ add 10 $k }};
+{{- end }}
+{{- range $k, $domain1 := $types }}
+{{ range $l, $domain2 := $types }}
+      {{ capitalize $domain1 }}And{{ capitalize $domain2 }}To{{ capitalize $messageDomain }}Function {{ $domain1 }}_{{ $domain2 }}_func = {{ add 100 (multiply 10 $k) $l }};
+{{- end }}
+{{- end }}
+{{ range $i, $domain := $types }}
+      {{ capitalize $domain }}sTo{{ capitalize $messageDomain }}Function {{ $domain }}s_func = {{ add 200 $i }};
+{{- end }}
+
+      {{ capitalize $domain }}ValueIf if = 1000;
+    }
+  }
+
+  repeated Argument arguments = 2;
+}
 {{- end }}
 {{- end }}
 

@@ -234,3 +234,88 @@ func StringAndStringToBool_LTE(v, w string) bool {
 func StringAndStringToBool_CONCAT(v, w string) string {
 	return v + w
 }
+
+func BoolsToBool_EQ(v ...bool) bool {
+	if len(v) == 0 {
+		return false
+	}
+
+	for _, b := range v[1:] {
+		if v[0] != b {
+			return false
+		}
+	}
+
+	return true
+}
+
+func BoolsToBool_NEQ(v ...bool) bool {
+	switch len(v) {
+	case 0:
+		return false
+	case 1:
+		return true
+	case 2:
+		return v[0] != v[1]
+	default:
+		return false
+	}
+}
+
+func BoolsToBool_AND(v ...bool) bool {
+	if len(v) == 0 {
+		return false
+	}
+
+	for _, b := range v {
+		if !b {
+			return false
+		}
+	}
+
+	return true
+}
+
+func BoolsToBool_OR(v ...bool) bool {
+	if len(v) == 0 {
+		return false
+	}
+
+	for _, b := range v {
+		if b {
+			return true
+		}
+	}
+
+	return false
+}
+
+func IntsToInt_ADD(v ...int) int {
+	var res int
+
+	for _, i := range v {
+		res += i
+	}
+
+	return res
+}
+
+func IntsToInt_MULT(v ...int) int {
+	var res int
+
+	for _, i := range v {
+		res *= i
+	}
+
+	return res
+}
+
+func StringsToString_CONCAT(v ...string) string {
+	var res string
+
+	for _, s := range v {
+		res += s
+	}
+
+	return res
+}

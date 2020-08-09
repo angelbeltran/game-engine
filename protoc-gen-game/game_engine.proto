@@ -109,7 +109,12 @@ message BoolValue {
     StringAndFloatToBoolFunction string_float_func = 132;
     StringAndStringToBoolFunction string_string_func = 133;
 
-    BoolValueIf if = 200;
+    BoolsToBoolFunction bools_func = 200;
+    IntsToBoolFunction ints_func = 201;
+    FloatsToBoolFunction floats_func = 202;
+    StringsToBoolFunction strings_func = 203;
+
+    BoolValueIf if = 300;
   }
 }
 
@@ -145,7 +150,12 @@ message IntValue {
     StringAndFloatToIntFunction string_float_func = 132;
     StringAndStringToIntFunction string_string_func = 133;
 
-    IntValueIf if = 200;
+    BoolsToIntFunction bools_func = 200;
+    IntsToIntFunction ints_func = 201;
+    FloatsToIntFunction floats_func = 202;
+    StringsToIntFunction strings_func = 203;
+
+    IntValueIf if = 300;
   }
 }
 
@@ -181,7 +191,12 @@ message FloatValue {
     StringAndFloatToFloatFunction string_float_func = 132;
     StringAndStringToFloatFunction string_string_func = 133;
 
-    FloatValueIf if = 200;
+    BoolsToFloatFunction bools_func = 200;
+    IntsToFloatFunction ints_func = 201;
+    FloatsToFloatFunction floats_func = 202;
+    StringsToFloatFunction strings_func = 203;
+
+    FloatValueIf if = 300;
   }
 }
 
@@ -217,7 +232,12 @@ message StringValue {
     StringAndFloatToStringFunction string_float_func = 132;
     StringAndStringToStringFunction string_string_func = 133;
 
-    StringValueIf if = 200;
+    BoolsToStringFunction bools_func = 200;
+    IntsToStringFunction ints_func = 201;
+    FloatsToStringFunction floats_func = 202;
+    StringsToStringFunction strings_func = 203;
+
+    StringValueIf if = 300;
   }
 }
 
@@ -260,6 +280,11 @@ message BoolToBoolFunction {
     StringAndFloatToBoolFunction string_float_func = 132;
     StringAndStringToBoolFunction string_string_func = 133;
 
+    BoolsToBoolFunction bools_func = 200;
+    IntsToBoolFunction ints_func = 201;
+    FloatsToBoolFunction floats_func = 202;
+    StringsToBoolFunction strings_func = 203;
+
     BoolValueIf if = 1000;
   }
 }
@@ -300,6 +325,11 @@ message BoolToIntFunction {
     StringAndIntToBoolFunction string_int_func = 131;
     StringAndFloatToBoolFunction string_float_func = 132;
     StringAndStringToBoolFunction string_string_func = 133;
+
+    BoolsToBoolFunction bools_func = 200;
+    IntsToBoolFunction ints_func = 201;
+    FloatsToBoolFunction floats_func = 202;
+    StringsToBoolFunction strings_func = 203;
 
     BoolValueIf if = 1000;
   }
@@ -342,6 +372,11 @@ message BoolToFloatFunction {
     StringAndFloatToBoolFunction string_float_func = 132;
     StringAndStringToBoolFunction string_string_func = 133;
 
+    BoolsToBoolFunction bools_func = 200;
+    IntsToBoolFunction ints_func = 201;
+    FloatsToBoolFunction floats_func = 202;
+    StringsToBoolFunction strings_func = 203;
+
     BoolValueIf if = 1000;
   }
 }
@@ -383,6 +418,11 @@ message BoolToStringFunction {
     StringAndFloatToBoolFunction string_float_func = 132;
     StringAndStringToBoolFunction string_string_func = 133;
 
+    BoolsToBoolFunction bools_func = 200;
+    IntsToBoolFunction ints_func = 201;
+    FloatsToBoolFunction floats_func = 202;
+    StringsToBoolFunction strings_func = 203;
+
     BoolValueIf if = 1000;
   }
 }
@@ -423,6 +463,11 @@ message IntToBoolFunction {
     StringAndIntToIntFunction string_int_func = 131;
     StringAndFloatToIntFunction string_float_func = 132;
     StringAndStringToIntFunction string_string_func = 133;
+
+    BoolsToIntFunction bools_func = 200;
+    IntsToIntFunction ints_func = 201;
+    FloatsToIntFunction floats_func = 202;
+    StringsToIntFunction strings_func = 203;
 
     IntValueIf if = 1000;
   }
@@ -467,6 +512,11 @@ message IntToIntFunction {
     StringAndFloatToIntFunction string_float_func = 132;
     StringAndStringToIntFunction string_string_func = 133;
 
+    BoolsToIntFunction bools_func = 200;
+    IntsToIntFunction ints_func = 201;
+    FloatsToIntFunction floats_func = 202;
+    StringsToIntFunction strings_func = 203;
+
     IntValueIf if = 1000;
   }
 }
@@ -507,6 +557,11 @@ message IntToFloatFunction {
     StringAndIntToIntFunction string_int_func = 131;
     StringAndFloatToIntFunction string_float_func = 132;
     StringAndStringToIntFunction string_string_func = 133;
+
+    BoolsToIntFunction bools_func = 200;
+    IntsToIntFunction ints_func = 201;
+    FloatsToIntFunction floats_func = 202;
+    StringsToIntFunction strings_func = 203;
 
     IntValueIf if = 1000;
   }
@@ -549,6 +604,11 @@ message IntToStringFunction {
     StringAndFloatToIntFunction string_float_func = 132;
     StringAndStringToIntFunction string_string_func = 133;
 
+    BoolsToIntFunction bools_func = 200;
+    IntsToIntFunction ints_func = 201;
+    FloatsToIntFunction floats_func = 202;
+    StringsToIntFunction strings_func = 203;
+
     IntValueIf if = 1000;
   }
 }
@@ -590,6 +650,11 @@ message FloatToBoolFunction {
     StringAndFloatToFloatFunction string_float_func = 132;
     StringAndStringToFloatFunction string_string_func = 133;
 
+    BoolsToFloatFunction bools_func = 200;
+    IntsToFloatFunction ints_func = 201;
+    FloatsToFloatFunction floats_func = 202;
+    StringsToFloatFunction strings_func = 203;
+
     FloatValueIf if = 1000;
   }
 }
@@ -630,6 +695,11 @@ message FloatToIntFunction {
     StringAndIntToFloatFunction string_int_func = 131;
     StringAndFloatToFloatFunction string_float_func = 132;
     StringAndStringToFloatFunction string_string_func = 133;
+
+    BoolsToFloatFunction bools_func = 200;
+    IntsToFloatFunction ints_func = 201;
+    FloatsToFloatFunction floats_func = 202;
+    StringsToFloatFunction strings_func = 203;
 
     FloatValueIf if = 1000;
   }
@@ -674,6 +744,11 @@ message FloatToFloatFunction {
     StringAndFloatToFloatFunction string_float_func = 132;
     StringAndStringToFloatFunction string_string_func = 133;
 
+    BoolsToFloatFunction bools_func = 200;
+    IntsToFloatFunction ints_func = 201;
+    FloatsToFloatFunction floats_func = 202;
+    StringsToFloatFunction strings_func = 203;
+
     FloatValueIf if = 1000;
   }
 }
@@ -714,6 +789,11 @@ message FloatToStringFunction {
     StringAndIntToFloatFunction string_int_func = 131;
     StringAndFloatToFloatFunction string_float_func = 132;
     StringAndStringToFloatFunction string_string_func = 133;
+
+    BoolsToFloatFunction bools_func = 200;
+    IntsToFloatFunction ints_func = 201;
+    FloatsToFloatFunction floats_func = 202;
+    StringsToFloatFunction strings_func = 203;
 
     FloatValueIf if = 1000;
   }
@@ -756,6 +836,11 @@ message StringToBoolFunction {
     StringAndFloatToStringFunction string_float_func = 132;
     StringAndStringToStringFunction string_string_func = 133;
 
+    BoolsToStringFunction bools_func = 200;
+    IntsToStringFunction ints_func = 201;
+    FloatsToStringFunction floats_func = 202;
+    StringsToStringFunction strings_func = 203;
+
     StringValueIf if = 1000;
   }
 }
@@ -797,6 +882,11 @@ message StringToIntFunction {
     StringAndFloatToStringFunction string_float_func = 132;
     StringAndStringToStringFunction string_string_func = 133;
 
+    BoolsToStringFunction bools_func = 200;
+    IntsToStringFunction ints_func = 201;
+    FloatsToStringFunction floats_func = 202;
+    StringsToStringFunction strings_func = 203;
+
     StringValueIf if = 1000;
   }
 }
@@ -836,6 +926,11 @@ message StringToFloatFunction {
     StringAndIntToStringFunction string_int_func = 131;
     StringAndFloatToStringFunction string_float_func = 132;
     StringAndStringToStringFunction string_string_func = 133;
+
+    BoolsToStringFunction bools_func = 200;
+    IntsToStringFunction ints_func = 201;
+    FloatsToStringFunction floats_func = 202;
+    StringsToStringFunction strings_func = 203;
 
     StringValueIf if = 1000;
   }
@@ -878,6 +973,11 @@ message StringToStringFunction {
     StringAndIntToStringFunction string_int_func = 131;
     StringAndFloatToStringFunction string_float_func = 132;
     StringAndStringToStringFunction string_string_func = 133;
+
+    BoolsToStringFunction bools_func = 200;
+    IntsToStringFunction ints_func = 201;
+    FloatsToStringFunction floats_func = 202;
+    StringsToStringFunction strings_func = 203;
 
     StringValueIf if = 1000;
   }
@@ -931,6 +1031,11 @@ message BoolAndBoolToBoolFunction {
     StringAndFloatToBoolFunction string_float_func_1 = 132;
     StringAndStringToBoolFunction string_string_func_1 = 133;
 
+    BoolsToBoolFunction bools_func_1 = 200;
+    IntsToBoolFunction ints_func_1 = 201;
+    FloatsToBoolFunction floats_func_1 = 202;
+    StringsToBoolFunction strings_func_1 = 203;
+
     BoolValueIf if_1 = 1000;
   }
 
@@ -962,6 +1067,11 @@ message BoolAndBoolToBoolFunction {
     StringAndIntToBoolFunction string_int_func_2 = 2131;
     StringAndFloatToBoolFunction string_float_func_2 = 2132;
     StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolsToBoolFunction bools_func_2 = 2200;
+    IntsToBoolFunction ints_func_2 = 2201;
+    FloatsToBoolFunction floats_func_2 = 2202;
+    StringsToBoolFunction strings_func_2 = 2203;
 
     BoolValueIf if_2 = 3000;
   }
@@ -1005,6 +1115,11 @@ message BoolAndBoolToIntFunction {
     StringAndFloatToBoolFunction string_float_func_1 = 132;
     StringAndStringToBoolFunction string_string_func_1 = 133;
 
+    BoolsToBoolFunction bools_func_1 = 200;
+    IntsToBoolFunction ints_func_1 = 201;
+    FloatsToBoolFunction floats_func_1 = 202;
+    StringsToBoolFunction strings_func_1 = 203;
+
     BoolValueIf if_1 = 1000;
   }
 
@@ -1036,6 +1151,11 @@ message BoolAndBoolToIntFunction {
     StringAndIntToBoolFunction string_int_func_2 = 2131;
     StringAndFloatToBoolFunction string_float_func_2 = 2132;
     StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolsToBoolFunction bools_func_2 = 2200;
+    IntsToBoolFunction ints_func_2 = 2201;
+    FloatsToBoolFunction floats_func_2 = 2202;
+    StringsToBoolFunction strings_func_2 = 2203;
 
     BoolValueIf if_2 = 3000;
   }
@@ -1079,6 +1199,11 @@ message BoolAndBoolToFloatFunction {
     StringAndFloatToBoolFunction string_float_func_1 = 132;
     StringAndStringToBoolFunction string_string_func_1 = 133;
 
+    BoolsToBoolFunction bools_func_1 = 200;
+    IntsToBoolFunction ints_func_1 = 201;
+    FloatsToBoolFunction floats_func_1 = 202;
+    StringsToBoolFunction strings_func_1 = 203;
+
     BoolValueIf if_1 = 1000;
   }
 
@@ -1110,6 +1235,11 @@ message BoolAndBoolToFloatFunction {
     StringAndIntToBoolFunction string_int_func_2 = 2131;
     StringAndFloatToBoolFunction string_float_func_2 = 2132;
     StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolsToBoolFunction bools_func_2 = 2200;
+    IntsToBoolFunction ints_func_2 = 2201;
+    FloatsToBoolFunction floats_func_2 = 2202;
+    StringsToBoolFunction strings_func_2 = 2203;
 
     BoolValueIf if_2 = 3000;
   }
@@ -1153,6 +1283,11 @@ message BoolAndBoolToStringFunction {
     StringAndFloatToBoolFunction string_float_func_1 = 132;
     StringAndStringToBoolFunction string_string_func_1 = 133;
 
+    BoolsToBoolFunction bools_func_1 = 200;
+    IntsToBoolFunction ints_func_1 = 201;
+    FloatsToBoolFunction floats_func_1 = 202;
+    StringsToBoolFunction strings_func_1 = 203;
+
     BoolValueIf if_1 = 1000;
   }
 
@@ -1184,6 +1319,11 @@ message BoolAndBoolToStringFunction {
     StringAndIntToBoolFunction string_int_func_2 = 2131;
     StringAndFloatToBoolFunction string_float_func_2 = 2132;
     StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolsToBoolFunction bools_func_2 = 2200;
+    IntsToBoolFunction ints_func_2 = 2201;
+    FloatsToBoolFunction floats_func_2 = 2202;
+    StringsToBoolFunction strings_func_2 = 2203;
 
     BoolValueIf if_2 = 3000;
   }
@@ -1227,6 +1367,11 @@ message BoolAndIntToBoolFunction {
     StringAndFloatToBoolFunction string_float_func_1 = 132;
     StringAndStringToBoolFunction string_string_func_1 = 133;
 
+    BoolsToBoolFunction bools_func_1 = 200;
+    IntsToBoolFunction ints_func_1 = 201;
+    FloatsToBoolFunction floats_func_1 = 202;
+    StringsToBoolFunction strings_func_1 = 203;
+
     BoolValueIf if_1 = 1000;
   }
 
@@ -1258,6 +1403,11 @@ message BoolAndIntToBoolFunction {
     StringAndIntToIntFunction string_int_func_2 = 2131;
     StringAndFloatToIntFunction string_float_func_2 = 2132;
     StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    BoolsToIntFunction bools_func_2 = 2200;
+    IntsToIntFunction ints_func_2 = 2201;
+    FloatsToIntFunction floats_func_2 = 2202;
+    StringsToIntFunction strings_func_2 = 2203;
 
     IntValueIf if_2 = 3000;
   }
@@ -1301,6 +1451,11 @@ message BoolAndIntToIntFunction {
     StringAndFloatToBoolFunction string_float_func_1 = 132;
     StringAndStringToBoolFunction string_string_func_1 = 133;
 
+    BoolsToBoolFunction bools_func_1 = 200;
+    IntsToBoolFunction ints_func_1 = 201;
+    FloatsToBoolFunction floats_func_1 = 202;
+    StringsToBoolFunction strings_func_1 = 203;
+
     BoolValueIf if_1 = 1000;
   }
 
@@ -1332,6 +1487,11 @@ message BoolAndIntToIntFunction {
     StringAndIntToIntFunction string_int_func_2 = 2131;
     StringAndFloatToIntFunction string_float_func_2 = 2132;
     StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    BoolsToIntFunction bools_func_2 = 2200;
+    IntsToIntFunction ints_func_2 = 2201;
+    FloatsToIntFunction floats_func_2 = 2202;
+    StringsToIntFunction strings_func_2 = 2203;
 
     IntValueIf if_2 = 3000;
   }
@@ -1375,6 +1535,11 @@ message BoolAndIntToFloatFunction {
     StringAndFloatToBoolFunction string_float_func_1 = 132;
     StringAndStringToBoolFunction string_string_func_1 = 133;
 
+    BoolsToBoolFunction bools_func_1 = 200;
+    IntsToBoolFunction ints_func_1 = 201;
+    FloatsToBoolFunction floats_func_1 = 202;
+    StringsToBoolFunction strings_func_1 = 203;
+
     BoolValueIf if_1 = 1000;
   }
 
@@ -1406,6 +1571,11 @@ message BoolAndIntToFloatFunction {
     StringAndIntToIntFunction string_int_func_2 = 2131;
     StringAndFloatToIntFunction string_float_func_2 = 2132;
     StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    BoolsToIntFunction bools_func_2 = 2200;
+    IntsToIntFunction ints_func_2 = 2201;
+    FloatsToIntFunction floats_func_2 = 2202;
+    StringsToIntFunction strings_func_2 = 2203;
 
     IntValueIf if_2 = 3000;
   }
@@ -1449,6 +1619,11 @@ message BoolAndIntToStringFunction {
     StringAndFloatToBoolFunction string_float_func_1 = 132;
     StringAndStringToBoolFunction string_string_func_1 = 133;
 
+    BoolsToBoolFunction bools_func_1 = 200;
+    IntsToBoolFunction ints_func_1 = 201;
+    FloatsToBoolFunction floats_func_1 = 202;
+    StringsToBoolFunction strings_func_1 = 203;
+
     BoolValueIf if_1 = 1000;
   }
 
@@ -1480,6 +1655,11 @@ message BoolAndIntToStringFunction {
     StringAndIntToIntFunction string_int_func_2 = 2131;
     StringAndFloatToIntFunction string_float_func_2 = 2132;
     StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    BoolsToIntFunction bools_func_2 = 2200;
+    IntsToIntFunction ints_func_2 = 2201;
+    FloatsToIntFunction floats_func_2 = 2202;
+    StringsToIntFunction strings_func_2 = 2203;
 
     IntValueIf if_2 = 3000;
   }
@@ -1523,6 +1703,11 @@ message BoolAndFloatToBoolFunction {
     StringAndFloatToBoolFunction string_float_func_1 = 132;
     StringAndStringToBoolFunction string_string_func_1 = 133;
 
+    BoolsToBoolFunction bools_func_1 = 200;
+    IntsToBoolFunction ints_func_1 = 201;
+    FloatsToBoolFunction floats_func_1 = 202;
+    StringsToBoolFunction strings_func_1 = 203;
+
     BoolValueIf if_1 = 1000;
   }
 
@@ -1554,6 +1739,11 @@ message BoolAndFloatToBoolFunction {
     StringAndIntToFloatFunction string_int_func_2 = 2131;
     StringAndFloatToFloatFunction string_float_func_2 = 2132;
     StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    BoolsToFloatFunction bools_func_2 = 2200;
+    IntsToFloatFunction ints_func_2 = 2201;
+    FloatsToFloatFunction floats_func_2 = 2202;
+    StringsToFloatFunction strings_func_2 = 2203;
 
     FloatValueIf if_2 = 3000;
   }
@@ -1597,6 +1787,11 @@ message BoolAndFloatToIntFunction {
     StringAndFloatToBoolFunction string_float_func_1 = 132;
     StringAndStringToBoolFunction string_string_func_1 = 133;
 
+    BoolsToBoolFunction bools_func_1 = 200;
+    IntsToBoolFunction ints_func_1 = 201;
+    FloatsToBoolFunction floats_func_1 = 202;
+    StringsToBoolFunction strings_func_1 = 203;
+
     BoolValueIf if_1 = 1000;
   }
 
@@ -1628,6 +1823,11 @@ message BoolAndFloatToIntFunction {
     StringAndIntToFloatFunction string_int_func_2 = 2131;
     StringAndFloatToFloatFunction string_float_func_2 = 2132;
     StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    BoolsToFloatFunction bools_func_2 = 2200;
+    IntsToFloatFunction ints_func_2 = 2201;
+    FloatsToFloatFunction floats_func_2 = 2202;
+    StringsToFloatFunction strings_func_2 = 2203;
 
     FloatValueIf if_2 = 3000;
   }
@@ -1671,6 +1871,11 @@ message BoolAndFloatToFloatFunction {
     StringAndFloatToBoolFunction string_float_func_1 = 132;
     StringAndStringToBoolFunction string_string_func_1 = 133;
 
+    BoolsToBoolFunction bools_func_1 = 200;
+    IntsToBoolFunction ints_func_1 = 201;
+    FloatsToBoolFunction floats_func_1 = 202;
+    StringsToBoolFunction strings_func_1 = 203;
+
     BoolValueIf if_1 = 1000;
   }
 
@@ -1702,6 +1907,11 @@ message BoolAndFloatToFloatFunction {
     StringAndIntToFloatFunction string_int_func_2 = 2131;
     StringAndFloatToFloatFunction string_float_func_2 = 2132;
     StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    BoolsToFloatFunction bools_func_2 = 2200;
+    IntsToFloatFunction ints_func_2 = 2201;
+    FloatsToFloatFunction floats_func_2 = 2202;
+    StringsToFloatFunction strings_func_2 = 2203;
 
     FloatValueIf if_2 = 3000;
   }
@@ -1745,6 +1955,11 @@ message BoolAndFloatToStringFunction {
     StringAndFloatToBoolFunction string_float_func_1 = 132;
     StringAndStringToBoolFunction string_string_func_1 = 133;
 
+    BoolsToBoolFunction bools_func_1 = 200;
+    IntsToBoolFunction ints_func_1 = 201;
+    FloatsToBoolFunction floats_func_1 = 202;
+    StringsToBoolFunction strings_func_1 = 203;
+
     BoolValueIf if_1 = 1000;
   }
 
@@ -1776,6 +1991,11 @@ message BoolAndFloatToStringFunction {
     StringAndIntToFloatFunction string_int_func_2 = 2131;
     StringAndFloatToFloatFunction string_float_func_2 = 2132;
     StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    BoolsToFloatFunction bools_func_2 = 2200;
+    IntsToFloatFunction ints_func_2 = 2201;
+    FloatsToFloatFunction floats_func_2 = 2202;
+    StringsToFloatFunction strings_func_2 = 2203;
 
     FloatValueIf if_2 = 3000;
   }
@@ -1819,6 +2039,11 @@ message BoolAndStringToBoolFunction {
     StringAndFloatToBoolFunction string_float_func_1 = 132;
     StringAndStringToBoolFunction string_string_func_1 = 133;
 
+    BoolsToBoolFunction bools_func_1 = 200;
+    IntsToBoolFunction ints_func_1 = 201;
+    FloatsToBoolFunction floats_func_1 = 202;
+    StringsToBoolFunction strings_func_1 = 203;
+
     BoolValueIf if_1 = 1000;
   }
 
@@ -1850,6 +2075,11 @@ message BoolAndStringToBoolFunction {
     StringAndIntToStringFunction string_int_func_2 = 2131;
     StringAndFloatToStringFunction string_float_func_2 = 2132;
     StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    BoolsToStringFunction bools_func_2 = 2200;
+    IntsToStringFunction ints_func_2 = 2201;
+    FloatsToStringFunction floats_func_2 = 2202;
+    StringsToStringFunction strings_func_2 = 2203;
 
     StringValueIf if_2 = 3000;
   }
@@ -1893,6 +2123,11 @@ message BoolAndStringToIntFunction {
     StringAndFloatToBoolFunction string_float_func_1 = 132;
     StringAndStringToBoolFunction string_string_func_1 = 133;
 
+    BoolsToBoolFunction bools_func_1 = 200;
+    IntsToBoolFunction ints_func_1 = 201;
+    FloatsToBoolFunction floats_func_1 = 202;
+    StringsToBoolFunction strings_func_1 = 203;
+
     BoolValueIf if_1 = 1000;
   }
 
@@ -1924,6 +2159,11 @@ message BoolAndStringToIntFunction {
     StringAndIntToStringFunction string_int_func_2 = 2131;
     StringAndFloatToStringFunction string_float_func_2 = 2132;
     StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    BoolsToStringFunction bools_func_2 = 2200;
+    IntsToStringFunction ints_func_2 = 2201;
+    FloatsToStringFunction floats_func_2 = 2202;
+    StringsToStringFunction strings_func_2 = 2203;
 
     StringValueIf if_2 = 3000;
   }
@@ -1967,6 +2207,11 @@ message BoolAndStringToFloatFunction {
     StringAndFloatToBoolFunction string_float_func_1 = 132;
     StringAndStringToBoolFunction string_string_func_1 = 133;
 
+    BoolsToBoolFunction bools_func_1 = 200;
+    IntsToBoolFunction ints_func_1 = 201;
+    FloatsToBoolFunction floats_func_1 = 202;
+    StringsToBoolFunction strings_func_1 = 203;
+
     BoolValueIf if_1 = 1000;
   }
 
@@ -1998,6 +2243,11 @@ message BoolAndStringToFloatFunction {
     StringAndIntToStringFunction string_int_func_2 = 2131;
     StringAndFloatToStringFunction string_float_func_2 = 2132;
     StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    BoolsToStringFunction bools_func_2 = 2200;
+    IntsToStringFunction ints_func_2 = 2201;
+    FloatsToStringFunction floats_func_2 = 2202;
+    StringsToStringFunction strings_func_2 = 2203;
 
     StringValueIf if_2 = 3000;
   }
@@ -2041,6 +2291,11 @@ message BoolAndStringToStringFunction {
     StringAndFloatToBoolFunction string_float_func_1 = 132;
     StringAndStringToBoolFunction string_string_func_1 = 133;
 
+    BoolsToBoolFunction bools_func_1 = 200;
+    IntsToBoolFunction ints_func_1 = 201;
+    FloatsToBoolFunction floats_func_1 = 202;
+    StringsToBoolFunction strings_func_1 = 203;
+
     BoolValueIf if_1 = 1000;
   }
 
@@ -2072,6 +2327,11 @@ message BoolAndStringToStringFunction {
     StringAndIntToStringFunction string_int_func_2 = 2131;
     StringAndFloatToStringFunction string_float_func_2 = 2132;
     StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    BoolsToStringFunction bools_func_2 = 2200;
+    IntsToStringFunction ints_func_2 = 2201;
+    FloatsToStringFunction floats_func_2 = 2202;
+    StringsToStringFunction strings_func_2 = 2203;
 
     StringValueIf if_2 = 3000;
   }
@@ -2115,6 +2375,11 @@ message IntAndBoolToBoolFunction {
     StringAndFloatToIntFunction string_float_func_1 = 132;
     StringAndStringToIntFunction string_string_func_1 = 133;
 
+    BoolsToIntFunction bools_func_1 = 200;
+    IntsToIntFunction ints_func_1 = 201;
+    FloatsToIntFunction floats_func_1 = 202;
+    StringsToIntFunction strings_func_1 = 203;
+
     IntValueIf if_1 = 1000;
   }
 
@@ -2146,6 +2411,11 @@ message IntAndBoolToBoolFunction {
     StringAndIntToBoolFunction string_int_func_2 = 2131;
     StringAndFloatToBoolFunction string_float_func_2 = 2132;
     StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolsToBoolFunction bools_func_2 = 2200;
+    IntsToBoolFunction ints_func_2 = 2201;
+    FloatsToBoolFunction floats_func_2 = 2202;
+    StringsToBoolFunction strings_func_2 = 2203;
 
     BoolValueIf if_2 = 3000;
   }
@@ -2189,6 +2459,11 @@ message IntAndBoolToIntFunction {
     StringAndFloatToIntFunction string_float_func_1 = 132;
     StringAndStringToIntFunction string_string_func_1 = 133;
 
+    BoolsToIntFunction bools_func_1 = 200;
+    IntsToIntFunction ints_func_1 = 201;
+    FloatsToIntFunction floats_func_1 = 202;
+    StringsToIntFunction strings_func_1 = 203;
+
     IntValueIf if_1 = 1000;
   }
 
@@ -2220,6 +2495,11 @@ message IntAndBoolToIntFunction {
     StringAndIntToBoolFunction string_int_func_2 = 2131;
     StringAndFloatToBoolFunction string_float_func_2 = 2132;
     StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolsToBoolFunction bools_func_2 = 2200;
+    IntsToBoolFunction ints_func_2 = 2201;
+    FloatsToBoolFunction floats_func_2 = 2202;
+    StringsToBoolFunction strings_func_2 = 2203;
 
     BoolValueIf if_2 = 3000;
   }
@@ -2263,6 +2543,11 @@ message IntAndBoolToFloatFunction {
     StringAndFloatToIntFunction string_float_func_1 = 132;
     StringAndStringToIntFunction string_string_func_1 = 133;
 
+    BoolsToIntFunction bools_func_1 = 200;
+    IntsToIntFunction ints_func_1 = 201;
+    FloatsToIntFunction floats_func_1 = 202;
+    StringsToIntFunction strings_func_1 = 203;
+
     IntValueIf if_1 = 1000;
   }
 
@@ -2294,6 +2579,11 @@ message IntAndBoolToFloatFunction {
     StringAndIntToBoolFunction string_int_func_2 = 2131;
     StringAndFloatToBoolFunction string_float_func_2 = 2132;
     StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolsToBoolFunction bools_func_2 = 2200;
+    IntsToBoolFunction ints_func_2 = 2201;
+    FloatsToBoolFunction floats_func_2 = 2202;
+    StringsToBoolFunction strings_func_2 = 2203;
 
     BoolValueIf if_2 = 3000;
   }
@@ -2337,6 +2627,11 @@ message IntAndBoolToStringFunction {
     StringAndFloatToIntFunction string_float_func_1 = 132;
     StringAndStringToIntFunction string_string_func_1 = 133;
 
+    BoolsToIntFunction bools_func_1 = 200;
+    IntsToIntFunction ints_func_1 = 201;
+    FloatsToIntFunction floats_func_1 = 202;
+    StringsToIntFunction strings_func_1 = 203;
+
     IntValueIf if_1 = 1000;
   }
 
@@ -2368,6 +2663,11 @@ message IntAndBoolToStringFunction {
     StringAndIntToBoolFunction string_int_func_2 = 2131;
     StringAndFloatToBoolFunction string_float_func_2 = 2132;
     StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolsToBoolFunction bools_func_2 = 2200;
+    IntsToBoolFunction ints_func_2 = 2201;
+    FloatsToBoolFunction floats_func_2 = 2202;
+    StringsToBoolFunction strings_func_2 = 2203;
 
     BoolValueIf if_2 = 3000;
   }
@@ -2417,6 +2717,11 @@ message IntAndIntToBoolFunction {
     StringAndFloatToIntFunction string_float_func_1 = 132;
     StringAndStringToIntFunction string_string_func_1 = 133;
 
+    BoolsToIntFunction bools_func_1 = 200;
+    IntsToIntFunction ints_func_1 = 201;
+    FloatsToIntFunction floats_func_1 = 202;
+    StringsToIntFunction strings_func_1 = 203;
+
     IntValueIf if_1 = 1000;
   }
 
@@ -2448,6 +2753,11 @@ message IntAndIntToBoolFunction {
     StringAndIntToIntFunction string_int_func_2 = 2131;
     StringAndFloatToIntFunction string_float_func_2 = 2132;
     StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    BoolsToIntFunction bools_func_2 = 2200;
+    IntsToIntFunction ints_func_2 = 2201;
+    FloatsToIntFunction floats_func_2 = 2202;
+    StringsToIntFunction strings_func_2 = 2203;
 
     IntValueIf if_2 = 3000;
   }
@@ -2496,6 +2806,11 @@ message IntAndIntToIntFunction {
     StringAndFloatToIntFunction string_float_func_1 = 132;
     StringAndStringToIntFunction string_string_func_1 = 133;
 
+    BoolsToIntFunction bools_func_1 = 200;
+    IntsToIntFunction ints_func_1 = 201;
+    FloatsToIntFunction floats_func_1 = 202;
+    StringsToIntFunction strings_func_1 = 203;
+
     IntValueIf if_1 = 1000;
   }
 
@@ -2527,6 +2842,11 @@ message IntAndIntToIntFunction {
     StringAndIntToIntFunction string_int_func_2 = 2131;
     StringAndFloatToIntFunction string_float_func_2 = 2132;
     StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    BoolsToIntFunction bools_func_2 = 2200;
+    IntsToIntFunction ints_func_2 = 2201;
+    FloatsToIntFunction floats_func_2 = 2202;
+    StringsToIntFunction strings_func_2 = 2203;
 
     IntValueIf if_2 = 3000;
   }
@@ -2570,6 +2890,11 @@ message IntAndIntToFloatFunction {
     StringAndFloatToIntFunction string_float_func_1 = 132;
     StringAndStringToIntFunction string_string_func_1 = 133;
 
+    BoolsToIntFunction bools_func_1 = 200;
+    IntsToIntFunction ints_func_1 = 201;
+    FloatsToIntFunction floats_func_1 = 202;
+    StringsToIntFunction strings_func_1 = 203;
+
     IntValueIf if_1 = 1000;
   }
 
@@ -2601,6 +2926,11 @@ message IntAndIntToFloatFunction {
     StringAndIntToIntFunction string_int_func_2 = 2131;
     StringAndFloatToIntFunction string_float_func_2 = 2132;
     StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    BoolsToIntFunction bools_func_2 = 2200;
+    IntsToIntFunction ints_func_2 = 2201;
+    FloatsToIntFunction floats_func_2 = 2202;
+    StringsToIntFunction strings_func_2 = 2203;
 
     IntValueIf if_2 = 3000;
   }
@@ -2644,6 +2974,11 @@ message IntAndIntToStringFunction {
     StringAndFloatToIntFunction string_float_func_1 = 132;
     StringAndStringToIntFunction string_string_func_1 = 133;
 
+    BoolsToIntFunction bools_func_1 = 200;
+    IntsToIntFunction ints_func_1 = 201;
+    FloatsToIntFunction floats_func_1 = 202;
+    StringsToIntFunction strings_func_1 = 203;
+
     IntValueIf if_1 = 1000;
   }
 
@@ -2675,6 +3010,11 @@ message IntAndIntToStringFunction {
     StringAndIntToIntFunction string_int_func_2 = 2131;
     StringAndFloatToIntFunction string_float_func_2 = 2132;
     StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    BoolsToIntFunction bools_func_2 = 2200;
+    IntsToIntFunction ints_func_2 = 2201;
+    FloatsToIntFunction floats_func_2 = 2202;
+    StringsToIntFunction strings_func_2 = 2203;
 
     IntValueIf if_2 = 3000;
   }
@@ -2718,6 +3058,11 @@ message IntAndFloatToBoolFunction {
     StringAndFloatToIntFunction string_float_func_1 = 132;
     StringAndStringToIntFunction string_string_func_1 = 133;
 
+    BoolsToIntFunction bools_func_1 = 200;
+    IntsToIntFunction ints_func_1 = 201;
+    FloatsToIntFunction floats_func_1 = 202;
+    StringsToIntFunction strings_func_1 = 203;
+
     IntValueIf if_1 = 1000;
   }
 
@@ -2749,6 +3094,11 @@ message IntAndFloatToBoolFunction {
     StringAndIntToFloatFunction string_int_func_2 = 2131;
     StringAndFloatToFloatFunction string_float_func_2 = 2132;
     StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    BoolsToFloatFunction bools_func_2 = 2200;
+    IntsToFloatFunction ints_func_2 = 2201;
+    FloatsToFloatFunction floats_func_2 = 2202;
+    StringsToFloatFunction strings_func_2 = 2203;
 
     FloatValueIf if_2 = 3000;
   }
@@ -2792,6 +3142,11 @@ message IntAndFloatToIntFunction {
     StringAndFloatToIntFunction string_float_func_1 = 132;
     StringAndStringToIntFunction string_string_func_1 = 133;
 
+    BoolsToIntFunction bools_func_1 = 200;
+    IntsToIntFunction ints_func_1 = 201;
+    FloatsToIntFunction floats_func_1 = 202;
+    StringsToIntFunction strings_func_1 = 203;
+
     IntValueIf if_1 = 1000;
   }
 
@@ -2823,6 +3178,11 @@ message IntAndFloatToIntFunction {
     StringAndIntToFloatFunction string_int_func_2 = 2131;
     StringAndFloatToFloatFunction string_float_func_2 = 2132;
     StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    BoolsToFloatFunction bools_func_2 = 2200;
+    IntsToFloatFunction ints_func_2 = 2201;
+    FloatsToFloatFunction floats_func_2 = 2202;
+    StringsToFloatFunction strings_func_2 = 2203;
 
     FloatValueIf if_2 = 3000;
   }
@@ -2866,6 +3226,11 @@ message IntAndFloatToFloatFunction {
     StringAndFloatToIntFunction string_float_func_1 = 132;
     StringAndStringToIntFunction string_string_func_1 = 133;
 
+    BoolsToIntFunction bools_func_1 = 200;
+    IntsToIntFunction ints_func_1 = 201;
+    FloatsToIntFunction floats_func_1 = 202;
+    StringsToIntFunction strings_func_1 = 203;
+
     IntValueIf if_1 = 1000;
   }
 
@@ -2897,6 +3262,11 @@ message IntAndFloatToFloatFunction {
     StringAndIntToFloatFunction string_int_func_2 = 2131;
     StringAndFloatToFloatFunction string_float_func_2 = 2132;
     StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    BoolsToFloatFunction bools_func_2 = 2200;
+    IntsToFloatFunction ints_func_2 = 2201;
+    FloatsToFloatFunction floats_func_2 = 2202;
+    StringsToFloatFunction strings_func_2 = 2203;
 
     FloatValueIf if_2 = 3000;
   }
@@ -2940,6 +3310,11 @@ message IntAndFloatToStringFunction {
     StringAndFloatToIntFunction string_float_func_1 = 132;
     StringAndStringToIntFunction string_string_func_1 = 133;
 
+    BoolsToIntFunction bools_func_1 = 200;
+    IntsToIntFunction ints_func_1 = 201;
+    FloatsToIntFunction floats_func_1 = 202;
+    StringsToIntFunction strings_func_1 = 203;
+
     IntValueIf if_1 = 1000;
   }
 
@@ -2971,6 +3346,11 @@ message IntAndFloatToStringFunction {
     StringAndIntToFloatFunction string_int_func_2 = 2131;
     StringAndFloatToFloatFunction string_float_func_2 = 2132;
     StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    BoolsToFloatFunction bools_func_2 = 2200;
+    IntsToFloatFunction ints_func_2 = 2201;
+    FloatsToFloatFunction floats_func_2 = 2202;
+    StringsToFloatFunction strings_func_2 = 2203;
 
     FloatValueIf if_2 = 3000;
   }
@@ -3014,6 +3394,11 @@ message IntAndStringToBoolFunction {
     StringAndFloatToIntFunction string_float_func_1 = 132;
     StringAndStringToIntFunction string_string_func_1 = 133;
 
+    BoolsToIntFunction bools_func_1 = 200;
+    IntsToIntFunction ints_func_1 = 201;
+    FloatsToIntFunction floats_func_1 = 202;
+    StringsToIntFunction strings_func_1 = 203;
+
     IntValueIf if_1 = 1000;
   }
 
@@ -3045,6 +3430,11 @@ message IntAndStringToBoolFunction {
     StringAndIntToStringFunction string_int_func_2 = 2131;
     StringAndFloatToStringFunction string_float_func_2 = 2132;
     StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    BoolsToStringFunction bools_func_2 = 2200;
+    IntsToStringFunction ints_func_2 = 2201;
+    FloatsToStringFunction floats_func_2 = 2202;
+    StringsToStringFunction strings_func_2 = 2203;
 
     StringValueIf if_2 = 3000;
   }
@@ -3088,6 +3478,11 @@ message IntAndStringToIntFunction {
     StringAndFloatToIntFunction string_float_func_1 = 132;
     StringAndStringToIntFunction string_string_func_1 = 133;
 
+    BoolsToIntFunction bools_func_1 = 200;
+    IntsToIntFunction ints_func_1 = 201;
+    FloatsToIntFunction floats_func_1 = 202;
+    StringsToIntFunction strings_func_1 = 203;
+
     IntValueIf if_1 = 1000;
   }
 
@@ -3119,6 +3514,11 @@ message IntAndStringToIntFunction {
     StringAndIntToStringFunction string_int_func_2 = 2131;
     StringAndFloatToStringFunction string_float_func_2 = 2132;
     StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    BoolsToStringFunction bools_func_2 = 2200;
+    IntsToStringFunction ints_func_2 = 2201;
+    FloatsToStringFunction floats_func_2 = 2202;
+    StringsToStringFunction strings_func_2 = 2203;
 
     StringValueIf if_2 = 3000;
   }
@@ -3162,6 +3562,11 @@ message IntAndStringToFloatFunction {
     StringAndFloatToIntFunction string_float_func_1 = 132;
     StringAndStringToIntFunction string_string_func_1 = 133;
 
+    BoolsToIntFunction bools_func_1 = 200;
+    IntsToIntFunction ints_func_1 = 201;
+    FloatsToIntFunction floats_func_1 = 202;
+    StringsToIntFunction strings_func_1 = 203;
+
     IntValueIf if_1 = 1000;
   }
 
@@ -3193,6 +3598,11 @@ message IntAndStringToFloatFunction {
     StringAndIntToStringFunction string_int_func_2 = 2131;
     StringAndFloatToStringFunction string_float_func_2 = 2132;
     StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    BoolsToStringFunction bools_func_2 = 2200;
+    IntsToStringFunction ints_func_2 = 2201;
+    FloatsToStringFunction floats_func_2 = 2202;
+    StringsToStringFunction strings_func_2 = 2203;
 
     StringValueIf if_2 = 3000;
   }
@@ -3236,6 +3646,11 @@ message IntAndStringToStringFunction {
     StringAndFloatToIntFunction string_float_func_1 = 132;
     StringAndStringToIntFunction string_string_func_1 = 133;
 
+    BoolsToIntFunction bools_func_1 = 200;
+    IntsToIntFunction ints_func_1 = 201;
+    FloatsToIntFunction floats_func_1 = 202;
+    StringsToIntFunction strings_func_1 = 203;
+
     IntValueIf if_1 = 1000;
   }
 
@@ -3267,6 +3682,11 @@ message IntAndStringToStringFunction {
     StringAndIntToStringFunction string_int_func_2 = 2131;
     StringAndFloatToStringFunction string_float_func_2 = 2132;
     StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    BoolsToStringFunction bools_func_2 = 2200;
+    IntsToStringFunction ints_func_2 = 2201;
+    FloatsToStringFunction floats_func_2 = 2202;
+    StringsToStringFunction strings_func_2 = 2203;
 
     StringValueIf if_2 = 3000;
   }
@@ -3310,6 +3730,11 @@ message FloatAndBoolToBoolFunction {
     StringAndFloatToFloatFunction string_float_func_1 = 132;
     StringAndStringToFloatFunction string_string_func_1 = 133;
 
+    BoolsToFloatFunction bools_func_1 = 200;
+    IntsToFloatFunction ints_func_1 = 201;
+    FloatsToFloatFunction floats_func_1 = 202;
+    StringsToFloatFunction strings_func_1 = 203;
+
     FloatValueIf if_1 = 1000;
   }
 
@@ -3341,6 +3766,11 @@ message FloatAndBoolToBoolFunction {
     StringAndIntToBoolFunction string_int_func_2 = 2131;
     StringAndFloatToBoolFunction string_float_func_2 = 2132;
     StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolsToBoolFunction bools_func_2 = 2200;
+    IntsToBoolFunction ints_func_2 = 2201;
+    FloatsToBoolFunction floats_func_2 = 2202;
+    StringsToBoolFunction strings_func_2 = 2203;
 
     BoolValueIf if_2 = 3000;
   }
@@ -3384,6 +3814,11 @@ message FloatAndBoolToIntFunction {
     StringAndFloatToFloatFunction string_float_func_1 = 132;
     StringAndStringToFloatFunction string_string_func_1 = 133;
 
+    BoolsToFloatFunction bools_func_1 = 200;
+    IntsToFloatFunction ints_func_1 = 201;
+    FloatsToFloatFunction floats_func_1 = 202;
+    StringsToFloatFunction strings_func_1 = 203;
+
     FloatValueIf if_1 = 1000;
   }
 
@@ -3415,6 +3850,11 @@ message FloatAndBoolToIntFunction {
     StringAndIntToBoolFunction string_int_func_2 = 2131;
     StringAndFloatToBoolFunction string_float_func_2 = 2132;
     StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolsToBoolFunction bools_func_2 = 2200;
+    IntsToBoolFunction ints_func_2 = 2201;
+    FloatsToBoolFunction floats_func_2 = 2202;
+    StringsToBoolFunction strings_func_2 = 2203;
 
     BoolValueIf if_2 = 3000;
   }
@@ -3458,6 +3898,11 @@ message FloatAndBoolToFloatFunction {
     StringAndFloatToFloatFunction string_float_func_1 = 132;
     StringAndStringToFloatFunction string_string_func_1 = 133;
 
+    BoolsToFloatFunction bools_func_1 = 200;
+    IntsToFloatFunction ints_func_1 = 201;
+    FloatsToFloatFunction floats_func_1 = 202;
+    StringsToFloatFunction strings_func_1 = 203;
+
     FloatValueIf if_1 = 1000;
   }
 
@@ -3489,6 +3934,11 @@ message FloatAndBoolToFloatFunction {
     StringAndIntToBoolFunction string_int_func_2 = 2131;
     StringAndFloatToBoolFunction string_float_func_2 = 2132;
     StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolsToBoolFunction bools_func_2 = 2200;
+    IntsToBoolFunction ints_func_2 = 2201;
+    FloatsToBoolFunction floats_func_2 = 2202;
+    StringsToBoolFunction strings_func_2 = 2203;
 
     BoolValueIf if_2 = 3000;
   }
@@ -3532,6 +3982,11 @@ message FloatAndBoolToStringFunction {
     StringAndFloatToFloatFunction string_float_func_1 = 132;
     StringAndStringToFloatFunction string_string_func_1 = 133;
 
+    BoolsToFloatFunction bools_func_1 = 200;
+    IntsToFloatFunction ints_func_1 = 201;
+    FloatsToFloatFunction floats_func_1 = 202;
+    StringsToFloatFunction strings_func_1 = 203;
+
     FloatValueIf if_1 = 1000;
   }
 
@@ -3563,6 +4018,11 @@ message FloatAndBoolToStringFunction {
     StringAndIntToBoolFunction string_int_func_2 = 2131;
     StringAndFloatToBoolFunction string_float_func_2 = 2132;
     StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolsToBoolFunction bools_func_2 = 2200;
+    IntsToBoolFunction ints_func_2 = 2201;
+    FloatsToBoolFunction floats_func_2 = 2202;
+    StringsToBoolFunction strings_func_2 = 2203;
 
     BoolValueIf if_2 = 3000;
   }
@@ -3606,6 +4066,11 @@ message FloatAndIntToBoolFunction {
     StringAndFloatToFloatFunction string_float_func_1 = 132;
     StringAndStringToFloatFunction string_string_func_1 = 133;
 
+    BoolsToFloatFunction bools_func_1 = 200;
+    IntsToFloatFunction ints_func_1 = 201;
+    FloatsToFloatFunction floats_func_1 = 202;
+    StringsToFloatFunction strings_func_1 = 203;
+
     FloatValueIf if_1 = 1000;
   }
 
@@ -3637,6 +4102,11 @@ message FloatAndIntToBoolFunction {
     StringAndIntToIntFunction string_int_func_2 = 2131;
     StringAndFloatToIntFunction string_float_func_2 = 2132;
     StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    BoolsToIntFunction bools_func_2 = 2200;
+    IntsToIntFunction ints_func_2 = 2201;
+    FloatsToIntFunction floats_func_2 = 2202;
+    StringsToIntFunction strings_func_2 = 2203;
 
     IntValueIf if_2 = 3000;
   }
@@ -3680,6 +4150,11 @@ message FloatAndIntToIntFunction {
     StringAndFloatToFloatFunction string_float_func_1 = 132;
     StringAndStringToFloatFunction string_string_func_1 = 133;
 
+    BoolsToFloatFunction bools_func_1 = 200;
+    IntsToFloatFunction ints_func_1 = 201;
+    FloatsToFloatFunction floats_func_1 = 202;
+    StringsToFloatFunction strings_func_1 = 203;
+
     FloatValueIf if_1 = 1000;
   }
 
@@ -3711,6 +4186,11 @@ message FloatAndIntToIntFunction {
     StringAndIntToIntFunction string_int_func_2 = 2131;
     StringAndFloatToIntFunction string_float_func_2 = 2132;
     StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    BoolsToIntFunction bools_func_2 = 2200;
+    IntsToIntFunction ints_func_2 = 2201;
+    FloatsToIntFunction floats_func_2 = 2202;
+    StringsToIntFunction strings_func_2 = 2203;
 
     IntValueIf if_2 = 3000;
   }
@@ -3754,6 +4234,11 @@ message FloatAndIntToFloatFunction {
     StringAndFloatToFloatFunction string_float_func_1 = 132;
     StringAndStringToFloatFunction string_string_func_1 = 133;
 
+    BoolsToFloatFunction bools_func_1 = 200;
+    IntsToFloatFunction ints_func_1 = 201;
+    FloatsToFloatFunction floats_func_1 = 202;
+    StringsToFloatFunction strings_func_1 = 203;
+
     FloatValueIf if_1 = 1000;
   }
 
@@ -3785,6 +4270,11 @@ message FloatAndIntToFloatFunction {
     StringAndIntToIntFunction string_int_func_2 = 2131;
     StringAndFloatToIntFunction string_float_func_2 = 2132;
     StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    BoolsToIntFunction bools_func_2 = 2200;
+    IntsToIntFunction ints_func_2 = 2201;
+    FloatsToIntFunction floats_func_2 = 2202;
+    StringsToIntFunction strings_func_2 = 2203;
 
     IntValueIf if_2 = 3000;
   }
@@ -3828,6 +4318,11 @@ message FloatAndIntToStringFunction {
     StringAndFloatToFloatFunction string_float_func_1 = 132;
     StringAndStringToFloatFunction string_string_func_1 = 133;
 
+    BoolsToFloatFunction bools_func_1 = 200;
+    IntsToFloatFunction ints_func_1 = 201;
+    FloatsToFloatFunction floats_func_1 = 202;
+    StringsToFloatFunction strings_func_1 = 203;
+
     FloatValueIf if_1 = 1000;
   }
 
@@ -3859,6 +4354,11 @@ message FloatAndIntToStringFunction {
     StringAndIntToIntFunction string_int_func_2 = 2131;
     StringAndFloatToIntFunction string_float_func_2 = 2132;
     StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    BoolsToIntFunction bools_func_2 = 2200;
+    IntsToIntFunction ints_func_2 = 2201;
+    FloatsToIntFunction floats_func_2 = 2202;
+    StringsToIntFunction strings_func_2 = 2203;
 
     IntValueIf if_2 = 3000;
   }
@@ -3908,6 +4408,11 @@ message FloatAndFloatToBoolFunction {
     StringAndFloatToFloatFunction string_float_func_1 = 132;
     StringAndStringToFloatFunction string_string_func_1 = 133;
 
+    BoolsToFloatFunction bools_func_1 = 200;
+    IntsToFloatFunction ints_func_1 = 201;
+    FloatsToFloatFunction floats_func_1 = 202;
+    StringsToFloatFunction strings_func_1 = 203;
+
     FloatValueIf if_1 = 1000;
   }
 
@@ -3939,6 +4444,11 @@ message FloatAndFloatToBoolFunction {
     StringAndIntToFloatFunction string_int_func_2 = 2131;
     StringAndFloatToFloatFunction string_float_func_2 = 2132;
     StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    BoolsToFloatFunction bools_func_2 = 2200;
+    IntsToFloatFunction ints_func_2 = 2201;
+    FloatsToFloatFunction floats_func_2 = 2202;
+    StringsToFloatFunction strings_func_2 = 2203;
 
     FloatValueIf if_2 = 3000;
   }
@@ -3982,6 +4492,11 @@ message FloatAndFloatToIntFunction {
     StringAndFloatToFloatFunction string_float_func_1 = 132;
     StringAndStringToFloatFunction string_string_func_1 = 133;
 
+    BoolsToFloatFunction bools_func_1 = 200;
+    IntsToFloatFunction ints_func_1 = 201;
+    FloatsToFloatFunction floats_func_1 = 202;
+    StringsToFloatFunction strings_func_1 = 203;
+
     FloatValueIf if_1 = 1000;
   }
 
@@ -4013,6 +4528,11 @@ message FloatAndFloatToIntFunction {
     StringAndIntToFloatFunction string_int_func_2 = 2131;
     StringAndFloatToFloatFunction string_float_func_2 = 2132;
     StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    BoolsToFloatFunction bools_func_2 = 2200;
+    IntsToFloatFunction ints_func_2 = 2201;
+    FloatsToFloatFunction floats_func_2 = 2202;
+    StringsToFloatFunction strings_func_2 = 2203;
 
     FloatValueIf if_2 = 3000;
   }
@@ -4060,6 +4580,11 @@ message FloatAndFloatToFloatFunction {
     StringAndFloatToFloatFunction string_float_func_1 = 132;
     StringAndStringToFloatFunction string_string_func_1 = 133;
 
+    BoolsToFloatFunction bools_func_1 = 200;
+    IntsToFloatFunction ints_func_1 = 201;
+    FloatsToFloatFunction floats_func_1 = 202;
+    StringsToFloatFunction strings_func_1 = 203;
+
     FloatValueIf if_1 = 1000;
   }
 
@@ -4091,6 +4616,11 @@ message FloatAndFloatToFloatFunction {
     StringAndIntToFloatFunction string_int_func_2 = 2131;
     StringAndFloatToFloatFunction string_float_func_2 = 2132;
     StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    BoolsToFloatFunction bools_func_2 = 2200;
+    IntsToFloatFunction ints_func_2 = 2201;
+    FloatsToFloatFunction floats_func_2 = 2202;
+    StringsToFloatFunction strings_func_2 = 2203;
 
     FloatValueIf if_2 = 3000;
   }
@@ -4134,6 +4664,11 @@ message FloatAndFloatToStringFunction {
     StringAndFloatToFloatFunction string_float_func_1 = 132;
     StringAndStringToFloatFunction string_string_func_1 = 133;
 
+    BoolsToFloatFunction bools_func_1 = 200;
+    IntsToFloatFunction ints_func_1 = 201;
+    FloatsToFloatFunction floats_func_1 = 202;
+    StringsToFloatFunction strings_func_1 = 203;
+
     FloatValueIf if_1 = 1000;
   }
 
@@ -4165,6 +4700,11 @@ message FloatAndFloatToStringFunction {
     StringAndIntToFloatFunction string_int_func_2 = 2131;
     StringAndFloatToFloatFunction string_float_func_2 = 2132;
     StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    BoolsToFloatFunction bools_func_2 = 2200;
+    IntsToFloatFunction ints_func_2 = 2201;
+    FloatsToFloatFunction floats_func_2 = 2202;
+    StringsToFloatFunction strings_func_2 = 2203;
 
     FloatValueIf if_2 = 3000;
   }
@@ -4208,6 +4748,11 @@ message FloatAndStringToBoolFunction {
     StringAndFloatToFloatFunction string_float_func_1 = 132;
     StringAndStringToFloatFunction string_string_func_1 = 133;
 
+    BoolsToFloatFunction bools_func_1 = 200;
+    IntsToFloatFunction ints_func_1 = 201;
+    FloatsToFloatFunction floats_func_1 = 202;
+    StringsToFloatFunction strings_func_1 = 203;
+
     FloatValueIf if_1 = 1000;
   }
 
@@ -4239,6 +4784,11 @@ message FloatAndStringToBoolFunction {
     StringAndIntToStringFunction string_int_func_2 = 2131;
     StringAndFloatToStringFunction string_float_func_2 = 2132;
     StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    BoolsToStringFunction bools_func_2 = 2200;
+    IntsToStringFunction ints_func_2 = 2201;
+    FloatsToStringFunction floats_func_2 = 2202;
+    StringsToStringFunction strings_func_2 = 2203;
 
     StringValueIf if_2 = 3000;
   }
@@ -4282,6 +4832,11 @@ message FloatAndStringToIntFunction {
     StringAndFloatToFloatFunction string_float_func_1 = 132;
     StringAndStringToFloatFunction string_string_func_1 = 133;
 
+    BoolsToFloatFunction bools_func_1 = 200;
+    IntsToFloatFunction ints_func_1 = 201;
+    FloatsToFloatFunction floats_func_1 = 202;
+    StringsToFloatFunction strings_func_1 = 203;
+
     FloatValueIf if_1 = 1000;
   }
 
@@ -4313,6 +4868,11 @@ message FloatAndStringToIntFunction {
     StringAndIntToStringFunction string_int_func_2 = 2131;
     StringAndFloatToStringFunction string_float_func_2 = 2132;
     StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    BoolsToStringFunction bools_func_2 = 2200;
+    IntsToStringFunction ints_func_2 = 2201;
+    FloatsToStringFunction floats_func_2 = 2202;
+    StringsToStringFunction strings_func_2 = 2203;
 
     StringValueIf if_2 = 3000;
   }
@@ -4356,6 +4916,11 @@ message FloatAndStringToFloatFunction {
     StringAndFloatToFloatFunction string_float_func_1 = 132;
     StringAndStringToFloatFunction string_string_func_1 = 133;
 
+    BoolsToFloatFunction bools_func_1 = 200;
+    IntsToFloatFunction ints_func_1 = 201;
+    FloatsToFloatFunction floats_func_1 = 202;
+    StringsToFloatFunction strings_func_1 = 203;
+
     FloatValueIf if_1 = 1000;
   }
 
@@ -4387,6 +4952,11 @@ message FloatAndStringToFloatFunction {
     StringAndIntToStringFunction string_int_func_2 = 2131;
     StringAndFloatToStringFunction string_float_func_2 = 2132;
     StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    BoolsToStringFunction bools_func_2 = 2200;
+    IntsToStringFunction ints_func_2 = 2201;
+    FloatsToStringFunction floats_func_2 = 2202;
+    StringsToStringFunction strings_func_2 = 2203;
 
     StringValueIf if_2 = 3000;
   }
@@ -4430,6 +5000,11 @@ message FloatAndStringToStringFunction {
     StringAndFloatToFloatFunction string_float_func_1 = 132;
     StringAndStringToFloatFunction string_string_func_1 = 133;
 
+    BoolsToFloatFunction bools_func_1 = 200;
+    IntsToFloatFunction ints_func_1 = 201;
+    FloatsToFloatFunction floats_func_1 = 202;
+    StringsToFloatFunction strings_func_1 = 203;
+
     FloatValueIf if_1 = 1000;
   }
 
@@ -4461,6 +5036,11 @@ message FloatAndStringToStringFunction {
     StringAndIntToStringFunction string_int_func_2 = 2131;
     StringAndFloatToStringFunction string_float_func_2 = 2132;
     StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    BoolsToStringFunction bools_func_2 = 2200;
+    IntsToStringFunction ints_func_2 = 2201;
+    FloatsToStringFunction floats_func_2 = 2202;
+    StringsToStringFunction strings_func_2 = 2203;
 
     StringValueIf if_2 = 3000;
   }
@@ -4504,6 +5084,11 @@ message StringAndBoolToBoolFunction {
     StringAndFloatToStringFunction string_float_func_1 = 132;
     StringAndStringToStringFunction string_string_func_1 = 133;
 
+    BoolsToStringFunction bools_func_1 = 200;
+    IntsToStringFunction ints_func_1 = 201;
+    FloatsToStringFunction floats_func_1 = 202;
+    StringsToStringFunction strings_func_1 = 203;
+
     StringValueIf if_1 = 1000;
   }
 
@@ -4535,6 +5120,11 @@ message StringAndBoolToBoolFunction {
     StringAndIntToBoolFunction string_int_func_2 = 2131;
     StringAndFloatToBoolFunction string_float_func_2 = 2132;
     StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolsToBoolFunction bools_func_2 = 2200;
+    IntsToBoolFunction ints_func_2 = 2201;
+    FloatsToBoolFunction floats_func_2 = 2202;
+    StringsToBoolFunction strings_func_2 = 2203;
 
     BoolValueIf if_2 = 3000;
   }
@@ -4578,6 +5168,11 @@ message StringAndBoolToIntFunction {
     StringAndFloatToStringFunction string_float_func_1 = 132;
     StringAndStringToStringFunction string_string_func_1 = 133;
 
+    BoolsToStringFunction bools_func_1 = 200;
+    IntsToStringFunction ints_func_1 = 201;
+    FloatsToStringFunction floats_func_1 = 202;
+    StringsToStringFunction strings_func_1 = 203;
+
     StringValueIf if_1 = 1000;
   }
 
@@ -4609,6 +5204,11 @@ message StringAndBoolToIntFunction {
     StringAndIntToBoolFunction string_int_func_2 = 2131;
     StringAndFloatToBoolFunction string_float_func_2 = 2132;
     StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolsToBoolFunction bools_func_2 = 2200;
+    IntsToBoolFunction ints_func_2 = 2201;
+    FloatsToBoolFunction floats_func_2 = 2202;
+    StringsToBoolFunction strings_func_2 = 2203;
 
     BoolValueIf if_2 = 3000;
   }
@@ -4652,6 +5252,11 @@ message StringAndBoolToFloatFunction {
     StringAndFloatToStringFunction string_float_func_1 = 132;
     StringAndStringToStringFunction string_string_func_1 = 133;
 
+    BoolsToStringFunction bools_func_1 = 200;
+    IntsToStringFunction ints_func_1 = 201;
+    FloatsToStringFunction floats_func_1 = 202;
+    StringsToStringFunction strings_func_1 = 203;
+
     StringValueIf if_1 = 1000;
   }
 
@@ -4683,6 +5288,11 @@ message StringAndBoolToFloatFunction {
     StringAndIntToBoolFunction string_int_func_2 = 2131;
     StringAndFloatToBoolFunction string_float_func_2 = 2132;
     StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolsToBoolFunction bools_func_2 = 2200;
+    IntsToBoolFunction ints_func_2 = 2201;
+    FloatsToBoolFunction floats_func_2 = 2202;
+    StringsToBoolFunction strings_func_2 = 2203;
 
     BoolValueIf if_2 = 3000;
   }
@@ -4726,6 +5336,11 @@ message StringAndBoolToStringFunction {
     StringAndFloatToStringFunction string_float_func_1 = 132;
     StringAndStringToStringFunction string_string_func_1 = 133;
 
+    BoolsToStringFunction bools_func_1 = 200;
+    IntsToStringFunction ints_func_1 = 201;
+    FloatsToStringFunction floats_func_1 = 202;
+    StringsToStringFunction strings_func_1 = 203;
+
     StringValueIf if_1 = 1000;
   }
 
@@ -4757,6 +5372,11 @@ message StringAndBoolToStringFunction {
     StringAndIntToBoolFunction string_int_func_2 = 2131;
     StringAndFloatToBoolFunction string_float_func_2 = 2132;
     StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolsToBoolFunction bools_func_2 = 2200;
+    IntsToBoolFunction ints_func_2 = 2201;
+    FloatsToBoolFunction floats_func_2 = 2202;
+    StringsToBoolFunction strings_func_2 = 2203;
 
     BoolValueIf if_2 = 3000;
   }
@@ -4800,6 +5420,11 @@ message StringAndIntToBoolFunction {
     StringAndFloatToStringFunction string_float_func_1 = 132;
     StringAndStringToStringFunction string_string_func_1 = 133;
 
+    BoolsToStringFunction bools_func_1 = 200;
+    IntsToStringFunction ints_func_1 = 201;
+    FloatsToStringFunction floats_func_1 = 202;
+    StringsToStringFunction strings_func_1 = 203;
+
     StringValueIf if_1 = 1000;
   }
 
@@ -4831,6 +5456,11 @@ message StringAndIntToBoolFunction {
     StringAndIntToIntFunction string_int_func_2 = 2131;
     StringAndFloatToIntFunction string_float_func_2 = 2132;
     StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    BoolsToIntFunction bools_func_2 = 2200;
+    IntsToIntFunction ints_func_2 = 2201;
+    FloatsToIntFunction floats_func_2 = 2202;
+    StringsToIntFunction strings_func_2 = 2203;
 
     IntValueIf if_2 = 3000;
   }
@@ -4874,6 +5504,11 @@ message StringAndIntToIntFunction {
     StringAndFloatToStringFunction string_float_func_1 = 132;
     StringAndStringToStringFunction string_string_func_1 = 133;
 
+    BoolsToStringFunction bools_func_1 = 200;
+    IntsToStringFunction ints_func_1 = 201;
+    FloatsToStringFunction floats_func_1 = 202;
+    StringsToStringFunction strings_func_1 = 203;
+
     StringValueIf if_1 = 1000;
   }
 
@@ -4905,6 +5540,11 @@ message StringAndIntToIntFunction {
     StringAndIntToIntFunction string_int_func_2 = 2131;
     StringAndFloatToIntFunction string_float_func_2 = 2132;
     StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    BoolsToIntFunction bools_func_2 = 2200;
+    IntsToIntFunction ints_func_2 = 2201;
+    FloatsToIntFunction floats_func_2 = 2202;
+    StringsToIntFunction strings_func_2 = 2203;
 
     IntValueIf if_2 = 3000;
   }
@@ -4948,6 +5588,11 @@ message StringAndIntToFloatFunction {
     StringAndFloatToStringFunction string_float_func_1 = 132;
     StringAndStringToStringFunction string_string_func_1 = 133;
 
+    BoolsToStringFunction bools_func_1 = 200;
+    IntsToStringFunction ints_func_1 = 201;
+    FloatsToStringFunction floats_func_1 = 202;
+    StringsToStringFunction strings_func_1 = 203;
+
     StringValueIf if_1 = 1000;
   }
 
@@ -4979,6 +5624,11 @@ message StringAndIntToFloatFunction {
     StringAndIntToIntFunction string_int_func_2 = 2131;
     StringAndFloatToIntFunction string_float_func_2 = 2132;
     StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    BoolsToIntFunction bools_func_2 = 2200;
+    IntsToIntFunction ints_func_2 = 2201;
+    FloatsToIntFunction floats_func_2 = 2202;
+    StringsToIntFunction strings_func_2 = 2203;
 
     IntValueIf if_2 = 3000;
   }
@@ -5022,6 +5672,11 @@ message StringAndIntToStringFunction {
     StringAndFloatToStringFunction string_float_func_1 = 132;
     StringAndStringToStringFunction string_string_func_1 = 133;
 
+    BoolsToStringFunction bools_func_1 = 200;
+    IntsToStringFunction ints_func_1 = 201;
+    FloatsToStringFunction floats_func_1 = 202;
+    StringsToStringFunction strings_func_1 = 203;
+
     StringValueIf if_1 = 1000;
   }
 
@@ -5053,6 +5708,11 @@ message StringAndIntToStringFunction {
     StringAndIntToIntFunction string_int_func_2 = 2131;
     StringAndFloatToIntFunction string_float_func_2 = 2132;
     StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    BoolsToIntFunction bools_func_2 = 2200;
+    IntsToIntFunction ints_func_2 = 2201;
+    FloatsToIntFunction floats_func_2 = 2202;
+    StringsToIntFunction strings_func_2 = 2203;
 
     IntValueIf if_2 = 3000;
   }
@@ -5096,6 +5756,11 @@ message StringAndFloatToBoolFunction {
     StringAndFloatToStringFunction string_float_func_1 = 132;
     StringAndStringToStringFunction string_string_func_1 = 133;
 
+    BoolsToStringFunction bools_func_1 = 200;
+    IntsToStringFunction ints_func_1 = 201;
+    FloatsToStringFunction floats_func_1 = 202;
+    StringsToStringFunction strings_func_1 = 203;
+
     StringValueIf if_1 = 1000;
   }
 
@@ -5127,6 +5792,11 @@ message StringAndFloatToBoolFunction {
     StringAndIntToFloatFunction string_int_func_2 = 2131;
     StringAndFloatToFloatFunction string_float_func_2 = 2132;
     StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    BoolsToFloatFunction bools_func_2 = 2200;
+    IntsToFloatFunction ints_func_2 = 2201;
+    FloatsToFloatFunction floats_func_2 = 2202;
+    StringsToFloatFunction strings_func_2 = 2203;
 
     FloatValueIf if_2 = 3000;
   }
@@ -5170,6 +5840,11 @@ message StringAndFloatToIntFunction {
     StringAndFloatToStringFunction string_float_func_1 = 132;
     StringAndStringToStringFunction string_string_func_1 = 133;
 
+    BoolsToStringFunction bools_func_1 = 200;
+    IntsToStringFunction ints_func_1 = 201;
+    FloatsToStringFunction floats_func_1 = 202;
+    StringsToStringFunction strings_func_1 = 203;
+
     StringValueIf if_1 = 1000;
   }
 
@@ -5201,6 +5876,11 @@ message StringAndFloatToIntFunction {
     StringAndIntToFloatFunction string_int_func_2 = 2131;
     StringAndFloatToFloatFunction string_float_func_2 = 2132;
     StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    BoolsToFloatFunction bools_func_2 = 2200;
+    IntsToFloatFunction ints_func_2 = 2201;
+    FloatsToFloatFunction floats_func_2 = 2202;
+    StringsToFloatFunction strings_func_2 = 2203;
 
     FloatValueIf if_2 = 3000;
   }
@@ -5244,6 +5924,11 @@ message StringAndFloatToFloatFunction {
     StringAndFloatToStringFunction string_float_func_1 = 132;
     StringAndStringToStringFunction string_string_func_1 = 133;
 
+    BoolsToStringFunction bools_func_1 = 200;
+    IntsToStringFunction ints_func_1 = 201;
+    FloatsToStringFunction floats_func_1 = 202;
+    StringsToStringFunction strings_func_1 = 203;
+
     StringValueIf if_1 = 1000;
   }
 
@@ -5275,6 +5960,11 @@ message StringAndFloatToFloatFunction {
     StringAndIntToFloatFunction string_int_func_2 = 2131;
     StringAndFloatToFloatFunction string_float_func_2 = 2132;
     StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    BoolsToFloatFunction bools_func_2 = 2200;
+    IntsToFloatFunction ints_func_2 = 2201;
+    FloatsToFloatFunction floats_func_2 = 2202;
+    StringsToFloatFunction strings_func_2 = 2203;
 
     FloatValueIf if_2 = 3000;
   }
@@ -5318,6 +6008,11 @@ message StringAndFloatToStringFunction {
     StringAndFloatToStringFunction string_float_func_1 = 132;
     StringAndStringToStringFunction string_string_func_1 = 133;
 
+    BoolsToStringFunction bools_func_1 = 200;
+    IntsToStringFunction ints_func_1 = 201;
+    FloatsToStringFunction floats_func_1 = 202;
+    StringsToStringFunction strings_func_1 = 203;
+
     StringValueIf if_1 = 1000;
   }
 
@@ -5349,6 +6044,11 @@ message StringAndFloatToStringFunction {
     StringAndIntToFloatFunction string_int_func_2 = 2131;
     StringAndFloatToFloatFunction string_float_func_2 = 2132;
     StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    BoolsToFloatFunction bools_func_2 = 2200;
+    IntsToFloatFunction ints_func_2 = 2201;
+    FloatsToFloatFunction floats_func_2 = 2202;
+    StringsToFloatFunction strings_func_2 = 2203;
 
     FloatValueIf if_2 = 3000;
   }
@@ -5398,6 +6098,11 @@ message StringAndStringToBoolFunction {
     StringAndFloatToStringFunction string_float_func_1 = 132;
     StringAndStringToStringFunction string_string_func_1 = 133;
 
+    BoolsToStringFunction bools_func_1 = 200;
+    IntsToStringFunction ints_func_1 = 201;
+    FloatsToStringFunction floats_func_1 = 202;
+    StringsToStringFunction strings_func_1 = 203;
+
     StringValueIf if_1 = 1000;
   }
 
@@ -5429,6 +6134,11 @@ message StringAndStringToBoolFunction {
     StringAndIntToStringFunction string_int_func_2 = 2131;
     StringAndFloatToStringFunction string_float_func_2 = 2132;
     StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    BoolsToStringFunction bools_func_2 = 2200;
+    IntsToStringFunction ints_func_2 = 2201;
+    FloatsToStringFunction floats_func_2 = 2202;
+    StringsToStringFunction strings_func_2 = 2203;
 
     StringValueIf if_2 = 3000;
   }
@@ -5472,6 +6182,11 @@ message StringAndStringToIntFunction {
     StringAndFloatToStringFunction string_float_func_1 = 132;
     StringAndStringToStringFunction string_string_func_1 = 133;
 
+    BoolsToStringFunction bools_func_1 = 200;
+    IntsToStringFunction ints_func_1 = 201;
+    FloatsToStringFunction floats_func_1 = 202;
+    StringsToStringFunction strings_func_1 = 203;
+
     StringValueIf if_1 = 1000;
   }
 
@@ -5503,6 +6218,11 @@ message StringAndStringToIntFunction {
     StringAndIntToStringFunction string_int_func_2 = 2131;
     StringAndFloatToStringFunction string_float_func_2 = 2132;
     StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    BoolsToStringFunction bools_func_2 = 2200;
+    IntsToStringFunction ints_func_2 = 2201;
+    FloatsToStringFunction floats_func_2 = 2202;
+    StringsToStringFunction strings_func_2 = 2203;
 
     StringValueIf if_2 = 3000;
   }
@@ -5546,6 +6266,11 @@ message StringAndStringToFloatFunction {
     StringAndFloatToStringFunction string_float_func_1 = 132;
     StringAndStringToStringFunction string_string_func_1 = 133;
 
+    BoolsToStringFunction bools_func_1 = 200;
+    IntsToStringFunction ints_func_1 = 201;
+    FloatsToStringFunction floats_func_1 = 202;
+    StringsToStringFunction strings_func_1 = 203;
+
     StringValueIf if_1 = 1000;
   }
 
@@ -5577,6 +6302,11 @@ message StringAndStringToFloatFunction {
     StringAndIntToStringFunction string_int_func_2 = 2131;
     StringAndFloatToStringFunction string_float_func_2 = 2132;
     StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    BoolsToStringFunction bools_func_2 = 2200;
+    IntsToStringFunction ints_func_2 = 2201;
+    FloatsToStringFunction floats_func_2 = 2202;
+    StringsToStringFunction strings_func_2 = 2203;
 
     StringValueIf if_2 = 3000;
   }
@@ -5621,6 +6351,11 @@ message StringAndStringToStringFunction {
     StringAndFloatToStringFunction string_float_func_1 = 132;
     StringAndStringToStringFunction string_string_func_1 = 133;
 
+    BoolsToStringFunction bools_func_1 = 200;
+    IntsToStringFunction ints_func_1 = 201;
+    FloatsToStringFunction floats_func_1 = 202;
+    StringsToStringFunction strings_func_1 = 203;
+
     StringValueIf if_1 = 1000;
   }
 
@@ -5653,8 +6388,822 @@ message StringAndStringToStringFunction {
     StringAndFloatToStringFunction string_float_func_2 = 2132;
     StringAndStringToStringFunction string_string_func_2 = 2133;
 
+    BoolsToStringFunction bools_func_2 = 2200;
+    IntsToStringFunction ints_func_2 = 2201;
+    FloatsToStringFunction floats_func_2 = 2202;
+    StringsToStringFunction strings_func_2 = 2203;
+
     StringValueIf if_2 = 3000;
   }
+}
+
+// N-ary Functions
+
+message BoolsToBoolFunction {
+  enum ID {
+    UNDEFINED = 0;
+    EQ = 1;
+    NEQ = 2;
+    AND = 3;
+    OR = 4;
+  }
+
+  ID name = 1;
+
+  message Argument {
+    oneof argument {
+      bool constant = 1;
+      Reference input = 2;
+      Reference state = 3;
+
+      BoolToBoolFunction bool_func = 10;
+      IntToBoolFunction int_func = 11;
+      FloatToBoolFunction float_func = 12;
+      StringToBoolFunction string_func = 13;
+
+      BoolAndBoolToBoolFunction bool_bool_func = 100;
+      BoolAndIntToBoolFunction bool_int_func = 101;
+      BoolAndFloatToBoolFunction bool_float_func = 102;
+      BoolAndStringToBoolFunction bool_string_func = 103;
+
+      IntAndBoolToBoolFunction int_bool_func = 110;
+      IntAndIntToBoolFunction int_int_func = 111;
+      IntAndFloatToBoolFunction int_float_func = 112;
+      IntAndStringToBoolFunction int_string_func = 113;
+
+      FloatAndBoolToBoolFunction float_bool_func = 120;
+      FloatAndIntToBoolFunction float_int_func = 121;
+      FloatAndFloatToBoolFunction float_float_func = 122;
+      FloatAndStringToBoolFunction float_string_func = 123;
+
+      StringAndBoolToBoolFunction string_bool_func = 130;
+      StringAndIntToBoolFunction string_int_func = 131;
+      StringAndFloatToBoolFunction string_float_func = 132;
+      StringAndStringToBoolFunction string_string_func = 133;
+
+      BoolsToBoolFunction bools_func = 200;
+      IntsToBoolFunction ints_func = 201;
+      FloatsToBoolFunction floats_func = 202;
+      StringsToBoolFunction strings_func = 203;
+
+      BoolValueIf if = 1000;
+    }
+  }
+
+  repeated Argument arguments = 2;
+}
+
+message BoolsToIntFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  message Argument {
+    oneof argument {
+      bool constant = 1;
+      Reference input = 2;
+      Reference state = 3;
+
+      BoolToBoolFunction bool_func = 10;
+      IntToBoolFunction int_func = 11;
+      FloatToBoolFunction float_func = 12;
+      StringToBoolFunction string_func = 13;
+
+      BoolAndBoolToBoolFunction bool_bool_func = 100;
+      BoolAndIntToBoolFunction bool_int_func = 101;
+      BoolAndFloatToBoolFunction bool_float_func = 102;
+      BoolAndStringToBoolFunction bool_string_func = 103;
+
+      IntAndBoolToBoolFunction int_bool_func = 110;
+      IntAndIntToBoolFunction int_int_func = 111;
+      IntAndFloatToBoolFunction int_float_func = 112;
+      IntAndStringToBoolFunction int_string_func = 113;
+
+      FloatAndBoolToBoolFunction float_bool_func = 120;
+      FloatAndIntToBoolFunction float_int_func = 121;
+      FloatAndFloatToBoolFunction float_float_func = 122;
+      FloatAndStringToBoolFunction float_string_func = 123;
+
+      StringAndBoolToBoolFunction string_bool_func = 130;
+      StringAndIntToBoolFunction string_int_func = 131;
+      StringAndFloatToBoolFunction string_float_func = 132;
+      StringAndStringToBoolFunction string_string_func = 133;
+
+      BoolsToBoolFunction bools_func = 200;
+      IntsToBoolFunction ints_func = 201;
+      FloatsToBoolFunction floats_func = 202;
+      StringsToBoolFunction strings_func = 203;
+
+      BoolValueIf if = 1000;
+    }
+  }
+
+  repeated Argument arguments = 2;
+}
+
+message BoolsToFloatFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  message Argument {
+    oneof argument {
+      bool constant = 1;
+      Reference input = 2;
+      Reference state = 3;
+
+      BoolToBoolFunction bool_func = 10;
+      IntToBoolFunction int_func = 11;
+      FloatToBoolFunction float_func = 12;
+      StringToBoolFunction string_func = 13;
+
+      BoolAndBoolToBoolFunction bool_bool_func = 100;
+      BoolAndIntToBoolFunction bool_int_func = 101;
+      BoolAndFloatToBoolFunction bool_float_func = 102;
+      BoolAndStringToBoolFunction bool_string_func = 103;
+
+      IntAndBoolToBoolFunction int_bool_func = 110;
+      IntAndIntToBoolFunction int_int_func = 111;
+      IntAndFloatToBoolFunction int_float_func = 112;
+      IntAndStringToBoolFunction int_string_func = 113;
+
+      FloatAndBoolToBoolFunction float_bool_func = 120;
+      FloatAndIntToBoolFunction float_int_func = 121;
+      FloatAndFloatToBoolFunction float_float_func = 122;
+      FloatAndStringToBoolFunction float_string_func = 123;
+
+      StringAndBoolToBoolFunction string_bool_func = 130;
+      StringAndIntToBoolFunction string_int_func = 131;
+      StringAndFloatToBoolFunction string_float_func = 132;
+      StringAndStringToBoolFunction string_string_func = 133;
+
+      BoolsToBoolFunction bools_func = 200;
+      IntsToBoolFunction ints_func = 201;
+      FloatsToBoolFunction floats_func = 202;
+      StringsToBoolFunction strings_func = 203;
+
+      BoolValueIf if = 1000;
+    }
+  }
+
+  repeated Argument arguments = 2;
+}
+
+message BoolsToStringFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  message Argument {
+    oneof argument {
+      bool constant = 1;
+      Reference input = 2;
+      Reference state = 3;
+
+      BoolToBoolFunction bool_func = 10;
+      IntToBoolFunction int_func = 11;
+      FloatToBoolFunction float_func = 12;
+      StringToBoolFunction string_func = 13;
+
+      BoolAndBoolToBoolFunction bool_bool_func = 100;
+      BoolAndIntToBoolFunction bool_int_func = 101;
+      BoolAndFloatToBoolFunction bool_float_func = 102;
+      BoolAndStringToBoolFunction bool_string_func = 103;
+
+      IntAndBoolToBoolFunction int_bool_func = 110;
+      IntAndIntToBoolFunction int_int_func = 111;
+      IntAndFloatToBoolFunction int_float_func = 112;
+      IntAndStringToBoolFunction int_string_func = 113;
+
+      FloatAndBoolToBoolFunction float_bool_func = 120;
+      FloatAndIntToBoolFunction float_int_func = 121;
+      FloatAndFloatToBoolFunction float_float_func = 122;
+      FloatAndStringToBoolFunction float_string_func = 123;
+
+      StringAndBoolToBoolFunction string_bool_func = 130;
+      StringAndIntToBoolFunction string_int_func = 131;
+      StringAndFloatToBoolFunction string_float_func = 132;
+      StringAndStringToBoolFunction string_string_func = 133;
+
+      BoolsToBoolFunction bools_func = 200;
+      IntsToBoolFunction ints_func = 201;
+      FloatsToBoolFunction floats_func = 202;
+      StringsToBoolFunction strings_func = 203;
+
+      BoolValueIf if = 1000;
+    }
+  }
+
+  repeated Argument arguments = 2;
+}
+
+message IntsToBoolFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  message Argument {
+    oneof argument {
+      int64 constant = 1;
+      Reference input = 2;
+      Reference state = 3;
+
+      BoolToIntFunction bool_func = 10;
+      IntToIntFunction int_func = 11;
+      FloatToIntFunction float_func = 12;
+      StringToIntFunction string_func = 13;
+
+      BoolAndBoolToIntFunction bool_bool_func = 100;
+      BoolAndIntToIntFunction bool_int_func = 101;
+      BoolAndFloatToIntFunction bool_float_func = 102;
+      BoolAndStringToIntFunction bool_string_func = 103;
+
+      IntAndBoolToIntFunction int_bool_func = 110;
+      IntAndIntToIntFunction int_int_func = 111;
+      IntAndFloatToIntFunction int_float_func = 112;
+      IntAndStringToIntFunction int_string_func = 113;
+
+      FloatAndBoolToIntFunction float_bool_func = 120;
+      FloatAndIntToIntFunction float_int_func = 121;
+      FloatAndFloatToIntFunction float_float_func = 122;
+      FloatAndStringToIntFunction float_string_func = 123;
+
+      StringAndBoolToIntFunction string_bool_func = 130;
+      StringAndIntToIntFunction string_int_func = 131;
+      StringAndFloatToIntFunction string_float_func = 132;
+      StringAndStringToIntFunction string_string_func = 133;
+
+      BoolsToIntFunction bools_func = 200;
+      IntsToIntFunction ints_func = 201;
+      FloatsToIntFunction floats_func = 202;
+      StringsToIntFunction strings_func = 203;
+
+      IntValueIf if = 1000;
+    }
+  }
+
+  repeated Argument arguments = 2;
+}
+
+message IntsToIntFunction {
+  enum ID {
+    UNDEFINED = 0;
+    ADD = 1;
+    MULT = 2;
+  }
+
+  ID name = 1;
+
+  message Argument {
+    oneof argument {
+      int64 constant = 1;
+      Reference input = 2;
+      Reference state = 3;
+
+      BoolToIntFunction bool_func = 10;
+      IntToIntFunction int_func = 11;
+      FloatToIntFunction float_func = 12;
+      StringToIntFunction string_func = 13;
+
+      BoolAndBoolToIntFunction bool_bool_func = 100;
+      BoolAndIntToIntFunction bool_int_func = 101;
+      BoolAndFloatToIntFunction bool_float_func = 102;
+      BoolAndStringToIntFunction bool_string_func = 103;
+
+      IntAndBoolToIntFunction int_bool_func = 110;
+      IntAndIntToIntFunction int_int_func = 111;
+      IntAndFloatToIntFunction int_float_func = 112;
+      IntAndStringToIntFunction int_string_func = 113;
+
+      FloatAndBoolToIntFunction float_bool_func = 120;
+      FloatAndIntToIntFunction float_int_func = 121;
+      FloatAndFloatToIntFunction float_float_func = 122;
+      FloatAndStringToIntFunction float_string_func = 123;
+
+      StringAndBoolToIntFunction string_bool_func = 130;
+      StringAndIntToIntFunction string_int_func = 131;
+      StringAndFloatToIntFunction string_float_func = 132;
+      StringAndStringToIntFunction string_string_func = 133;
+
+      BoolsToIntFunction bools_func = 200;
+      IntsToIntFunction ints_func = 201;
+      FloatsToIntFunction floats_func = 202;
+      StringsToIntFunction strings_func = 203;
+
+      IntValueIf if = 1000;
+    }
+  }
+
+  repeated Argument arguments = 2;
+}
+
+message IntsToFloatFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  message Argument {
+    oneof argument {
+      int64 constant = 1;
+      Reference input = 2;
+      Reference state = 3;
+
+      BoolToIntFunction bool_func = 10;
+      IntToIntFunction int_func = 11;
+      FloatToIntFunction float_func = 12;
+      StringToIntFunction string_func = 13;
+
+      BoolAndBoolToIntFunction bool_bool_func = 100;
+      BoolAndIntToIntFunction bool_int_func = 101;
+      BoolAndFloatToIntFunction bool_float_func = 102;
+      BoolAndStringToIntFunction bool_string_func = 103;
+
+      IntAndBoolToIntFunction int_bool_func = 110;
+      IntAndIntToIntFunction int_int_func = 111;
+      IntAndFloatToIntFunction int_float_func = 112;
+      IntAndStringToIntFunction int_string_func = 113;
+
+      FloatAndBoolToIntFunction float_bool_func = 120;
+      FloatAndIntToIntFunction float_int_func = 121;
+      FloatAndFloatToIntFunction float_float_func = 122;
+      FloatAndStringToIntFunction float_string_func = 123;
+
+      StringAndBoolToIntFunction string_bool_func = 130;
+      StringAndIntToIntFunction string_int_func = 131;
+      StringAndFloatToIntFunction string_float_func = 132;
+      StringAndStringToIntFunction string_string_func = 133;
+
+      BoolsToIntFunction bools_func = 200;
+      IntsToIntFunction ints_func = 201;
+      FloatsToIntFunction floats_func = 202;
+      StringsToIntFunction strings_func = 203;
+
+      IntValueIf if = 1000;
+    }
+  }
+
+  repeated Argument arguments = 2;
+}
+
+message IntsToStringFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  message Argument {
+    oneof argument {
+      int64 constant = 1;
+      Reference input = 2;
+      Reference state = 3;
+
+      BoolToIntFunction bool_func = 10;
+      IntToIntFunction int_func = 11;
+      FloatToIntFunction float_func = 12;
+      StringToIntFunction string_func = 13;
+
+      BoolAndBoolToIntFunction bool_bool_func = 100;
+      BoolAndIntToIntFunction bool_int_func = 101;
+      BoolAndFloatToIntFunction bool_float_func = 102;
+      BoolAndStringToIntFunction bool_string_func = 103;
+
+      IntAndBoolToIntFunction int_bool_func = 110;
+      IntAndIntToIntFunction int_int_func = 111;
+      IntAndFloatToIntFunction int_float_func = 112;
+      IntAndStringToIntFunction int_string_func = 113;
+
+      FloatAndBoolToIntFunction float_bool_func = 120;
+      FloatAndIntToIntFunction float_int_func = 121;
+      FloatAndFloatToIntFunction float_float_func = 122;
+      FloatAndStringToIntFunction float_string_func = 123;
+
+      StringAndBoolToIntFunction string_bool_func = 130;
+      StringAndIntToIntFunction string_int_func = 131;
+      StringAndFloatToIntFunction string_float_func = 132;
+      StringAndStringToIntFunction string_string_func = 133;
+
+      BoolsToIntFunction bools_func = 200;
+      IntsToIntFunction ints_func = 201;
+      FloatsToIntFunction floats_func = 202;
+      StringsToIntFunction strings_func = 203;
+
+      IntValueIf if = 1000;
+    }
+  }
+
+  repeated Argument arguments = 2;
+}
+
+message FloatsToBoolFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  message Argument {
+    oneof argument {
+      float constant = 1;
+      Reference input = 2;
+      Reference state = 3;
+
+      BoolToFloatFunction bool_func = 10;
+      IntToFloatFunction int_func = 11;
+      FloatToFloatFunction float_func = 12;
+      StringToFloatFunction string_func = 13;
+
+      BoolAndBoolToFloatFunction bool_bool_func = 100;
+      BoolAndIntToFloatFunction bool_int_func = 101;
+      BoolAndFloatToFloatFunction bool_float_func = 102;
+      BoolAndStringToFloatFunction bool_string_func = 103;
+
+      IntAndBoolToFloatFunction int_bool_func = 110;
+      IntAndIntToFloatFunction int_int_func = 111;
+      IntAndFloatToFloatFunction int_float_func = 112;
+      IntAndStringToFloatFunction int_string_func = 113;
+
+      FloatAndBoolToFloatFunction float_bool_func = 120;
+      FloatAndIntToFloatFunction float_int_func = 121;
+      FloatAndFloatToFloatFunction float_float_func = 122;
+      FloatAndStringToFloatFunction float_string_func = 123;
+
+      StringAndBoolToFloatFunction string_bool_func = 130;
+      StringAndIntToFloatFunction string_int_func = 131;
+      StringAndFloatToFloatFunction string_float_func = 132;
+      StringAndStringToFloatFunction string_string_func = 133;
+
+      BoolsToFloatFunction bools_func = 200;
+      IntsToFloatFunction ints_func = 201;
+      FloatsToFloatFunction floats_func = 202;
+      StringsToFloatFunction strings_func = 203;
+
+      FloatValueIf if = 1000;
+    }
+  }
+
+  repeated Argument arguments = 2;
+}
+
+message FloatsToIntFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  message Argument {
+    oneof argument {
+      float constant = 1;
+      Reference input = 2;
+      Reference state = 3;
+
+      BoolToFloatFunction bool_func = 10;
+      IntToFloatFunction int_func = 11;
+      FloatToFloatFunction float_func = 12;
+      StringToFloatFunction string_func = 13;
+
+      BoolAndBoolToFloatFunction bool_bool_func = 100;
+      BoolAndIntToFloatFunction bool_int_func = 101;
+      BoolAndFloatToFloatFunction bool_float_func = 102;
+      BoolAndStringToFloatFunction bool_string_func = 103;
+
+      IntAndBoolToFloatFunction int_bool_func = 110;
+      IntAndIntToFloatFunction int_int_func = 111;
+      IntAndFloatToFloatFunction int_float_func = 112;
+      IntAndStringToFloatFunction int_string_func = 113;
+
+      FloatAndBoolToFloatFunction float_bool_func = 120;
+      FloatAndIntToFloatFunction float_int_func = 121;
+      FloatAndFloatToFloatFunction float_float_func = 122;
+      FloatAndStringToFloatFunction float_string_func = 123;
+
+      StringAndBoolToFloatFunction string_bool_func = 130;
+      StringAndIntToFloatFunction string_int_func = 131;
+      StringAndFloatToFloatFunction string_float_func = 132;
+      StringAndStringToFloatFunction string_string_func = 133;
+
+      BoolsToFloatFunction bools_func = 200;
+      IntsToFloatFunction ints_func = 201;
+      FloatsToFloatFunction floats_func = 202;
+      StringsToFloatFunction strings_func = 203;
+
+      FloatValueIf if = 1000;
+    }
+  }
+
+  repeated Argument arguments = 2;
+}
+
+message FloatsToFloatFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  message Argument {
+    oneof argument {
+      float constant = 1;
+      Reference input = 2;
+      Reference state = 3;
+
+      BoolToFloatFunction bool_func = 10;
+      IntToFloatFunction int_func = 11;
+      FloatToFloatFunction float_func = 12;
+      StringToFloatFunction string_func = 13;
+
+      BoolAndBoolToFloatFunction bool_bool_func = 100;
+      BoolAndIntToFloatFunction bool_int_func = 101;
+      BoolAndFloatToFloatFunction bool_float_func = 102;
+      BoolAndStringToFloatFunction bool_string_func = 103;
+
+      IntAndBoolToFloatFunction int_bool_func = 110;
+      IntAndIntToFloatFunction int_int_func = 111;
+      IntAndFloatToFloatFunction int_float_func = 112;
+      IntAndStringToFloatFunction int_string_func = 113;
+
+      FloatAndBoolToFloatFunction float_bool_func = 120;
+      FloatAndIntToFloatFunction float_int_func = 121;
+      FloatAndFloatToFloatFunction float_float_func = 122;
+      FloatAndStringToFloatFunction float_string_func = 123;
+
+      StringAndBoolToFloatFunction string_bool_func = 130;
+      StringAndIntToFloatFunction string_int_func = 131;
+      StringAndFloatToFloatFunction string_float_func = 132;
+      StringAndStringToFloatFunction string_string_func = 133;
+
+      BoolsToFloatFunction bools_func = 200;
+      IntsToFloatFunction ints_func = 201;
+      FloatsToFloatFunction floats_func = 202;
+      StringsToFloatFunction strings_func = 203;
+
+      FloatValueIf if = 1000;
+    }
+  }
+
+  repeated Argument arguments = 2;
+}
+
+message FloatsToStringFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  message Argument {
+    oneof argument {
+      float constant = 1;
+      Reference input = 2;
+      Reference state = 3;
+
+      BoolToFloatFunction bool_func = 10;
+      IntToFloatFunction int_func = 11;
+      FloatToFloatFunction float_func = 12;
+      StringToFloatFunction string_func = 13;
+
+      BoolAndBoolToFloatFunction bool_bool_func = 100;
+      BoolAndIntToFloatFunction bool_int_func = 101;
+      BoolAndFloatToFloatFunction bool_float_func = 102;
+      BoolAndStringToFloatFunction bool_string_func = 103;
+
+      IntAndBoolToFloatFunction int_bool_func = 110;
+      IntAndIntToFloatFunction int_int_func = 111;
+      IntAndFloatToFloatFunction int_float_func = 112;
+      IntAndStringToFloatFunction int_string_func = 113;
+
+      FloatAndBoolToFloatFunction float_bool_func = 120;
+      FloatAndIntToFloatFunction float_int_func = 121;
+      FloatAndFloatToFloatFunction float_float_func = 122;
+      FloatAndStringToFloatFunction float_string_func = 123;
+
+      StringAndBoolToFloatFunction string_bool_func = 130;
+      StringAndIntToFloatFunction string_int_func = 131;
+      StringAndFloatToFloatFunction string_float_func = 132;
+      StringAndStringToFloatFunction string_string_func = 133;
+
+      BoolsToFloatFunction bools_func = 200;
+      IntsToFloatFunction ints_func = 201;
+      FloatsToFloatFunction floats_func = 202;
+      StringsToFloatFunction strings_func = 203;
+
+      FloatValueIf if = 1000;
+    }
+  }
+
+  repeated Argument arguments = 2;
+}
+
+message StringsToBoolFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  message Argument {
+    oneof argument {
+      string constant = 1;
+      Reference input = 2;
+      Reference state = 3;
+
+      BoolToStringFunction bool_func = 10;
+      IntToStringFunction int_func = 11;
+      FloatToStringFunction float_func = 12;
+      StringToStringFunction string_func = 13;
+
+      BoolAndBoolToStringFunction bool_bool_func = 100;
+      BoolAndIntToStringFunction bool_int_func = 101;
+      BoolAndFloatToStringFunction bool_float_func = 102;
+      BoolAndStringToStringFunction bool_string_func = 103;
+
+      IntAndBoolToStringFunction int_bool_func = 110;
+      IntAndIntToStringFunction int_int_func = 111;
+      IntAndFloatToStringFunction int_float_func = 112;
+      IntAndStringToStringFunction int_string_func = 113;
+
+      FloatAndBoolToStringFunction float_bool_func = 120;
+      FloatAndIntToStringFunction float_int_func = 121;
+      FloatAndFloatToStringFunction float_float_func = 122;
+      FloatAndStringToStringFunction float_string_func = 123;
+
+      StringAndBoolToStringFunction string_bool_func = 130;
+      StringAndIntToStringFunction string_int_func = 131;
+      StringAndFloatToStringFunction string_float_func = 132;
+      StringAndStringToStringFunction string_string_func = 133;
+
+      BoolsToStringFunction bools_func = 200;
+      IntsToStringFunction ints_func = 201;
+      FloatsToStringFunction floats_func = 202;
+      StringsToStringFunction strings_func = 203;
+
+      StringValueIf if = 1000;
+    }
+  }
+
+  repeated Argument arguments = 2;
+}
+
+message StringsToIntFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  message Argument {
+    oneof argument {
+      string constant = 1;
+      Reference input = 2;
+      Reference state = 3;
+
+      BoolToStringFunction bool_func = 10;
+      IntToStringFunction int_func = 11;
+      FloatToStringFunction float_func = 12;
+      StringToStringFunction string_func = 13;
+
+      BoolAndBoolToStringFunction bool_bool_func = 100;
+      BoolAndIntToStringFunction bool_int_func = 101;
+      BoolAndFloatToStringFunction bool_float_func = 102;
+      BoolAndStringToStringFunction bool_string_func = 103;
+
+      IntAndBoolToStringFunction int_bool_func = 110;
+      IntAndIntToStringFunction int_int_func = 111;
+      IntAndFloatToStringFunction int_float_func = 112;
+      IntAndStringToStringFunction int_string_func = 113;
+
+      FloatAndBoolToStringFunction float_bool_func = 120;
+      FloatAndIntToStringFunction float_int_func = 121;
+      FloatAndFloatToStringFunction float_float_func = 122;
+      FloatAndStringToStringFunction float_string_func = 123;
+
+      StringAndBoolToStringFunction string_bool_func = 130;
+      StringAndIntToStringFunction string_int_func = 131;
+      StringAndFloatToStringFunction string_float_func = 132;
+      StringAndStringToStringFunction string_string_func = 133;
+
+      BoolsToStringFunction bools_func = 200;
+      IntsToStringFunction ints_func = 201;
+      FloatsToStringFunction floats_func = 202;
+      StringsToStringFunction strings_func = 203;
+
+      StringValueIf if = 1000;
+    }
+  }
+
+  repeated Argument arguments = 2;
+}
+
+message StringsToFloatFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  message Argument {
+    oneof argument {
+      string constant = 1;
+      Reference input = 2;
+      Reference state = 3;
+
+      BoolToStringFunction bool_func = 10;
+      IntToStringFunction int_func = 11;
+      FloatToStringFunction float_func = 12;
+      StringToStringFunction string_func = 13;
+
+      BoolAndBoolToStringFunction bool_bool_func = 100;
+      BoolAndIntToStringFunction bool_int_func = 101;
+      BoolAndFloatToStringFunction bool_float_func = 102;
+      BoolAndStringToStringFunction bool_string_func = 103;
+
+      IntAndBoolToStringFunction int_bool_func = 110;
+      IntAndIntToStringFunction int_int_func = 111;
+      IntAndFloatToStringFunction int_float_func = 112;
+      IntAndStringToStringFunction int_string_func = 113;
+
+      FloatAndBoolToStringFunction float_bool_func = 120;
+      FloatAndIntToStringFunction float_int_func = 121;
+      FloatAndFloatToStringFunction float_float_func = 122;
+      FloatAndStringToStringFunction float_string_func = 123;
+
+      StringAndBoolToStringFunction string_bool_func = 130;
+      StringAndIntToStringFunction string_int_func = 131;
+      StringAndFloatToStringFunction string_float_func = 132;
+      StringAndStringToStringFunction string_string_func = 133;
+
+      BoolsToStringFunction bools_func = 200;
+      IntsToStringFunction ints_func = 201;
+      FloatsToStringFunction floats_func = 202;
+      StringsToStringFunction strings_func = 203;
+
+      StringValueIf if = 1000;
+    }
+  }
+
+  repeated Argument arguments = 2;
+}
+
+message StringsToStringFunction {
+  enum ID {
+    UNDEFINED = 0;
+    CONCAT = 1;
+  }
+
+  ID name = 1;
+
+  message Argument {
+    oneof argument {
+      string constant = 1;
+      Reference input = 2;
+      Reference state = 3;
+
+      BoolToStringFunction bool_func = 10;
+      IntToStringFunction int_func = 11;
+      FloatToStringFunction float_func = 12;
+      StringToStringFunction string_func = 13;
+
+      BoolAndBoolToStringFunction bool_bool_func = 100;
+      BoolAndIntToStringFunction bool_int_func = 101;
+      BoolAndFloatToStringFunction bool_float_func = 102;
+      BoolAndStringToStringFunction bool_string_func = 103;
+
+      IntAndBoolToStringFunction int_bool_func = 110;
+      IntAndIntToStringFunction int_int_func = 111;
+      IntAndFloatToStringFunction int_float_func = 112;
+      IntAndStringToStringFunction int_string_func = 113;
+
+      FloatAndBoolToStringFunction float_bool_func = 120;
+      FloatAndIntToStringFunction float_int_func = 121;
+      FloatAndFloatToStringFunction float_float_func = 122;
+      FloatAndStringToStringFunction float_string_func = 123;
+
+      StringAndBoolToStringFunction string_bool_func = 130;
+      StringAndIntToStringFunction string_int_func = 131;
+      StringAndFloatToStringFunction string_float_func = 132;
+      StringAndStringToStringFunction string_string_func = 133;
+
+      BoolsToStringFunction bools_func = 200;
+      IntsToStringFunction ints_func = 201;
+      FloatsToStringFunction floats_func = 202;
+      StringsToStringFunction strings_func = 203;
+
+      StringValueIf if = 1000;
+    }
+  }
+
+  repeated Argument arguments = 2;
 }
 
 // If-Else Control Structures

@@ -188,6 +188,14 @@ func ValidateBoolValueReferences(val *pb.BoolValue, state, input *desc.MessageDe
 		return ValidateStringAndFloatToBoolFunctionReferences(v.StringFloatFunc, state, input)
 	case *pb.BoolValue_StringStringFunc:
 		return ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc, state, input)
+	case *pb.BoolValue_BoolsFunc:
+		return ValidateBoolsToBoolFunctionReferences(v.BoolsFunc, state, input)
+	case *pb.BoolValue_IntsFunc:
+		return ValidateIntsToBoolFunctionReferences(v.IntsFunc, state, input)
+	case *pb.BoolValue_FloatsFunc:
+		return ValidateFloatsToBoolFunctionReferences(v.FloatsFunc, state, input)
+	case *pb.BoolValue_StringsFunc:
+		return ValidateStringsToBoolFunctionReferences(v.StringsFunc, state, input)
 	case *pb.BoolValue_If:
 		return ValidateBoolValueIf(v.If, state, input)
 	default:
@@ -249,6 +257,14 @@ func ValidateIntValueReferences(val *pb.IntValue, state, input *desc.MessageDesc
 		return ValidateStringAndFloatToIntFunctionReferences(v.StringFloatFunc, state, input)
 	case *pb.IntValue_StringStringFunc:
 		return ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc, state, input)
+	case *pb.IntValue_BoolsFunc:
+		return ValidateBoolsToIntFunctionReferences(v.BoolsFunc, state, input)
+	case *pb.IntValue_IntsFunc:
+		return ValidateIntsToIntFunctionReferences(v.IntsFunc, state, input)
+	case *pb.IntValue_FloatsFunc:
+		return ValidateFloatsToIntFunctionReferences(v.FloatsFunc, state, input)
+	case *pb.IntValue_StringsFunc:
+		return ValidateStringsToIntFunctionReferences(v.StringsFunc, state, input)
 	case *pb.IntValue_If:
 		return ValidateIntValueIf(v.If, state, input)
 	default:
@@ -310,6 +326,14 @@ func ValidateFloatValueReferences(val *pb.FloatValue, state, input *desc.Message
 		return ValidateStringAndFloatToFloatFunctionReferences(v.StringFloatFunc, state, input)
 	case *pb.FloatValue_StringStringFunc:
 		return ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc, state, input)
+	case *pb.FloatValue_BoolsFunc:
+		return ValidateBoolsToFloatFunctionReferences(v.BoolsFunc, state, input)
+	case *pb.FloatValue_IntsFunc:
+		return ValidateIntsToFloatFunctionReferences(v.IntsFunc, state, input)
+	case *pb.FloatValue_FloatsFunc:
+		return ValidateFloatsToFloatFunctionReferences(v.FloatsFunc, state, input)
+	case *pb.FloatValue_StringsFunc:
+		return ValidateStringsToFloatFunctionReferences(v.StringsFunc, state, input)
 	case *pb.FloatValue_If:
 		return ValidateFloatValueIf(v.If, state, input)
 	default:
@@ -371,6 +395,14 @@ func ValidateStringValueReferences(val *pb.StringValue, state, input *desc.Messa
 		return ValidateStringAndFloatToStringFunctionReferences(v.StringFloatFunc, state, input)
 	case *pb.StringValue_StringStringFunc:
 		return ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc, state, input)
+	case *pb.StringValue_BoolsFunc:
+		return ValidateBoolsToStringFunctionReferences(v.BoolsFunc, state, input)
+	case *pb.StringValue_IntsFunc:
+		return ValidateIntsToStringFunctionReferences(v.IntsFunc, state, input)
+	case *pb.StringValue_FloatsFunc:
+		return ValidateFloatsToStringFunctionReferences(v.FloatsFunc, state, input)
+	case *pb.StringValue_StringsFunc:
+		return ValidateStringsToStringFunctionReferences(v.StringsFunc, state, input)
 	case *pb.StringValue_If:
 		return ValidateStringValueIf(v.If, state, input)
 	default:
@@ -432,6 +464,14 @@ func ValidateBoolToBoolFunctionReferences(val *pb.BoolToBoolFunction, state, inp
 		return ValidateStringAndFloatToBoolFunctionReferences(v.StringFloatFunc, state, input)
 	case *pb.BoolToBoolFunction_StringStringFunc:
 		return ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc, state, input)
+	case *pb.BoolToBoolFunction_BoolsFunc:
+		return ValidateBoolsToBoolFunctionReferences(v.BoolsFunc, state, input)
+	case *pb.BoolToBoolFunction_IntsFunc:
+		return ValidateIntsToBoolFunctionReferences(v.IntsFunc, state, input)
+	case *pb.BoolToBoolFunction_FloatsFunc:
+		return ValidateFloatsToBoolFunctionReferences(v.FloatsFunc, state, input)
+	case *pb.BoolToBoolFunction_StringsFunc:
+		return ValidateStringsToBoolFunctionReferences(v.StringsFunc, state, input)
 	case *pb.BoolToBoolFunction_If:
 		return ValidateBoolValueIf(v.If, state, input)
 	default:
@@ -491,6 +531,14 @@ func ValidateBoolToIntFunctionReferences(val *pb.BoolToIntFunction, state, input
 		return ValidateStringAndFloatToBoolFunctionReferences(v.StringFloatFunc, state, input)
 	case *pb.BoolToIntFunction_StringStringFunc:
 		return ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc, state, input)
+	case *pb.BoolToIntFunction_BoolsFunc:
+		return ValidateBoolsToBoolFunctionReferences(v.BoolsFunc, state, input)
+	case *pb.BoolToIntFunction_IntsFunc:
+		return ValidateIntsToBoolFunctionReferences(v.IntsFunc, state, input)
+	case *pb.BoolToIntFunction_FloatsFunc:
+		return ValidateFloatsToBoolFunctionReferences(v.FloatsFunc, state, input)
+	case *pb.BoolToIntFunction_StringsFunc:
+		return ValidateStringsToBoolFunctionReferences(v.StringsFunc, state, input)
 	case *pb.BoolToIntFunction_If:
 		return ValidateBoolValueIf(v.If, state, input)
 	default:
@@ -550,6 +598,14 @@ func ValidateBoolToFloatFunctionReferences(val *pb.BoolToFloatFunction, state, i
 		return ValidateStringAndFloatToBoolFunctionReferences(v.StringFloatFunc, state, input)
 	case *pb.BoolToFloatFunction_StringStringFunc:
 		return ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc, state, input)
+	case *pb.BoolToFloatFunction_BoolsFunc:
+		return ValidateBoolsToBoolFunctionReferences(v.BoolsFunc, state, input)
+	case *pb.BoolToFloatFunction_IntsFunc:
+		return ValidateIntsToBoolFunctionReferences(v.IntsFunc, state, input)
+	case *pb.BoolToFloatFunction_FloatsFunc:
+		return ValidateFloatsToBoolFunctionReferences(v.FloatsFunc, state, input)
+	case *pb.BoolToFloatFunction_StringsFunc:
+		return ValidateStringsToBoolFunctionReferences(v.StringsFunc, state, input)
 	case *pb.BoolToFloatFunction_If:
 		return ValidateBoolValueIf(v.If, state, input)
 	default:
@@ -609,6 +665,14 @@ func ValidateBoolToStringFunctionReferences(val *pb.BoolToStringFunction, state,
 		return ValidateStringAndFloatToBoolFunctionReferences(v.StringFloatFunc, state, input)
 	case *pb.BoolToStringFunction_StringStringFunc:
 		return ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc, state, input)
+	case *pb.BoolToStringFunction_BoolsFunc:
+		return ValidateBoolsToBoolFunctionReferences(v.BoolsFunc, state, input)
+	case *pb.BoolToStringFunction_IntsFunc:
+		return ValidateIntsToBoolFunctionReferences(v.IntsFunc, state, input)
+	case *pb.BoolToStringFunction_FloatsFunc:
+		return ValidateFloatsToBoolFunctionReferences(v.FloatsFunc, state, input)
+	case *pb.BoolToStringFunction_StringsFunc:
+		return ValidateStringsToBoolFunctionReferences(v.StringsFunc, state, input)
 	case *pb.BoolToStringFunction_If:
 		return ValidateBoolValueIf(v.If, state, input)
 	default:
@@ -668,6 +732,14 @@ func ValidateIntToBoolFunctionReferences(val *pb.IntToBoolFunction, state, input
 		return ValidateStringAndFloatToIntFunctionReferences(v.StringFloatFunc, state, input)
 	case *pb.IntToBoolFunction_StringStringFunc:
 		return ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc, state, input)
+	case *pb.IntToBoolFunction_BoolsFunc:
+		return ValidateBoolsToIntFunctionReferences(v.BoolsFunc, state, input)
+	case *pb.IntToBoolFunction_IntsFunc:
+		return ValidateIntsToIntFunctionReferences(v.IntsFunc, state, input)
+	case *pb.IntToBoolFunction_FloatsFunc:
+		return ValidateFloatsToIntFunctionReferences(v.FloatsFunc, state, input)
+	case *pb.IntToBoolFunction_StringsFunc:
+		return ValidateStringsToIntFunctionReferences(v.StringsFunc, state, input)
 	case *pb.IntToBoolFunction_If:
 		return ValidateIntValueIf(v.If, state, input)
 	default:
@@ -727,6 +799,14 @@ func ValidateIntToIntFunctionReferences(val *pb.IntToIntFunction, state, input *
 		return ValidateStringAndFloatToIntFunctionReferences(v.StringFloatFunc, state, input)
 	case *pb.IntToIntFunction_StringStringFunc:
 		return ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc, state, input)
+	case *pb.IntToIntFunction_BoolsFunc:
+		return ValidateBoolsToIntFunctionReferences(v.BoolsFunc, state, input)
+	case *pb.IntToIntFunction_IntsFunc:
+		return ValidateIntsToIntFunctionReferences(v.IntsFunc, state, input)
+	case *pb.IntToIntFunction_FloatsFunc:
+		return ValidateFloatsToIntFunctionReferences(v.FloatsFunc, state, input)
+	case *pb.IntToIntFunction_StringsFunc:
+		return ValidateStringsToIntFunctionReferences(v.StringsFunc, state, input)
 	case *pb.IntToIntFunction_If:
 		return ValidateIntValueIf(v.If, state, input)
 	default:
@@ -786,6 +866,14 @@ func ValidateIntToFloatFunctionReferences(val *pb.IntToFloatFunction, state, inp
 		return ValidateStringAndFloatToIntFunctionReferences(v.StringFloatFunc, state, input)
 	case *pb.IntToFloatFunction_StringStringFunc:
 		return ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc, state, input)
+	case *pb.IntToFloatFunction_BoolsFunc:
+		return ValidateBoolsToIntFunctionReferences(v.BoolsFunc, state, input)
+	case *pb.IntToFloatFunction_IntsFunc:
+		return ValidateIntsToIntFunctionReferences(v.IntsFunc, state, input)
+	case *pb.IntToFloatFunction_FloatsFunc:
+		return ValidateFloatsToIntFunctionReferences(v.FloatsFunc, state, input)
+	case *pb.IntToFloatFunction_StringsFunc:
+		return ValidateStringsToIntFunctionReferences(v.StringsFunc, state, input)
 	case *pb.IntToFloatFunction_If:
 		return ValidateIntValueIf(v.If, state, input)
 	default:
@@ -845,6 +933,14 @@ func ValidateIntToStringFunctionReferences(val *pb.IntToStringFunction, state, i
 		return ValidateStringAndFloatToIntFunctionReferences(v.StringFloatFunc, state, input)
 	case *pb.IntToStringFunction_StringStringFunc:
 		return ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc, state, input)
+	case *pb.IntToStringFunction_BoolsFunc:
+		return ValidateBoolsToIntFunctionReferences(v.BoolsFunc, state, input)
+	case *pb.IntToStringFunction_IntsFunc:
+		return ValidateIntsToIntFunctionReferences(v.IntsFunc, state, input)
+	case *pb.IntToStringFunction_FloatsFunc:
+		return ValidateFloatsToIntFunctionReferences(v.FloatsFunc, state, input)
+	case *pb.IntToStringFunction_StringsFunc:
+		return ValidateStringsToIntFunctionReferences(v.StringsFunc, state, input)
 	case *pb.IntToStringFunction_If:
 		return ValidateIntValueIf(v.If, state, input)
 	default:
@@ -904,6 +1000,14 @@ func ValidateFloatToBoolFunctionReferences(val *pb.FloatToBoolFunction, state, i
 		return ValidateStringAndFloatToFloatFunctionReferences(v.StringFloatFunc, state, input)
 	case *pb.FloatToBoolFunction_StringStringFunc:
 		return ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc, state, input)
+	case *pb.FloatToBoolFunction_BoolsFunc:
+		return ValidateBoolsToFloatFunctionReferences(v.BoolsFunc, state, input)
+	case *pb.FloatToBoolFunction_IntsFunc:
+		return ValidateIntsToFloatFunctionReferences(v.IntsFunc, state, input)
+	case *pb.FloatToBoolFunction_FloatsFunc:
+		return ValidateFloatsToFloatFunctionReferences(v.FloatsFunc, state, input)
+	case *pb.FloatToBoolFunction_StringsFunc:
+		return ValidateStringsToFloatFunctionReferences(v.StringsFunc, state, input)
 	case *pb.FloatToBoolFunction_If:
 		return ValidateFloatValueIf(v.If, state, input)
 	default:
@@ -963,6 +1067,14 @@ func ValidateFloatToIntFunctionReferences(val *pb.FloatToIntFunction, state, inp
 		return ValidateStringAndFloatToFloatFunctionReferences(v.StringFloatFunc, state, input)
 	case *pb.FloatToIntFunction_StringStringFunc:
 		return ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc, state, input)
+	case *pb.FloatToIntFunction_BoolsFunc:
+		return ValidateBoolsToFloatFunctionReferences(v.BoolsFunc, state, input)
+	case *pb.FloatToIntFunction_IntsFunc:
+		return ValidateIntsToFloatFunctionReferences(v.IntsFunc, state, input)
+	case *pb.FloatToIntFunction_FloatsFunc:
+		return ValidateFloatsToFloatFunctionReferences(v.FloatsFunc, state, input)
+	case *pb.FloatToIntFunction_StringsFunc:
+		return ValidateStringsToFloatFunctionReferences(v.StringsFunc, state, input)
 	case *pb.FloatToIntFunction_If:
 		return ValidateFloatValueIf(v.If, state, input)
 	default:
@@ -1022,6 +1134,14 @@ func ValidateFloatToFloatFunctionReferences(val *pb.FloatToFloatFunction, state,
 		return ValidateStringAndFloatToFloatFunctionReferences(v.StringFloatFunc, state, input)
 	case *pb.FloatToFloatFunction_StringStringFunc:
 		return ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc, state, input)
+	case *pb.FloatToFloatFunction_BoolsFunc:
+		return ValidateBoolsToFloatFunctionReferences(v.BoolsFunc, state, input)
+	case *pb.FloatToFloatFunction_IntsFunc:
+		return ValidateIntsToFloatFunctionReferences(v.IntsFunc, state, input)
+	case *pb.FloatToFloatFunction_FloatsFunc:
+		return ValidateFloatsToFloatFunctionReferences(v.FloatsFunc, state, input)
+	case *pb.FloatToFloatFunction_StringsFunc:
+		return ValidateStringsToFloatFunctionReferences(v.StringsFunc, state, input)
 	case *pb.FloatToFloatFunction_If:
 		return ValidateFloatValueIf(v.If, state, input)
 	default:
@@ -1081,6 +1201,14 @@ func ValidateFloatToStringFunctionReferences(val *pb.FloatToStringFunction, stat
 		return ValidateStringAndFloatToFloatFunctionReferences(v.StringFloatFunc, state, input)
 	case *pb.FloatToStringFunction_StringStringFunc:
 		return ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc, state, input)
+	case *pb.FloatToStringFunction_BoolsFunc:
+		return ValidateBoolsToFloatFunctionReferences(v.BoolsFunc, state, input)
+	case *pb.FloatToStringFunction_IntsFunc:
+		return ValidateIntsToFloatFunctionReferences(v.IntsFunc, state, input)
+	case *pb.FloatToStringFunction_FloatsFunc:
+		return ValidateFloatsToFloatFunctionReferences(v.FloatsFunc, state, input)
+	case *pb.FloatToStringFunction_StringsFunc:
+		return ValidateStringsToFloatFunctionReferences(v.StringsFunc, state, input)
 	case *pb.FloatToStringFunction_If:
 		return ValidateFloatValueIf(v.If, state, input)
 	default:
@@ -1140,6 +1268,14 @@ func ValidateStringToBoolFunctionReferences(val *pb.StringToBoolFunction, state,
 		return ValidateStringAndFloatToStringFunctionReferences(v.StringFloatFunc, state, input)
 	case *pb.StringToBoolFunction_StringStringFunc:
 		return ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc, state, input)
+	case *pb.StringToBoolFunction_BoolsFunc:
+		return ValidateBoolsToStringFunctionReferences(v.BoolsFunc, state, input)
+	case *pb.StringToBoolFunction_IntsFunc:
+		return ValidateIntsToStringFunctionReferences(v.IntsFunc, state, input)
+	case *pb.StringToBoolFunction_FloatsFunc:
+		return ValidateFloatsToStringFunctionReferences(v.FloatsFunc, state, input)
+	case *pb.StringToBoolFunction_StringsFunc:
+		return ValidateStringsToStringFunctionReferences(v.StringsFunc, state, input)
 	case *pb.StringToBoolFunction_If:
 		return ValidateStringValueIf(v.If, state, input)
 	default:
@@ -1199,6 +1335,14 @@ func ValidateStringToIntFunctionReferences(val *pb.StringToIntFunction, state, i
 		return ValidateStringAndFloatToStringFunctionReferences(v.StringFloatFunc, state, input)
 	case *pb.StringToIntFunction_StringStringFunc:
 		return ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc, state, input)
+	case *pb.StringToIntFunction_BoolsFunc:
+		return ValidateBoolsToStringFunctionReferences(v.BoolsFunc, state, input)
+	case *pb.StringToIntFunction_IntsFunc:
+		return ValidateIntsToStringFunctionReferences(v.IntsFunc, state, input)
+	case *pb.StringToIntFunction_FloatsFunc:
+		return ValidateFloatsToStringFunctionReferences(v.FloatsFunc, state, input)
+	case *pb.StringToIntFunction_StringsFunc:
+		return ValidateStringsToStringFunctionReferences(v.StringsFunc, state, input)
 	case *pb.StringToIntFunction_If:
 		return ValidateStringValueIf(v.If, state, input)
 	default:
@@ -1258,6 +1402,14 @@ func ValidateStringToFloatFunctionReferences(val *pb.StringToFloatFunction, stat
 		return ValidateStringAndFloatToStringFunctionReferences(v.StringFloatFunc, state, input)
 	case *pb.StringToFloatFunction_StringStringFunc:
 		return ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc, state, input)
+	case *pb.StringToFloatFunction_BoolsFunc:
+		return ValidateBoolsToStringFunctionReferences(v.BoolsFunc, state, input)
+	case *pb.StringToFloatFunction_IntsFunc:
+		return ValidateIntsToStringFunctionReferences(v.IntsFunc, state, input)
+	case *pb.StringToFloatFunction_FloatsFunc:
+		return ValidateFloatsToStringFunctionReferences(v.FloatsFunc, state, input)
+	case *pb.StringToFloatFunction_StringsFunc:
+		return ValidateStringsToStringFunctionReferences(v.StringsFunc, state, input)
 	case *pb.StringToFloatFunction_If:
 		return ValidateStringValueIf(v.If, state, input)
 	default:
@@ -1317,6 +1469,14 @@ func ValidateStringToStringFunctionReferences(val *pb.StringToStringFunction, st
 		return ValidateStringAndFloatToStringFunctionReferences(v.StringFloatFunc, state, input)
 	case *pb.StringToStringFunction_StringStringFunc:
 		return ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc, state, input)
+	case *pb.StringToStringFunction_BoolsFunc:
+		return ValidateBoolsToStringFunctionReferences(v.BoolsFunc, state, input)
+	case *pb.StringToStringFunction_IntsFunc:
+		return ValidateIntsToStringFunctionReferences(v.IntsFunc, state, input)
+	case *pb.StringToStringFunction_FloatsFunc:
+		return ValidateFloatsToStringFunctionReferences(v.FloatsFunc, state, input)
+	case *pb.StringToStringFunction_StringsFunc:
+		return ValidateStringsToStringFunctionReferences(v.StringsFunc, state, input)
 	case *pb.StringToStringFunction_If:
 		return ValidateStringValueIf(v.If, state, input)
 	default:
@@ -1424,6 +1584,22 @@ func ValidateBoolAndBoolToBoolFunctionReferences(val *pb.BoolAndBoolToBoolFuncti
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.BoolAndBoolToBoolFunction_BoolsFunc_1:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToBoolFunction_IntsFunc_1:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToBoolFunction_FloatsFunc_1:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToBoolFunction_StringsFunc_1:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.BoolAndBoolToBoolFunction_If_1:
 		if err := ValidateBoolValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -1519,6 +1695,22 @@ func ValidateBoolAndBoolToBoolFunctionReferences(val *pb.BoolAndBoolToBoolFuncti
 		}
 	case *pb.BoolAndBoolToBoolFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToBoolFunction_BoolsFunc_2:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToBoolFunction_IntsFunc_2:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToBoolFunction_FloatsFunc_2:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToBoolFunction_StringsFunc_2:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.BoolAndBoolToBoolFunction_If_2:
@@ -1628,6 +1820,22 @@ func ValidateBoolAndBoolToIntFunctionReferences(val *pb.BoolAndBoolToIntFunction
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.BoolAndBoolToIntFunction_BoolsFunc_1:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToIntFunction_IntsFunc_1:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToIntFunction_FloatsFunc_1:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToIntFunction_StringsFunc_1:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.BoolAndBoolToIntFunction_If_1:
 		if err := ValidateBoolValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -1723,6 +1931,22 @@ func ValidateBoolAndBoolToIntFunctionReferences(val *pb.BoolAndBoolToIntFunction
 		}
 	case *pb.BoolAndBoolToIntFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToIntFunction_BoolsFunc_2:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToIntFunction_IntsFunc_2:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToIntFunction_FloatsFunc_2:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToIntFunction_StringsFunc_2:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.BoolAndBoolToIntFunction_If_2:
@@ -1832,6 +2056,22 @@ func ValidateBoolAndBoolToFloatFunctionReferences(val *pb.BoolAndBoolToFloatFunc
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.BoolAndBoolToFloatFunction_BoolsFunc_1:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToFloatFunction_IntsFunc_1:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToFloatFunction_FloatsFunc_1:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToFloatFunction_StringsFunc_1:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.BoolAndBoolToFloatFunction_If_1:
 		if err := ValidateBoolValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -1927,6 +2167,22 @@ func ValidateBoolAndBoolToFloatFunctionReferences(val *pb.BoolAndBoolToFloatFunc
 		}
 	case *pb.BoolAndBoolToFloatFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToFloatFunction_BoolsFunc_2:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToFloatFunction_IntsFunc_2:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToFloatFunction_FloatsFunc_2:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToFloatFunction_StringsFunc_2:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.BoolAndBoolToFloatFunction_If_2:
@@ -2036,6 +2292,22 @@ func ValidateBoolAndBoolToStringFunctionReferences(val *pb.BoolAndBoolToStringFu
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.BoolAndBoolToStringFunction_BoolsFunc_1:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToStringFunction_IntsFunc_1:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToStringFunction_FloatsFunc_1:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToStringFunction_StringsFunc_1:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.BoolAndBoolToStringFunction_If_1:
 		if err := ValidateBoolValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -2131,6 +2403,22 @@ func ValidateBoolAndBoolToStringFunctionReferences(val *pb.BoolAndBoolToStringFu
 		}
 	case *pb.BoolAndBoolToStringFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToStringFunction_BoolsFunc_2:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToStringFunction_IntsFunc_2:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToStringFunction_FloatsFunc_2:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndBoolToStringFunction_StringsFunc_2:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.BoolAndBoolToStringFunction_If_2:
@@ -2240,6 +2528,22 @@ func ValidateBoolAndIntToBoolFunctionReferences(val *pb.BoolAndIntToBoolFunction
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.BoolAndIntToBoolFunction_BoolsFunc_1:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToBoolFunction_IntsFunc_1:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToBoolFunction_FloatsFunc_1:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToBoolFunction_StringsFunc_1:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.BoolAndIntToBoolFunction_If_1:
 		if err := ValidateBoolValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -2335,6 +2639,22 @@ func ValidateBoolAndIntToBoolFunctionReferences(val *pb.BoolAndIntToBoolFunction
 		}
 	case *pb.BoolAndIntToBoolFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToBoolFunction_BoolsFunc_2:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToBoolFunction_IntsFunc_2:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToBoolFunction_FloatsFunc_2:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToBoolFunction_StringsFunc_2:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.BoolAndIntToBoolFunction_If_2:
@@ -2444,6 +2764,22 @@ func ValidateBoolAndIntToIntFunctionReferences(val *pb.BoolAndIntToIntFunction, 
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.BoolAndIntToIntFunction_BoolsFunc_1:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToIntFunction_IntsFunc_1:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToIntFunction_FloatsFunc_1:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToIntFunction_StringsFunc_1:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.BoolAndIntToIntFunction_If_1:
 		if err := ValidateBoolValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -2539,6 +2875,22 @@ func ValidateBoolAndIntToIntFunctionReferences(val *pb.BoolAndIntToIntFunction, 
 		}
 	case *pb.BoolAndIntToIntFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToIntFunction_BoolsFunc_2:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToIntFunction_IntsFunc_2:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToIntFunction_FloatsFunc_2:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToIntFunction_StringsFunc_2:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.BoolAndIntToIntFunction_If_2:
@@ -2648,6 +3000,22 @@ func ValidateBoolAndIntToFloatFunctionReferences(val *pb.BoolAndIntToFloatFuncti
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.BoolAndIntToFloatFunction_BoolsFunc_1:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToFloatFunction_IntsFunc_1:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToFloatFunction_FloatsFunc_1:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToFloatFunction_StringsFunc_1:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.BoolAndIntToFloatFunction_If_1:
 		if err := ValidateBoolValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -2743,6 +3111,22 @@ func ValidateBoolAndIntToFloatFunctionReferences(val *pb.BoolAndIntToFloatFuncti
 		}
 	case *pb.BoolAndIntToFloatFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToFloatFunction_BoolsFunc_2:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToFloatFunction_IntsFunc_2:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToFloatFunction_FloatsFunc_2:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToFloatFunction_StringsFunc_2:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.BoolAndIntToFloatFunction_If_2:
@@ -2852,6 +3236,22 @@ func ValidateBoolAndIntToStringFunctionReferences(val *pb.BoolAndIntToStringFunc
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.BoolAndIntToStringFunction_BoolsFunc_1:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToStringFunction_IntsFunc_1:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToStringFunction_FloatsFunc_1:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToStringFunction_StringsFunc_1:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.BoolAndIntToStringFunction_If_1:
 		if err := ValidateBoolValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -2947,6 +3347,22 @@ func ValidateBoolAndIntToStringFunctionReferences(val *pb.BoolAndIntToStringFunc
 		}
 	case *pb.BoolAndIntToStringFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToStringFunction_BoolsFunc_2:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToStringFunction_IntsFunc_2:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToStringFunction_FloatsFunc_2:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndIntToStringFunction_StringsFunc_2:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.BoolAndIntToStringFunction_If_2:
@@ -3056,6 +3472,22 @@ func ValidateBoolAndFloatToBoolFunctionReferences(val *pb.BoolAndFloatToBoolFunc
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.BoolAndFloatToBoolFunction_BoolsFunc_1:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToBoolFunction_IntsFunc_1:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToBoolFunction_FloatsFunc_1:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToBoolFunction_StringsFunc_1:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.BoolAndFloatToBoolFunction_If_1:
 		if err := ValidateBoolValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -3151,6 +3583,22 @@ func ValidateBoolAndFloatToBoolFunctionReferences(val *pb.BoolAndFloatToBoolFunc
 		}
 	case *pb.BoolAndFloatToBoolFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToBoolFunction_BoolsFunc_2:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToBoolFunction_IntsFunc_2:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToBoolFunction_FloatsFunc_2:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToBoolFunction_StringsFunc_2:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.BoolAndFloatToBoolFunction_If_2:
@@ -3260,6 +3708,22 @@ func ValidateBoolAndFloatToIntFunctionReferences(val *pb.BoolAndFloatToIntFuncti
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.BoolAndFloatToIntFunction_BoolsFunc_1:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToIntFunction_IntsFunc_1:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToIntFunction_FloatsFunc_1:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToIntFunction_StringsFunc_1:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.BoolAndFloatToIntFunction_If_1:
 		if err := ValidateBoolValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -3355,6 +3819,22 @@ func ValidateBoolAndFloatToIntFunctionReferences(val *pb.BoolAndFloatToIntFuncti
 		}
 	case *pb.BoolAndFloatToIntFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToIntFunction_BoolsFunc_2:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToIntFunction_IntsFunc_2:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToIntFunction_FloatsFunc_2:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToIntFunction_StringsFunc_2:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.BoolAndFloatToIntFunction_If_2:
@@ -3464,6 +3944,22 @@ func ValidateBoolAndFloatToFloatFunctionReferences(val *pb.BoolAndFloatToFloatFu
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.BoolAndFloatToFloatFunction_BoolsFunc_1:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToFloatFunction_IntsFunc_1:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToFloatFunction_FloatsFunc_1:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToFloatFunction_StringsFunc_1:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.BoolAndFloatToFloatFunction_If_1:
 		if err := ValidateBoolValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -3559,6 +4055,22 @@ func ValidateBoolAndFloatToFloatFunctionReferences(val *pb.BoolAndFloatToFloatFu
 		}
 	case *pb.BoolAndFloatToFloatFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToFloatFunction_BoolsFunc_2:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToFloatFunction_IntsFunc_2:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToFloatFunction_FloatsFunc_2:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToFloatFunction_StringsFunc_2:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.BoolAndFloatToFloatFunction_If_2:
@@ -3668,6 +4180,22 @@ func ValidateBoolAndFloatToStringFunctionReferences(val *pb.BoolAndFloatToString
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.BoolAndFloatToStringFunction_BoolsFunc_1:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToStringFunction_IntsFunc_1:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToStringFunction_FloatsFunc_1:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToStringFunction_StringsFunc_1:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.BoolAndFloatToStringFunction_If_1:
 		if err := ValidateBoolValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -3763,6 +4291,22 @@ func ValidateBoolAndFloatToStringFunctionReferences(val *pb.BoolAndFloatToString
 		}
 	case *pb.BoolAndFloatToStringFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToStringFunction_BoolsFunc_2:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToStringFunction_IntsFunc_2:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToStringFunction_FloatsFunc_2:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndFloatToStringFunction_StringsFunc_2:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.BoolAndFloatToStringFunction_If_2:
@@ -3872,6 +4416,22 @@ func ValidateBoolAndStringToBoolFunctionReferences(val *pb.BoolAndStringToBoolFu
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.BoolAndStringToBoolFunction_BoolsFunc_1:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToBoolFunction_IntsFunc_1:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToBoolFunction_FloatsFunc_1:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToBoolFunction_StringsFunc_1:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.BoolAndStringToBoolFunction_If_1:
 		if err := ValidateBoolValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -3967,6 +4527,22 @@ func ValidateBoolAndStringToBoolFunctionReferences(val *pb.BoolAndStringToBoolFu
 		}
 	case *pb.BoolAndStringToBoolFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToBoolFunction_BoolsFunc_2:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToBoolFunction_IntsFunc_2:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToBoolFunction_FloatsFunc_2:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToBoolFunction_StringsFunc_2:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.BoolAndStringToBoolFunction_If_2:
@@ -4076,6 +4652,22 @@ func ValidateBoolAndStringToIntFunctionReferences(val *pb.BoolAndStringToIntFunc
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.BoolAndStringToIntFunction_BoolsFunc_1:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToIntFunction_IntsFunc_1:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToIntFunction_FloatsFunc_1:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToIntFunction_StringsFunc_1:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.BoolAndStringToIntFunction_If_1:
 		if err := ValidateBoolValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -4171,6 +4763,22 @@ func ValidateBoolAndStringToIntFunctionReferences(val *pb.BoolAndStringToIntFunc
 		}
 	case *pb.BoolAndStringToIntFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToIntFunction_BoolsFunc_2:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToIntFunction_IntsFunc_2:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToIntFunction_FloatsFunc_2:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToIntFunction_StringsFunc_2:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.BoolAndStringToIntFunction_If_2:
@@ -4280,6 +4888,22 @@ func ValidateBoolAndStringToFloatFunctionReferences(val *pb.BoolAndStringToFloat
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.BoolAndStringToFloatFunction_BoolsFunc_1:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToFloatFunction_IntsFunc_1:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToFloatFunction_FloatsFunc_1:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToFloatFunction_StringsFunc_1:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.BoolAndStringToFloatFunction_If_1:
 		if err := ValidateBoolValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -4375,6 +4999,22 @@ func ValidateBoolAndStringToFloatFunctionReferences(val *pb.BoolAndStringToFloat
 		}
 	case *pb.BoolAndStringToFloatFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToFloatFunction_BoolsFunc_2:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToFloatFunction_IntsFunc_2:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToFloatFunction_FloatsFunc_2:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToFloatFunction_StringsFunc_2:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.BoolAndStringToFloatFunction_If_2:
@@ -4484,6 +5124,22 @@ func ValidateBoolAndStringToStringFunctionReferences(val *pb.BoolAndStringToStri
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.BoolAndStringToStringFunction_BoolsFunc_1:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToStringFunction_IntsFunc_1:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToStringFunction_FloatsFunc_1:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToStringFunction_StringsFunc_1:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.BoolAndStringToStringFunction_If_1:
 		if err := ValidateBoolValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -4579,6 +5235,22 @@ func ValidateBoolAndStringToStringFunctionReferences(val *pb.BoolAndStringToStri
 		}
 	case *pb.BoolAndStringToStringFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToStringFunction_BoolsFunc_2:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToStringFunction_IntsFunc_2:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToStringFunction_FloatsFunc_2:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.BoolAndStringToStringFunction_StringsFunc_2:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.BoolAndStringToStringFunction_If_2:
@@ -4688,6 +5360,22 @@ func ValidateIntAndBoolToBoolFunctionReferences(val *pb.IntAndBoolToBoolFunction
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.IntAndBoolToBoolFunction_BoolsFunc_1:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToBoolFunction_IntsFunc_1:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToBoolFunction_FloatsFunc_1:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToBoolFunction_StringsFunc_1:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.IntAndBoolToBoolFunction_If_1:
 		if err := ValidateIntValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -4783,6 +5471,22 @@ func ValidateIntAndBoolToBoolFunctionReferences(val *pb.IntAndBoolToBoolFunction
 		}
 	case *pb.IntAndBoolToBoolFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToBoolFunction_BoolsFunc_2:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToBoolFunction_IntsFunc_2:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToBoolFunction_FloatsFunc_2:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToBoolFunction_StringsFunc_2:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.IntAndBoolToBoolFunction_If_2:
@@ -4892,6 +5596,22 @@ func ValidateIntAndBoolToIntFunctionReferences(val *pb.IntAndBoolToIntFunction, 
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.IntAndBoolToIntFunction_BoolsFunc_1:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToIntFunction_IntsFunc_1:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToIntFunction_FloatsFunc_1:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToIntFunction_StringsFunc_1:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.IntAndBoolToIntFunction_If_1:
 		if err := ValidateIntValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -4987,6 +5707,22 @@ func ValidateIntAndBoolToIntFunctionReferences(val *pb.IntAndBoolToIntFunction, 
 		}
 	case *pb.IntAndBoolToIntFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToIntFunction_BoolsFunc_2:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToIntFunction_IntsFunc_2:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToIntFunction_FloatsFunc_2:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToIntFunction_StringsFunc_2:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.IntAndBoolToIntFunction_If_2:
@@ -5096,6 +5832,22 @@ func ValidateIntAndBoolToFloatFunctionReferences(val *pb.IntAndBoolToFloatFuncti
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.IntAndBoolToFloatFunction_BoolsFunc_1:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToFloatFunction_IntsFunc_1:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToFloatFunction_FloatsFunc_1:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToFloatFunction_StringsFunc_1:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.IntAndBoolToFloatFunction_If_1:
 		if err := ValidateIntValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -5191,6 +5943,22 @@ func ValidateIntAndBoolToFloatFunctionReferences(val *pb.IntAndBoolToFloatFuncti
 		}
 	case *pb.IntAndBoolToFloatFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToFloatFunction_BoolsFunc_2:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToFloatFunction_IntsFunc_2:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToFloatFunction_FloatsFunc_2:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToFloatFunction_StringsFunc_2:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.IntAndBoolToFloatFunction_If_2:
@@ -5300,6 +6068,22 @@ func ValidateIntAndBoolToStringFunctionReferences(val *pb.IntAndBoolToStringFunc
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.IntAndBoolToStringFunction_BoolsFunc_1:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToStringFunction_IntsFunc_1:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToStringFunction_FloatsFunc_1:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToStringFunction_StringsFunc_1:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.IntAndBoolToStringFunction_If_1:
 		if err := ValidateIntValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -5395,6 +6179,22 @@ func ValidateIntAndBoolToStringFunctionReferences(val *pb.IntAndBoolToStringFunc
 		}
 	case *pb.IntAndBoolToStringFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToStringFunction_BoolsFunc_2:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToStringFunction_IntsFunc_2:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToStringFunction_FloatsFunc_2:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndBoolToStringFunction_StringsFunc_2:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.IntAndBoolToStringFunction_If_2:
@@ -5504,6 +6304,22 @@ func ValidateIntAndIntToBoolFunctionReferences(val *pb.IntAndIntToBoolFunction, 
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.IntAndIntToBoolFunction_BoolsFunc_1:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToBoolFunction_IntsFunc_1:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToBoolFunction_FloatsFunc_1:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToBoolFunction_StringsFunc_1:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.IntAndIntToBoolFunction_If_1:
 		if err := ValidateIntValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -5599,6 +6415,22 @@ func ValidateIntAndIntToBoolFunctionReferences(val *pb.IntAndIntToBoolFunction, 
 		}
 	case *pb.IntAndIntToBoolFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToBoolFunction_BoolsFunc_2:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToBoolFunction_IntsFunc_2:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToBoolFunction_FloatsFunc_2:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToBoolFunction_StringsFunc_2:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.IntAndIntToBoolFunction_If_2:
@@ -5708,6 +6540,22 @@ func ValidateIntAndIntToIntFunctionReferences(val *pb.IntAndIntToIntFunction, st
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.IntAndIntToIntFunction_BoolsFunc_1:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToIntFunction_IntsFunc_1:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToIntFunction_FloatsFunc_1:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToIntFunction_StringsFunc_1:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.IntAndIntToIntFunction_If_1:
 		if err := ValidateIntValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -5803,6 +6651,22 @@ func ValidateIntAndIntToIntFunctionReferences(val *pb.IntAndIntToIntFunction, st
 		}
 	case *pb.IntAndIntToIntFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToIntFunction_BoolsFunc_2:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToIntFunction_IntsFunc_2:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToIntFunction_FloatsFunc_2:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToIntFunction_StringsFunc_2:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.IntAndIntToIntFunction_If_2:
@@ -5912,6 +6776,22 @@ func ValidateIntAndIntToFloatFunctionReferences(val *pb.IntAndIntToFloatFunction
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.IntAndIntToFloatFunction_BoolsFunc_1:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToFloatFunction_IntsFunc_1:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToFloatFunction_FloatsFunc_1:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToFloatFunction_StringsFunc_1:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.IntAndIntToFloatFunction_If_1:
 		if err := ValidateIntValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -6007,6 +6887,22 @@ func ValidateIntAndIntToFloatFunctionReferences(val *pb.IntAndIntToFloatFunction
 		}
 	case *pb.IntAndIntToFloatFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToFloatFunction_BoolsFunc_2:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToFloatFunction_IntsFunc_2:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToFloatFunction_FloatsFunc_2:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToFloatFunction_StringsFunc_2:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.IntAndIntToFloatFunction_If_2:
@@ -6116,6 +7012,22 @@ func ValidateIntAndIntToStringFunctionReferences(val *pb.IntAndIntToStringFuncti
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.IntAndIntToStringFunction_BoolsFunc_1:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToStringFunction_IntsFunc_1:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToStringFunction_FloatsFunc_1:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToStringFunction_StringsFunc_1:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.IntAndIntToStringFunction_If_1:
 		if err := ValidateIntValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -6211,6 +7123,22 @@ func ValidateIntAndIntToStringFunctionReferences(val *pb.IntAndIntToStringFuncti
 		}
 	case *pb.IntAndIntToStringFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToStringFunction_BoolsFunc_2:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToStringFunction_IntsFunc_2:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToStringFunction_FloatsFunc_2:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndIntToStringFunction_StringsFunc_2:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.IntAndIntToStringFunction_If_2:
@@ -6320,6 +7248,22 @@ func ValidateIntAndFloatToBoolFunctionReferences(val *pb.IntAndFloatToBoolFuncti
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.IntAndFloatToBoolFunction_BoolsFunc_1:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToBoolFunction_IntsFunc_1:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToBoolFunction_FloatsFunc_1:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToBoolFunction_StringsFunc_1:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.IntAndFloatToBoolFunction_If_1:
 		if err := ValidateIntValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -6415,6 +7359,22 @@ func ValidateIntAndFloatToBoolFunctionReferences(val *pb.IntAndFloatToBoolFuncti
 		}
 	case *pb.IntAndFloatToBoolFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToBoolFunction_BoolsFunc_2:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToBoolFunction_IntsFunc_2:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToBoolFunction_FloatsFunc_2:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToBoolFunction_StringsFunc_2:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.IntAndFloatToBoolFunction_If_2:
@@ -6524,6 +7484,22 @@ func ValidateIntAndFloatToIntFunctionReferences(val *pb.IntAndFloatToIntFunction
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.IntAndFloatToIntFunction_BoolsFunc_1:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToIntFunction_IntsFunc_1:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToIntFunction_FloatsFunc_1:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToIntFunction_StringsFunc_1:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.IntAndFloatToIntFunction_If_1:
 		if err := ValidateIntValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -6619,6 +7595,22 @@ func ValidateIntAndFloatToIntFunctionReferences(val *pb.IntAndFloatToIntFunction
 		}
 	case *pb.IntAndFloatToIntFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToIntFunction_BoolsFunc_2:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToIntFunction_IntsFunc_2:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToIntFunction_FloatsFunc_2:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToIntFunction_StringsFunc_2:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.IntAndFloatToIntFunction_If_2:
@@ -6728,6 +7720,22 @@ func ValidateIntAndFloatToFloatFunctionReferences(val *pb.IntAndFloatToFloatFunc
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.IntAndFloatToFloatFunction_BoolsFunc_1:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToFloatFunction_IntsFunc_1:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToFloatFunction_FloatsFunc_1:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToFloatFunction_StringsFunc_1:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.IntAndFloatToFloatFunction_If_1:
 		if err := ValidateIntValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -6823,6 +7831,22 @@ func ValidateIntAndFloatToFloatFunctionReferences(val *pb.IntAndFloatToFloatFunc
 		}
 	case *pb.IntAndFloatToFloatFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToFloatFunction_BoolsFunc_2:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToFloatFunction_IntsFunc_2:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToFloatFunction_FloatsFunc_2:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToFloatFunction_StringsFunc_2:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.IntAndFloatToFloatFunction_If_2:
@@ -6932,6 +7956,22 @@ func ValidateIntAndFloatToStringFunctionReferences(val *pb.IntAndFloatToStringFu
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.IntAndFloatToStringFunction_BoolsFunc_1:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToStringFunction_IntsFunc_1:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToStringFunction_FloatsFunc_1:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToStringFunction_StringsFunc_1:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.IntAndFloatToStringFunction_If_1:
 		if err := ValidateIntValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -7027,6 +8067,22 @@ func ValidateIntAndFloatToStringFunctionReferences(val *pb.IntAndFloatToStringFu
 		}
 	case *pb.IntAndFloatToStringFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToStringFunction_BoolsFunc_2:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToStringFunction_IntsFunc_2:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToStringFunction_FloatsFunc_2:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndFloatToStringFunction_StringsFunc_2:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.IntAndFloatToStringFunction_If_2:
@@ -7136,6 +8192,22 @@ func ValidateIntAndStringToBoolFunctionReferences(val *pb.IntAndStringToBoolFunc
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.IntAndStringToBoolFunction_BoolsFunc_1:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToBoolFunction_IntsFunc_1:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToBoolFunction_FloatsFunc_1:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToBoolFunction_StringsFunc_1:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.IntAndStringToBoolFunction_If_1:
 		if err := ValidateIntValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -7231,6 +8303,22 @@ func ValidateIntAndStringToBoolFunctionReferences(val *pb.IntAndStringToBoolFunc
 		}
 	case *pb.IntAndStringToBoolFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToBoolFunction_BoolsFunc_2:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToBoolFunction_IntsFunc_2:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToBoolFunction_FloatsFunc_2:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToBoolFunction_StringsFunc_2:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.IntAndStringToBoolFunction_If_2:
@@ -7340,6 +8428,22 @@ func ValidateIntAndStringToIntFunctionReferences(val *pb.IntAndStringToIntFuncti
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.IntAndStringToIntFunction_BoolsFunc_1:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToIntFunction_IntsFunc_1:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToIntFunction_FloatsFunc_1:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToIntFunction_StringsFunc_1:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.IntAndStringToIntFunction_If_1:
 		if err := ValidateIntValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -7435,6 +8539,22 @@ func ValidateIntAndStringToIntFunctionReferences(val *pb.IntAndStringToIntFuncti
 		}
 	case *pb.IntAndStringToIntFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToIntFunction_BoolsFunc_2:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToIntFunction_IntsFunc_2:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToIntFunction_FloatsFunc_2:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToIntFunction_StringsFunc_2:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.IntAndStringToIntFunction_If_2:
@@ -7544,6 +8664,22 @@ func ValidateIntAndStringToFloatFunctionReferences(val *pb.IntAndStringToFloatFu
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.IntAndStringToFloatFunction_BoolsFunc_1:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToFloatFunction_IntsFunc_1:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToFloatFunction_FloatsFunc_1:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToFloatFunction_StringsFunc_1:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.IntAndStringToFloatFunction_If_1:
 		if err := ValidateIntValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -7639,6 +8775,22 @@ func ValidateIntAndStringToFloatFunctionReferences(val *pb.IntAndStringToFloatFu
 		}
 	case *pb.IntAndStringToFloatFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToFloatFunction_BoolsFunc_2:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToFloatFunction_IntsFunc_2:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToFloatFunction_FloatsFunc_2:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToFloatFunction_StringsFunc_2:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.IntAndStringToFloatFunction_If_2:
@@ -7748,6 +8900,22 @@ func ValidateIntAndStringToStringFunctionReferences(val *pb.IntAndStringToString
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.IntAndStringToStringFunction_BoolsFunc_1:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToStringFunction_IntsFunc_1:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToStringFunction_FloatsFunc_1:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToStringFunction_StringsFunc_1:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.IntAndStringToStringFunction_If_1:
 		if err := ValidateIntValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -7843,6 +9011,22 @@ func ValidateIntAndStringToStringFunctionReferences(val *pb.IntAndStringToString
 		}
 	case *pb.IntAndStringToStringFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToStringFunction_BoolsFunc_2:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToStringFunction_IntsFunc_2:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToStringFunction_FloatsFunc_2:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.IntAndStringToStringFunction_StringsFunc_2:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.IntAndStringToStringFunction_If_2:
@@ -7952,6 +9136,22 @@ func ValidateFloatAndBoolToBoolFunctionReferences(val *pb.FloatAndBoolToBoolFunc
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.FloatAndBoolToBoolFunction_BoolsFunc_1:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToBoolFunction_IntsFunc_1:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToBoolFunction_FloatsFunc_1:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToBoolFunction_StringsFunc_1:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.FloatAndBoolToBoolFunction_If_1:
 		if err := ValidateFloatValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -8047,6 +9247,22 @@ func ValidateFloatAndBoolToBoolFunctionReferences(val *pb.FloatAndBoolToBoolFunc
 		}
 	case *pb.FloatAndBoolToBoolFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToBoolFunction_BoolsFunc_2:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToBoolFunction_IntsFunc_2:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToBoolFunction_FloatsFunc_2:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToBoolFunction_StringsFunc_2:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.FloatAndBoolToBoolFunction_If_2:
@@ -8156,6 +9372,22 @@ func ValidateFloatAndBoolToIntFunctionReferences(val *pb.FloatAndBoolToIntFuncti
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.FloatAndBoolToIntFunction_BoolsFunc_1:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToIntFunction_IntsFunc_1:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToIntFunction_FloatsFunc_1:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToIntFunction_StringsFunc_1:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.FloatAndBoolToIntFunction_If_1:
 		if err := ValidateFloatValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -8251,6 +9483,22 @@ func ValidateFloatAndBoolToIntFunctionReferences(val *pb.FloatAndBoolToIntFuncti
 		}
 	case *pb.FloatAndBoolToIntFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToIntFunction_BoolsFunc_2:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToIntFunction_IntsFunc_2:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToIntFunction_FloatsFunc_2:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToIntFunction_StringsFunc_2:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.FloatAndBoolToIntFunction_If_2:
@@ -8360,6 +9608,22 @@ func ValidateFloatAndBoolToFloatFunctionReferences(val *pb.FloatAndBoolToFloatFu
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.FloatAndBoolToFloatFunction_BoolsFunc_1:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToFloatFunction_IntsFunc_1:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToFloatFunction_FloatsFunc_1:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToFloatFunction_StringsFunc_1:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.FloatAndBoolToFloatFunction_If_1:
 		if err := ValidateFloatValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -8455,6 +9719,22 @@ func ValidateFloatAndBoolToFloatFunctionReferences(val *pb.FloatAndBoolToFloatFu
 		}
 	case *pb.FloatAndBoolToFloatFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToFloatFunction_BoolsFunc_2:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToFloatFunction_IntsFunc_2:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToFloatFunction_FloatsFunc_2:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToFloatFunction_StringsFunc_2:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.FloatAndBoolToFloatFunction_If_2:
@@ -8564,6 +9844,22 @@ func ValidateFloatAndBoolToStringFunctionReferences(val *pb.FloatAndBoolToString
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.FloatAndBoolToStringFunction_BoolsFunc_1:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToStringFunction_IntsFunc_1:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToStringFunction_FloatsFunc_1:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToStringFunction_StringsFunc_1:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.FloatAndBoolToStringFunction_If_1:
 		if err := ValidateFloatValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -8659,6 +9955,22 @@ func ValidateFloatAndBoolToStringFunctionReferences(val *pb.FloatAndBoolToString
 		}
 	case *pb.FloatAndBoolToStringFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToStringFunction_BoolsFunc_2:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToStringFunction_IntsFunc_2:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToStringFunction_FloatsFunc_2:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndBoolToStringFunction_StringsFunc_2:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.FloatAndBoolToStringFunction_If_2:
@@ -8768,6 +10080,22 @@ func ValidateFloatAndIntToBoolFunctionReferences(val *pb.FloatAndIntToBoolFuncti
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.FloatAndIntToBoolFunction_BoolsFunc_1:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToBoolFunction_IntsFunc_1:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToBoolFunction_FloatsFunc_1:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToBoolFunction_StringsFunc_1:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.FloatAndIntToBoolFunction_If_1:
 		if err := ValidateFloatValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -8863,6 +10191,22 @@ func ValidateFloatAndIntToBoolFunctionReferences(val *pb.FloatAndIntToBoolFuncti
 		}
 	case *pb.FloatAndIntToBoolFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToBoolFunction_BoolsFunc_2:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToBoolFunction_IntsFunc_2:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToBoolFunction_FloatsFunc_2:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToBoolFunction_StringsFunc_2:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.FloatAndIntToBoolFunction_If_2:
@@ -8972,6 +10316,22 @@ func ValidateFloatAndIntToIntFunctionReferences(val *pb.FloatAndIntToIntFunction
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.FloatAndIntToIntFunction_BoolsFunc_1:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToIntFunction_IntsFunc_1:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToIntFunction_FloatsFunc_1:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToIntFunction_StringsFunc_1:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.FloatAndIntToIntFunction_If_1:
 		if err := ValidateFloatValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -9067,6 +10427,22 @@ func ValidateFloatAndIntToIntFunctionReferences(val *pb.FloatAndIntToIntFunction
 		}
 	case *pb.FloatAndIntToIntFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToIntFunction_BoolsFunc_2:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToIntFunction_IntsFunc_2:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToIntFunction_FloatsFunc_2:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToIntFunction_StringsFunc_2:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.FloatAndIntToIntFunction_If_2:
@@ -9176,6 +10552,22 @@ func ValidateFloatAndIntToFloatFunctionReferences(val *pb.FloatAndIntToFloatFunc
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.FloatAndIntToFloatFunction_BoolsFunc_1:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToFloatFunction_IntsFunc_1:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToFloatFunction_FloatsFunc_1:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToFloatFunction_StringsFunc_1:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.FloatAndIntToFloatFunction_If_1:
 		if err := ValidateFloatValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -9271,6 +10663,22 @@ func ValidateFloatAndIntToFloatFunctionReferences(val *pb.FloatAndIntToFloatFunc
 		}
 	case *pb.FloatAndIntToFloatFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToFloatFunction_BoolsFunc_2:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToFloatFunction_IntsFunc_2:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToFloatFunction_FloatsFunc_2:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToFloatFunction_StringsFunc_2:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.FloatAndIntToFloatFunction_If_2:
@@ -9380,6 +10788,22 @@ func ValidateFloatAndIntToStringFunctionReferences(val *pb.FloatAndIntToStringFu
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.FloatAndIntToStringFunction_BoolsFunc_1:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToStringFunction_IntsFunc_1:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToStringFunction_FloatsFunc_1:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToStringFunction_StringsFunc_1:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.FloatAndIntToStringFunction_If_1:
 		if err := ValidateFloatValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -9475,6 +10899,22 @@ func ValidateFloatAndIntToStringFunctionReferences(val *pb.FloatAndIntToStringFu
 		}
 	case *pb.FloatAndIntToStringFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToStringFunction_BoolsFunc_2:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToStringFunction_IntsFunc_2:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToStringFunction_FloatsFunc_2:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndIntToStringFunction_StringsFunc_2:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.FloatAndIntToStringFunction_If_2:
@@ -9584,6 +11024,22 @@ func ValidateFloatAndFloatToBoolFunctionReferences(val *pb.FloatAndFloatToBoolFu
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.FloatAndFloatToBoolFunction_BoolsFunc_1:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToBoolFunction_IntsFunc_1:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToBoolFunction_FloatsFunc_1:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToBoolFunction_StringsFunc_1:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.FloatAndFloatToBoolFunction_If_1:
 		if err := ValidateFloatValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -9679,6 +11135,22 @@ func ValidateFloatAndFloatToBoolFunctionReferences(val *pb.FloatAndFloatToBoolFu
 		}
 	case *pb.FloatAndFloatToBoolFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToBoolFunction_BoolsFunc_2:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToBoolFunction_IntsFunc_2:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToBoolFunction_FloatsFunc_2:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToBoolFunction_StringsFunc_2:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.FloatAndFloatToBoolFunction_If_2:
@@ -9788,6 +11260,22 @@ func ValidateFloatAndFloatToIntFunctionReferences(val *pb.FloatAndFloatToIntFunc
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.FloatAndFloatToIntFunction_BoolsFunc_1:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToIntFunction_IntsFunc_1:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToIntFunction_FloatsFunc_1:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToIntFunction_StringsFunc_1:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.FloatAndFloatToIntFunction_If_1:
 		if err := ValidateFloatValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -9883,6 +11371,22 @@ func ValidateFloatAndFloatToIntFunctionReferences(val *pb.FloatAndFloatToIntFunc
 		}
 	case *pb.FloatAndFloatToIntFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToIntFunction_BoolsFunc_2:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToIntFunction_IntsFunc_2:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToIntFunction_FloatsFunc_2:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToIntFunction_StringsFunc_2:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.FloatAndFloatToIntFunction_If_2:
@@ -9992,6 +11496,22 @@ func ValidateFloatAndFloatToFloatFunctionReferences(val *pb.FloatAndFloatToFloat
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.FloatAndFloatToFloatFunction_BoolsFunc_1:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToFloatFunction_IntsFunc_1:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToFloatFunction_FloatsFunc_1:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToFloatFunction_StringsFunc_1:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.FloatAndFloatToFloatFunction_If_1:
 		if err := ValidateFloatValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -10087,6 +11607,22 @@ func ValidateFloatAndFloatToFloatFunctionReferences(val *pb.FloatAndFloatToFloat
 		}
 	case *pb.FloatAndFloatToFloatFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToFloatFunction_BoolsFunc_2:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToFloatFunction_IntsFunc_2:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToFloatFunction_FloatsFunc_2:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToFloatFunction_StringsFunc_2:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.FloatAndFloatToFloatFunction_If_2:
@@ -10196,6 +11732,22 @@ func ValidateFloatAndFloatToStringFunctionReferences(val *pb.FloatAndFloatToStri
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.FloatAndFloatToStringFunction_BoolsFunc_1:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToStringFunction_IntsFunc_1:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToStringFunction_FloatsFunc_1:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToStringFunction_StringsFunc_1:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.FloatAndFloatToStringFunction_If_1:
 		if err := ValidateFloatValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -10291,6 +11843,22 @@ func ValidateFloatAndFloatToStringFunctionReferences(val *pb.FloatAndFloatToStri
 		}
 	case *pb.FloatAndFloatToStringFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToStringFunction_BoolsFunc_2:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToStringFunction_IntsFunc_2:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToStringFunction_FloatsFunc_2:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndFloatToStringFunction_StringsFunc_2:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.FloatAndFloatToStringFunction_If_2:
@@ -10400,6 +11968,22 @@ func ValidateFloatAndStringToBoolFunctionReferences(val *pb.FloatAndStringToBool
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.FloatAndStringToBoolFunction_BoolsFunc_1:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToBoolFunction_IntsFunc_1:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToBoolFunction_FloatsFunc_1:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToBoolFunction_StringsFunc_1:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.FloatAndStringToBoolFunction_If_1:
 		if err := ValidateFloatValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -10495,6 +12079,22 @@ func ValidateFloatAndStringToBoolFunctionReferences(val *pb.FloatAndStringToBool
 		}
 	case *pb.FloatAndStringToBoolFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToBoolFunction_BoolsFunc_2:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToBoolFunction_IntsFunc_2:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToBoolFunction_FloatsFunc_2:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToBoolFunction_StringsFunc_2:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.FloatAndStringToBoolFunction_If_2:
@@ -10604,6 +12204,22 @@ func ValidateFloatAndStringToIntFunctionReferences(val *pb.FloatAndStringToIntFu
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.FloatAndStringToIntFunction_BoolsFunc_1:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToIntFunction_IntsFunc_1:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToIntFunction_FloatsFunc_1:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToIntFunction_StringsFunc_1:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.FloatAndStringToIntFunction_If_1:
 		if err := ValidateFloatValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -10699,6 +12315,22 @@ func ValidateFloatAndStringToIntFunctionReferences(val *pb.FloatAndStringToIntFu
 		}
 	case *pb.FloatAndStringToIntFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToIntFunction_BoolsFunc_2:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToIntFunction_IntsFunc_2:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToIntFunction_FloatsFunc_2:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToIntFunction_StringsFunc_2:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.FloatAndStringToIntFunction_If_2:
@@ -10808,6 +12440,22 @@ func ValidateFloatAndStringToFloatFunctionReferences(val *pb.FloatAndStringToFlo
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.FloatAndStringToFloatFunction_BoolsFunc_1:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToFloatFunction_IntsFunc_1:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToFloatFunction_FloatsFunc_1:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToFloatFunction_StringsFunc_1:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.FloatAndStringToFloatFunction_If_1:
 		if err := ValidateFloatValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -10903,6 +12551,22 @@ func ValidateFloatAndStringToFloatFunctionReferences(val *pb.FloatAndStringToFlo
 		}
 	case *pb.FloatAndStringToFloatFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToFloatFunction_BoolsFunc_2:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToFloatFunction_IntsFunc_2:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToFloatFunction_FloatsFunc_2:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToFloatFunction_StringsFunc_2:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.FloatAndStringToFloatFunction_If_2:
@@ -11012,6 +12676,22 @@ func ValidateFloatAndStringToStringFunctionReferences(val *pb.FloatAndStringToSt
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.FloatAndStringToStringFunction_BoolsFunc_1:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToStringFunction_IntsFunc_1:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToStringFunction_FloatsFunc_1:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToStringFunction_StringsFunc_1:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.FloatAndStringToStringFunction_If_1:
 		if err := ValidateFloatValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -11107,6 +12787,22 @@ func ValidateFloatAndStringToStringFunctionReferences(val *pb.FloatAndStringToSt
 		}
 	case *pb.FloatAndStringToStringFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToStringFunction_BoolsFunc_2:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToStringFunction_IntsFunc_2:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToStringFunction_FloatsFunc_2:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.FloatAndStringToStringFunction_StringsFunc_2:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.FloatAndStringToStringFunction_If_2:
@@ -11216,6 +12912,22 @@ func ValidateStringAndBoolToBoolFunctionReferences(val *pb.StringAndBoolToBoolFu
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.StringAndBoolToBoolFunction_BoolsFunc_1:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToBoolFunction_IntsFunc_1:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToBoolFunction_FloatsFunc_1:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToBoolFunction_StringsFunc_1:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.StringAndBoolToBoolFunction_If_1:
 		if err := ValidateStringValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -11311,6 +13023,22 @@ func ValidateStringAndBoolToBoolFunctionReferences(val *pb.StringAndBoolToBoolFu
 		}
 	case *pb.StringAndBoolToBoolFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToBoolFunction_BoolsFunc_2:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToBoolFunction_IntsFunc_2:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToBoolFunction_FloatsFunc_2:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToBoolFunction_StringsFunc_2:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.StringAndBoolToBoolFunction_If_2:
@@ -11420,6 +13148,22 @@ func ValidateStringAndBoolToIntFunctionReferences(val *pb.StringAndBoolToIntFunc
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.StringAndBoolToIntFunction_BoolsFunc_1:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToIntFunction_IntsFunc_1:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToIntFunction_FloatsFunc_1:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToIntFunction_StringsFunc_1:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.StringAndBoolToIntFunction_If_1:
 		if err := ValidateStringValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -11515,6 +13259,22 @@ func ValidateStringAndBoolToIntFunctionReferences(val *pb.StringAndBoolToIntFunc
 		}
 	case *pb.StringAndBoolToIntFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToIntFunction_BoolsFunc_2:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToIntFunction_IntsFunc_2:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToIntFunction_FloatsFunc_2:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToIntFunction_StringsFunc_2:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.StringAndBoolToIntFunction_If_2:
@@ -11624,6 +13384,22 @@ func ValidateStringAndBoolToFloatFunctionReferences(val *pb.StringAndBoolToFloat
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.StringAndBoolToFloatFunction_BoolsFunc_1:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToFloatFunction_IntsFunc_1:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToFloatFunction_FloatsFunc_1:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToFloatFunction_StringsFunc_1:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.StringAndBoolToFloatFunction_If_1:
 		if err := ValidateStringValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -11719,6 +13495,22 @@ func ValidateStringAndBoolToFloatFunctionReferences(val *pb.StringAndBoolToFloat
 		}
 	case *pb.StringAndBoolToFloatFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToFloatFunction_BoolsFunc_2:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToFloatFunction_IntsFunc_2:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToFloatFunction_FloatsFunc_2:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToFloatFunction_StringsFunc_2:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.StringAndBoolToFloatFunction_If_2:
@@ -11828,6 +13620,22 @@ func ValidateStringAndBoolToStringFunctionReferences(val *pb.StringAndBoolToStri
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.StringAndBoolToStringFunction_BoolsFunc_1:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToStringFunction_IntsFunc_1:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToStringFunction_FloatsFunc_1:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToStringFunction_StringsFunc_1:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.StringAndBoolToStringFunction_If_1:
 		if err := ValidateStringValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -11923,6 +13731,22 @@ func ValidateStringAndBoolToStringFunctionReferences(val *pb.StringAndBoolToStri
 		}
 	case *pb.StringAndBoolToStringFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToStringFunction_BoolsFunc_2:
+		if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToStringFunction_IntsFunc_2:
+		if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToStringFunction_FloatsFunc_2:
+		if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndBoolToStringFunction_StringsFunc_2:
+		if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.StringAndBoolToStringFunction_If_2:
@@ -12032,6 +13856,22 @@ func ValidateStringAndIntToBoolFunctionReferences(val *pb.StringAndIntToBoolFunc
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.StringAndIntToBoolFunction_BoolsFunc_1:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToBoolFunction_IntsFunc_1:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToBoolFunction_FloatsFunc_1:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToBoolFunction_StringsFunc_1:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.StringAndIntToBoolFunction_If_1:
 		if err := ValidateStringValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -12127,6 +13967,22 @@ func ValidateStringAndIntToBoolFunctionReferences(val *pb.StringAndIntToBoolFunc
 		}
 	case *pb.StringAndIntToBoolFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToBoolFunction_BoolsFunc_2:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToBoolFunction_IntsFunc_2:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToBoolFunction_FloatsFunc_2:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToBoolFunction_StringsFunc_2:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.StringAndIntToBoolFunction_If_2:
@@ -12236,6 +14092,22 @@ func ValidateStringAndIntToIntFunctionReferences(val *pb.StringAndIntToIntFuncti
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.StringAndIntToIntFunction_BoolsFunc_1:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToIntFunction_IntsFunc_1:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToIntFunction_FloatsFunc_1:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToIntFunction_StringsFunc_1:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.StringAndIntToIntFunction_If_1:
 		if err := ValidateStringValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -12331,6 +14203,22 @@ func ValidateStringAndIntToIntFunctionReferences(val *pb.StringAndIntToIntFuncti
 		}
 	case *pb.StringAndIntToIntFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToIntFunction_BoolsFunc_2:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToIntFunction_IntsFunc_2:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToIntFunction_FloatsFunc_2:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToIntFunction_StringsFunc_2:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.StringAndIntToIntFunction_If_2:
@@ -12440,6 +14328,22 @@ func ValidateStringAndIntToFloatFunctionReferences(val *pb.StringAndIntToFloatFu
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.StringAndIntToFloatFunction_BoolsFunc_1:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToFloatFunction_IntsFunc_1:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToFloatFunction_FloatsFunc_1:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToFloatFunction_StringsFunc_1:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.StringAndIntToFloatFunction_If_1:
 		if err := ValidateStringValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -12535,6 +14439,22 @@ func ValidateStringAndIntToFloatFunctionReferences(val *pb.StringAndIntToFloatFu
 		}
 	case *pb.StringAndIntToFloatFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToFloatFunction_BoolsFunc_2:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToFloatFunction_IntsFunc_2:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToFloatFunction_FloatsFunc_2:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToFloatFunction_StringsFunc_2:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.StringAndIntToFloatFunction_If_2:
@@ -12644,6 +14564,22 @@ func ValidateStringAndIntToStringFunctionReferences(val *pb.StringAndIntToString
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.StringAndIntToStringFunction_BoolsFunc_1:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToStringFunction_IntsFunc_1:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToStringFunction_FloatsFunc_1:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToStringFunction_StringsFunc_1:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.StringAndIntToStringFunction_If_1:
 		if err := ValidateStringValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -12739,6 +14675,22 @@ func ValidateStringAndIntToStringFunctionReferences(val *pb.StringAndIntToString
 		}
 	case *pb.StringAndIntToStringFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToStringFunction_BoolsFunc_2:
+		if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToStringFunction_IntsFunc_2:
+		if err := ValidateIntsToIntFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToStringFunction_FloatsFunc_2:
+		if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndIntToStringFunction_StringsFunc_2:
+		if err := ValidateStringsToIntFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.StringAndIntToStringFunction_If_2:
@@ -12848,6 +14800,22 @@ func ValidateStringAndFloatToBoolFunctionReferences(val *pb.StringAndFloatToBool
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.StringAndFloatToBoolFunction_BoolsFunc_1:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToBoolFunction_IntsFunc_1:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToBoolFunction_FloatsFunc_1:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToBoolFunction_StringsFunc_1:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.StringAndFloatToBoolFunction_If_1:
 		if err := ValidateStringValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -12943,6 +14911,22 @@ func ValidateStringAndFloatToBoolFunctionReferences(val *pb.StringAndFloatToBool
 		}
 	case *pb.StringAndFloatToBoolFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToBoolFunction_BoolsFunc_2:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToBoolFunction_IntsFunc_2:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToBoolFunction_FloatsFunc_2:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToBoolFunction_StringsFunc_2:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.StringAndFloatToBoolFunction_If_2:
@@ -13052,6 +15036,22 @@ func ValidateStringAndFloatToIntFunctionReferences(val *pb.StringAndFloatToIntFu
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.StringAndFloatToIntFunction_BoolsFunc_1:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToIntFunction_IntsFunc_1:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToIntFunction_FloatsFunc_1:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToIntFunction_StringsFunc_1:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.StringAndFloatToIntFunction_If_1:
 		if err := ValidateStringValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -13147,6 +15147,22 @@ func ValidateStringAndFloatToIntFunctionReferences(val *pb.StringAndFloatToIntFu
 		}
 	case *pb.StringAndFloatToIntFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToIntFunction_BoolsFunc_2:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToIntFunction_IntsFunc_2:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToIntFunction_FloatsFunc_2:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToIntFunction_StringsFunc_2:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.StringAndFloatToIntFunction_If_2:
@@ -13256,6 +15272,22 @@ func ValidateStringAndFloatToFloatFunctionReferences(val *pb.StringAndFloatToFlo
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.StringAndFloatToFloatFunction_BoolsFunc_1:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToFloatFunction_IntsFunc_1:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToFloatFunction_FloatsFunc_1:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToFloatFunction_StringsFunc_1:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.StringAndFloatToFloatFunction_If_1:
 		if err := ValidateStringValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -13351,6 +15383,22 @@ func ValidateStringAndFloatToFloatFunctionReferences(val *pb.StringAndFloatToFlo
 		}
 	case *pb.StringAndFloatToFloatFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToFloatFunction_BoolsFunc_2:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToFloatFunction_IntsFunc_2:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToFloatFunction_FloatsFunc_2:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToFloatFunction_StringsFunc_2:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.StringAndFloatToFloatFunction_If_2:
@@ -13460,6 +15508,22 @@ func ValidateStringAndFloatToStringFunctionReferences(val *pb.StringAndFloatToSt
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.StringAndFloatToStringFunction_BoolsFunc_1:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToStringFunction_IntsFunc_1:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToStringFunction_FloatsFunc_1:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToStringFunction_StringsFunc_1:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.StringAndFloatToStringFunction_If_1:
 		if err := ValidateStringValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -13555,6 +15619,22 @@ func ValidateStringAndFloatToStringFunctionReferences(val *pb.StringAndFloatToSt
 		}
 	case *pb.StringAndFloatToStringFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToStringFunction_BoolsFunc_2:
+		if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToStringFunction_IntsFunc_2:
+		if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToStringFunction_FloatsFunc_2:
+		if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndFloatToStringFunction_StringsFunc_2:
+		if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.StringAndFloatToStringFunction_If_2:
@@ -13664,6 +15744,22 @@ func ValidateStringAndStringToBoolFunctionReferences(val *pb.StringAndStringToBo
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.StringAndStringToBoolFunction_BoolsFunc_1:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndStringToBoolFunction_IntsFunc_1:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndStringToBoolFunction_FloatsFunc_1:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndStringToBoolFunction_StringsFunc_1:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.StringAndStringToBoolFunction_If_1:
 		if err := ValidateStringValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -13759,6 +15855,22 @@ func ValidateStringAndStringToBoolFunctionReferences(val *pb.StringAndStringToBo
 		}
 	case *pb.StringAndStringToBoolFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndStringToBoolFunction_BoolsFunc_2:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndStringToBoolFunction_IntsFunc_2:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndStringToBoolFunction_FloatsFunc_2:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndStringToBoolFunction_StringsFunc_2:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.StringAndStringToBoolFunction_If_2:
@@ -13868,6 +15980,22 @@ func ValidateStringAndStringToIntFunctionReferences(val *pb.StringAndStringToInt
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.StringAndStringToIntFunction_BoolsFunc_1:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndStringToIntFunction_IntsFunc_1:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndStringToIntFunction_FloatsFunc_1:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndStringToIntFunction_StringsFunc_1:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.StringAndStringToIntFunction_If_1:
 		if err := ValidateStringValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -13963,6 +16091,22 @@ func ValidateStringAndStringToIntFunctionReferences(val *pb.StringAndStringToInt
 		}
 	case *pb.StringAndStringToIntFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndStringToIntFunction_BoolsFunc_2:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndStringToIntFunction_IntsFunc_2:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndStringToIntFunction_FloatsFunc_2:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndStringToIntFunction_StringsFunc_2:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.StringAndStringToIntFunction_If_2:
@@ -14072,6 +16216,22 @@ func ValidateStringAndStringToFloatFunctionReferences(val *pb.StringAndStringToF
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.StringAndStringToFloatFunction_BoolsFunc_1:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndStringToFloatFunction_IntsFunc_1:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndStringToFloatFunction_FloatsFunc_1:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndStringToFloatFunction_StringsFunc_1:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.StringAndStringToFloatFunction_If_1:
 		if err := ValidateStringValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -14167,6 +16327,22 @@ func ValidateStringAndStringToFloatFunctionReferences(val *pb.StringAndStringToF
 		}
 	case *pb.StringAndStringToFloatFunction_StringStringFunc_2:
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndStringToFloatFunction_BoolsFunc_2:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndStringToFloatFunction_IntsFunc_2:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndStringToFloatFunction_FloatsFunc_2:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndStringToFloatFunction_StringsFunc_2:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_2, state, input); err != nil {
 			return err
 		}
 	case *pb.StringAndStringToFloatFunction_If_2:
@@ -14276,6 +16452,22 @@ func ValidateStringAndStringToStringFunctionReferences(val *pb.StringAndStringTo
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_1, state, input); err != nil {
 			return err
 		}
+	case *pb.StringAndStringToStringFunction_BoolsFunc_1:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndStringToStringFunction_IntsFunc_1:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndStringToStringFunction_FloatsFunc_1:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_1, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndStringToStringFunction_StringsFunc_1:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_1, state, input); err != nil {
+			return err
+		}
 	case *pb.StringAndStringToStringFunction_If_1:
 		if err := ValidateStringValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -14373,12 +16565,2014 @@ func ValidateStringAndStringToStringFunctionReferences(val *pb.StringAndStringTo
 		if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc_2, state, input); err != nil {
 			return err
 		}
+	case *pb.StringAndStringToStringFunction_BoolsFunc_2:
+		if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndStringToStringFunction_IntsFunc_2:
+		if err := ValidateIntsToStringFunctionReferences(v.IntsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndStringToStringFunction_FloatsFunc_2:
+		if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc_2, state, input); err != nil {
+			return err
+		}
+	case *pb.StringAndStringToStringFunction_StringsFunc_2:
+		if err := ValidateStringsToStringFunctionReferences(v.StringsFunc_2, state, input); err != nil {
+			return err
+		}
 	case *pb.StringAndStringToStringFunction_If_2:
 		if err := ValidateStringValueIf(v.If_2, state, input); err != nil {
 			return err
 		}
 	default:
 		return fmt.Errorf("unrecognized argument_2 type from StringAndStringToStringFunction: %T", v)
+	}
+
+	return nil
+}
+
+// N-ary Function Validation
+
+func ValidateBoolsToBoolFunctionReferences(val *pb.BoolsToBoolFunction, state, input *desc.MessageDescriptor) error {
+	if val == nil {
+		return fmt.Errorf("BoolsToBoolFunction function missing")
+	}
+
+	for _, arg := range val.Arguments {
+		switch v := arg.Argument.(type) {
+		case *pb.BoolsToBoolFunction_Argument_Constant:
+		case *pb.BoolsToBoolFunction_Argument_Input:
+			if err := ValidateReference(v.Input, input, TypeBool); err != nil {
+				return err
+			}
+		case *pb.BoolsToBoolFunction_Argument_State:
+			if err := ValidateReference(v.State, state, TypeBool); err != nil {
+				return err
+			}
+		case *pb.BoolsToBoolFunction_Argument_BoolFunc:
+			if err := ValidateBoolToBoolFunctionReferences(v.BoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToBoolFunction_Argument_IntFunc:
+			if err := ValidateIntToBoolFunctionReferences(v.IntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToBoolFunction_Argument_FloatFunc:
+			if err := ValidateFloatToBoolFunctionReferences(v.FloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToBoolFunction_Argument_StringFunc:
+			if err := ValidateStringToBoolFunctionReferences(v.StringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToBoolFunction_Argument_BoolBoolFunc:
+			if err := ValidateBoolAndBoolToBoolFunctionReferences(v.BoolBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToBoolFunction_Argument_BoolIntFunc:
+			if err := ValidateBoolAndIntToBoolFunctionReferences(v.BoolIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToBoolFunction_Argument_BoolFloatFunc:
+			if err := ValidateBoolAndFloatToBoolFunctionReferences(v.BoolFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToBoolFunction_Argument_BoolStringFunc:
+			if err := ValidateBoolAndStringToBoolFunctionReferences(v.BoolStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToBoolFunction_Argument_IntBoolFunc:
+			if err := ValidateIntAndBoolToBoolFunctionReferences(v.IntBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToBoolFunction_Argument_IntIntFunc:
+			if err := ValidateIntAndIntToBoolFunctionReferences(v.IntIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToBoolFunction_Argument_IntFloatFunc:
+			if err := ValidateIntAndFloatToBoolFunctionReferences(v.IntFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToBoolFunction_Argument_IntStringFunc:
+			if err := ValidateIntAndStringToBoolFunctionReferences(v.IntStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToBoolFunction_Argument_FloatBoolFunc:
+			if err := ValidateFloatAndBoolToBoolFunctionReferences(v.FloatBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToBoolFunction_Argument_FloatIntFunc:
+			if err := ValidateFloatAndIntToBoolFunctionReferences(v.FloatIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToBoolFunction_Argument_FloatFloatFunc:
+			if err := ValidateFloatAndFloatToBoolFunctionReferences(v.FloatFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToBoolFunction_Argument_FloatStringFunc:
+			if err := ValidateFloatAndStringToBoolFunctionReferences(v.FloatStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToBoolFunction_Argument_StringBoolFunc:
+			if err := ValidateStringAndBoolToBoolFunctionReferences(v.StringBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToBoolFunction_Argument_StringIntFunc:
+			if err := ValidateStringAndIntToBoolFunctionReferences(v.StringIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToBoolFunction_Argument_StringFloatFunc:
+			if err := ValidateStringAndFloatToBoolFunctionReferences(v.StringFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToBoolFunction_Argument_StringStringFunc:
+			if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToBoolFunction_Argument_BoolsFunc:
+			if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToBoolFunction_Argument_IntsFunc:
+			if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToBoolFunction_Argument_FloatsFunc:
+			if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToBoolFunction_Argument_StringsFunc:
+			if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToBoolFunction_Argument_If:
+			if err := ValidateBoolValueIf(v.If, state, input); err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("unrecognized argument type from BoolsToBoolFunction_Argument: %T", v)
+		}
+	}
+
+	return nil
+}
+
+func ValidateBoolsToIntFunctionReferences(val *pb.BoolsToIntFunction, state, input *desc.MessageDescriptor) error {
+	if val == nil {
+		return fmt.Errorf("BoolsToIntFunction function missing")
+	}
+
+	for _, arg := range val.Arguments {
+		switch v := arg.Argument.(type) {
+		case *pb.BoolsToIntFunction_Argument_Constant:
+		case *pb.BoolsToIntFunction_Argument_Input:
+			if err := ValidateReference(v.Input, input, TypeBool); err != nil {
+				return err
+			}
+		case *pb.BoolsToIntFunction_Argument_State:
+			if err := ValidateReference(v.State, state, TypeBool); err != nil {
+				return err
+			}
+		case *pb.BoolsToIntFunction_Argument_BoolFunc:
+			if err := ValidateBoolToBoolFunctionReferences(v.BoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToIntFunction_Argument_IntFunc:
+			if err := ValidateIntToBoolFunctionReferences(v.IntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToIntFunction_Argument_FloatFunc:
+			if err := ValidateFloatToBoolFunctionReferences(v.FloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToIntFunction_Argument_StringFunc:
+			if err := ValidateStringToBoolFunctionReferences(v.StringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToIntFunction_Argument_BoolBoolFunc:
+			if err := ValidateBoolAndBoolToBoolFunctionReferences(v.BoolBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToIntFunction_Argument_BoolIntFunc:
+			if err := ValidateBoolAndIntToBoolFunctionReferences(v.BoolIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToIntFunction_Argument_BoolFloatFunc:
+			if err := ValidateBoolAndFloatToBoolFunctionReferences(v.BoolFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToIntFunction_Argument_BoolStringFunc:
+			if err := ValidateBoolAndStringToBoolFunctionReferences(v.BoolStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToIntFunction_Argument_IntBoolFunc:
+			if err := ValidateIntAndBoolToBoolFunctionReferences(v.IntBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToIntFunction_Argument_IntIntFunc:
+			if err := ValidateIntAndIntToBoolFunctionReferences(v.IntIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToIntFunction_Argument_IntFloatFunc:
+			if err := ValidateIntAndFloatToBoolFunctionReferences(v.IntFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToIntFunction_Argument_IntStringFunc:
+			if err := ValidateIntAndStringToBoolFunctionReferences(v.IntStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToIntFunction_Argument_FloatBoolFunc:
+			if err := ValidateFloatAndBoolToBoolFunctionReferences(v.FloatBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToIntFunction_Argument_FloatIntFunc:
+			if err := ValidateFloatAndIntToBoolFunctionReferences(v.FloatIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToIntFunction_Argument_FloatFloatFunc:
+			if err := ValidateFloatAndFloatToBoolFunctionReferences(v.FloatFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToIntFunction_Argument_FloatStringFunc:
+			if err := ValidateFloatAndStringToBoolFunctionReferences(v.FloatStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToIntFunction_Argument_StringBoolFunc:
+			if err := ValidateStringAndBoolToBoolFunctionReferences(v.StringBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToIntFunction_Argument_StringIntFunc:
+			if err := ValidateStringAndIntToBoolFunctionReferences(v.StringIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToIntFunction_Argument_StringFloatFunc:
+			if err := ValidateStringAndFloatToBoolFunctionReferences(v.StringFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToIntFunction_Argument_StringStringFunc:
+			if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToIntFunction_Argument_BoolsFunc:
+			if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToIntFunction_Argument_IntsFunc:
+			if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToIntFunction_Argument_FloatsFunc:
+			if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToIntFunction_Argument_StringsFunc:
+			if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToIntFunction_Argument_If:
+			if err := ValidateBoolValueIf(v.If, state, input); err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("unrecognized argument type from BoolsToIntFunction_Argument: %T", v)
+		}
+	}
+
+	return nil
+}
+
+func ValidateBoolsToFloatFunctionReferences(val *pb.BoolsToFloatFunction, state, input *desc.MessageDescriptor) error {
+	if val == nil {
+		return fmt.Errorf("BoolsToFloatFunction function missing")
+	}
+
+	for _, arg := range val.Arguments {
+		switch v := arg.Argument.(type) {
+		case *pb.BoolsToFloatFunction_Argument_Constant:
+		case *pb.BoolsToFloatFunction_Argument_Input:
+			if err := ValidateReference(v.Input, input, TypeBool); err != nil {
+				return err
+			}
+		case *pb.BoolsToFloatFunction_Argument_State:
+			if err := ValidateReference(v.State, state, TypeBool); err != nil {
+				return err
+			}
+		case *pb.BoolsToFloatFunction_Argument_BoolFunc:
+			if err := ValidateBoolToBoolFunctionReferences(v.BoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToFloatFunction_Argument_IntFunc:
+			if err := ValidateIntToBoolFunctionReferences(v.IntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToFloatFunction_Argument_FloatFunc:
+			if err := ValidateFloatToBoolFunctionReferences(v.FloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToFloatFunction_Argument_StringFunc:
+			if err := ValidateStringToBoolFunctionReferences(v.StringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToFloatFunction_Argument_BoolBoolFunc:
+			if err := ValidateBoolAndBoolToBoolFunctionReferences(v.BoolBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToFloatFunction_Argument_BoolIntFunc:
+			if err := ValidateBoolAndIntToBoolFunctionReferences(v.BoolIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToFloatFunction_Argument_BoolFloatFunc:
+			if err := ValidateBoolAndFloatToBoolFunctionReferences(v.BoolFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToFloatFunction_Argument_BoolStringFunc:
+			if err := ValidateBoolAndStringToBoolFunctionReferences(v.BoolStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToFloatFunction_Argument_IntBoolFunc:
+			if err := ValidateIntAndBoolToBoolFunctionReferences(v.IntBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToFloatFunction_Argument_IntIntFunc:
+			if err := ValidateIntAndIntToBoolFunctionReferences(v.IntIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToFloatFunction_Argument_IntFloatFunc:
+			if err := ValidateIntAndFloatToBoolFunctionReferences(v.IntFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToFloatFunction_Argument_IntStringFunc:
+			if err := ValidateIntAndStringToBoolFunctionReferences(v.IntStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToFloatFunction_Argument_FloatBoolFunc:
+			if err := ValidateFloatAndBoolToBoolFunctionReferences(v.FloatBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToFloatFunction_Argument_FloatIntFunc:
+			if err := ValidateFloatAndIntToBoolFunctionReferences(v.FloatIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToFloatFunction_Argument_FloatFloatFunc:
+			if err := ValidateFloatAndFloatToBoolFunctionReferences(v.FloatFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToFloatFunction_Argument_FloatStringFunc:
+			if err := ValidateFloatAndStringToBoolFunctionReferences(v.FloatStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToFloatFunction_Argument_StringBoolFunc:
+			if err := ValidateStringAndBoolToBoolFunctionReferences(v.StringBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToFloatFunction_Argument_StringIntFunc:
+			if err := ValidateStringAndIntToBoolFunctionReferences(v.StringIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToFloatFunction_Argument_StringFloatFunc:
+			if err := ValidateStringAndFloatToBoolFunctionReferences(v.StringFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToFloatFunction_Argument_StringStringFunc:
+			if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToFloatFunction_Argument_BoolsFunc:
+			if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToFloatFunction_Argument_IntsFunc:
+			if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToFloatFunction_Argument_FloatsFunc:
+			if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToFloatFunction_Argument_StringsFunc:
+			if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToFloatFunction_Argument_If:
+			if err := ValidateBoolValueIf(v.If, state, input); err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("unrecognized argument type from BoolsToFloatFunction_Argument: %T", v)
+		}
+	}
+
+	return nil
+}
+
+func ValidateBoolsToStringFunctionReferences(val *pb.BoolsToStringFunction, state, input *desc.MessageDescriptor) error {
+	if val == nil {
+		return fmt.Errorf("BoolsToStringFunction function missing")
+	}
+
+	for _, arg := range val.Arguments {
+		switch v := arg.Argument.(type) {
+		case *pb.BoolsToStringFunction_Argument_Constant:
+		case *pb.BoolsToStringFunction_Argument_Input:
+			if err := ValidateReference(v.Input, input, TypeBool); err != nil {
+				return err
+			}
+		case *pb.BoolsToStringFunction_Argument_State:
+			if err := ValidateReference(v.State, state, TypeBool); err != nil {
+				return err
+			}
+		case *pb.BoolsToStringFunction_Argument_BoolFunc:
+			if err := ValidateBoolToBoolFunctionReferences(v.BoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToStringFunction_Argument_IntFunc:
+			if err := ValidateIntToBoolFunctionReferences(v.IntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToStringFunction_Argument_FloatFunc:
+			if err := ValidateFloatToBoolFunctionReferences(v.FloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToStringFunction_Argument_StringFunc:
+			if err := ValidateStringToBoolFunctionReferences(v.StringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToStringFunction_Argument_BoolBoolFunc:
+			if err := ValidateBoolAndBoolToBoolFunctionReferences(v.BoolBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToStringFunction_Argument_BoolIntFunc:
+			if err := ValidateBoolAndIntToBoolFunctionReferences(v.BoolIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToStringFunction_Argument_BoolFloatFunc:
+			if err := ValidateBoolAndFloatToBoolFunctionReferences(v.BoolFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToStringFunction_Argument_BoolStringFunc:
+			if err := ValidateBoolAndStringToBoolFunctionReferences(v.BoolStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToStringFunction_Argument_IntBoolFunc:
+			if err := ValidateIntAndBoolToBoolFunctionReferences(v.IntBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToStringFunction_Argument_IntIntFunc:
+			if err := ValidateIntAndIntToBoolFunctionReferences(v.IntIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToStringFunction_Argument_IntFloatFunc:
+			if err := ValidateIntAndFloatToBoolFunctionReferences(v.IntFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToStringFunction_Argument_IntStringFunc:
+			if err := ValidateIntAndStringToBoolFunctionReferences(v.IntStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToStringFunction_Argument_FloatBoolFunc:
+			if err := ValidateFloatAndBoolToBoolFunctionReferences(v.FloatBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToStringFunction_Argument_FloatIntFunc:
+			if err := ValidateFloatAndIntToBoolFunctionReferences(v.FloatIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToStringFunction_Argument_FloatFloatFunc:
+			if err := ValidateFloatAndFloatToBoolFunctionReferences(v.FloatFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToStringFunction_Argument_FloatStringFunc:
+			if err := ValidateFloatAndStringToBoolFunctionReferences(v.FloatStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToStringFunction_Argument_StringBoolFunc:
+			if err := ValidateStringAndBoolToBoolFunctionReferences(v.StringBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToStringFunction_Argument_StringIntFunc:
+			if err := ValidateStringAndIntToBoolFunctionReferences(v.StringIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToStringFunction_Argument_StringFloatFunc:
+			if err := ValidateStringAndFloatToBoolFunctionReferences(v.StringFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToStringFunction_Argument_StringStringFunc:
+			if err := ValidateStringAndStringToBoolFunctionReferences(v.StringStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToStringFunction_Argument_BoolsFunc:
+			if err := ValidateBoolsToBoolFunctionReferences(v.BoolsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToStringFunction_Argument_IntsFunc:
+			if err := ValidateIntsToBoolFunctionReferences(v.IntsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToStringFunction_Argument_FloatsFunc:
+			if err := ValidateFloatsToBoolFunctionReferences(v.FloatsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToStringFunction_Argument_StringsFunc:
+			if err := ValidateStringsToBoolFunctionReferences(v.StringsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.BoolsToStringFunction_Argument_If:
+			if err := ValidateBoolValueIf(v.If, state, input); err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("unrecognized argument type from BoolsToStringFunction_Argument: %T", v)
+		}
+	}
+
+	return nil
+}
+
+func ValidateIntsToBoolFunctionReferences(val *pb.IntsToBoolFunction, state, input *desc.MessageDescriptor) error {
+	if val == nil {
+		return fmt.Errorf("IntsToBoolFunction function missing")
+	}
+
+	for _, arg := range val.Arguments {
+		switch v := arg.Argument.(type) {
+		case *pb.IntsToBoolFunction_Argument_Constant:
+		case *pb.IntsToBoolFunction_Argument_Input:
+			if err := ValidateReference(v.Input, input, TypeInt); err != nil {
+				return err
+			}
+		case *pb.IntsToBoolFunction_Argument_State:
+			if err := ValidateReference(v.State, state, TypeInt); err != nil {
+				return err
+			}
+		case *pb.IntsToBoolFunction_Argument_BoolFunc:
+			if err := ValidateBoolToIntFunctionReferences(v.BoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToBoolFunction_Argument_IntFunc:
+			if err := ValidateIntToIntFunctionReferences(v.IntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToBoolFunction_Argument_FloatFunc:
+			if err := ValidateFloatToIntFunctionReferences(v.FloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToBoolFunction_Argument_StringFunc:
+			if err := ValidateStringToIntFunctionReferences(v.StringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToBoolFunction_Argument_BoolBoolFunc:
+			if err := ValidateBoolAndBoolToIntFunctionReferences(v.BoolBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToBoolFunction_Argument_BoolIntFunc:
+			if err := ValidateBoolAndIntToIntFunctionReferences(v.BoolIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToBoolFunction_Argument_BoolFloatFunc:
+			if err := ValidateBoolAndFloatToIntFunctionReferences(v.BoolFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToBoolFunction_Argument_BoolStringFunc:
+			if err := ValidateBoolAndStringToIntFunctionReferences(v.BoolStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToBoolFunction_Argument_IntBoolFunc:
+			if err := ValidateIntAndBoolToIntFunctionReferences(v.IntBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToBoolFunction_Argument_IntIntFunc:
+			if err := ValidateIntAndIntToIntFunctionReferences(v.IntIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToBoolFunction_Argument_IntFloatFunc:
+			if err := ValidateIntAndFloatToIntFunctionReferences(v.IntFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToBoolFunction_Argument_IntStringFunc:
+			if err := ValidateIntAndStringToIntFunctionReferences(v.IntStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToBoolFunction_Argument_FloatBoolFunc:
+			if err := ValidateFloatAndBoolToIntFunctionReferences(v.FloatBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToBoolFunction_Argument_FloatIntFunc:
+			if err := ValidateFloatAndIntToIntFunctionReferences(v.FloatIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToBoolFunction_Argument_FloatFloatFunc:
+			if err := ValidateFloatAndFloatToIntFunctionReferences(v.FloatFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToBoolFunction_Argument_FloatStringFunc:
+			if err := ValidateFloatAndStringToIntFunctionReferences(v.FloatStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToBoolFunction_Argument_StringBoolFunc:
+			if err := ValidateStringAndBoolToIntFunctionReferences(v.StringBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToBoolFunction_Argument_StringIntFunc:
+			if err := ValidateStringAndIntToIntFunctionReferences(v.StringIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToBoolFunction_Argument_StringFloatFunc:
+			if err := ValidateStringAndFloatToIntFunctionReferences(v.StringFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToBoolFunction_Argument_StringStringFunc:
+			if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToBoolFunction_Argument_BoolsFunc:
+			if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToBoolFunction_Argument_IntsFunc:
+			if err := ValidateIntsToIntFunctionReferences(v.IntsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToBoolFunction_Argument_FloatsFunc:
+			if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToBoolFunction_Argument_StringsFunc:
+			if err := ValidateStringsToIntFunctionReferences(v.StringsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToBoolFunction_Argument_If:
+			if err := ValidateIntValueIf(v.If, state, input); err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("unrecognized argument type from IntsToBoolFunction_Argument: %T", v)
+		}
+	}
+
+	return nil
+}
+
+func ValidateIntsToIntFunctionReferences(val *pb.IntsToIntFunction, state, input *desc.MessageDescriptor) error {
+	if val == nil {
+		return fmt.Errorf("IntsToIntFunction function missing")
+	}
+
+	for _, arg := range val.Arguments {
+		switch v := arg.Argument.(type) {
+		case *pb.IntsToIntFunction_Argument_Constant:
+		case *pb.IntsToIntFunction_Argument_Input:
+			if err := ValidateReference(v.Input, input, TypeInt); err != nil {
+				return err
+			}
+		case *pb.IntsToIntFunction_Argument_State:
+			if err := ValidateReference(v.State, state, TypeInt); err != nil {
+				return err
+			}
+		case *pb.IntsToIntFunction_Argument_BoolFunc:
+			if err := ValidateBoolToIntFunctionReferences(v.BoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToIntFunction_Argument_IntFunc:
+			if err := ValidateIntToIntFunctionReferences(v.IntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToIntFunction_Argument_FloatFunc:
+			if err := ValidateFloatToIntFunctionReferences(v.FloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToIntFunction_Argument_StringFunc:
+			if err := ValidateStringToIntFunctionReferences(v.StringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToIntFunction_Argument_BoolBoolFunc:
+			if err := ValidateBoolAndBoolToIntFunctionReferences(v.BoolBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToIntFunction_Argument_BoolIntFunc:
+			if err := ValidateBoolAndIntToIntFunctionReferences(v.BoolIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToIntFunction_Argument_BoolFloatFunc:
+			if err := ValidateBoolAndFloatToIntFunctionReferences(v.BoolFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToIntFunction_Argument_BoolStringFunc:
+			if err := ValidateBoolAndStringToIntFunctionReferences(v.BoolStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToIntFunction_Argument_IntBoolFunc:
+			if err := ValidateIntAndBoolToIntFunctionReferences(v.IntBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToIntFunction_Argument_IntIntFunc:
+			if err := ValidateIntAndIntToIntFunctionReferences(v.IntIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToIntFunction_Argument_IntFloatFunc:
+			if err := ValidateIntAndFloatToIntFunctionReferences(v.IntFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToIntFunction_Argument_IntStringFunc:
+			if err := ValidateIntAndStringToIntFunctionReferences(v.IntStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToIntFunction_Argument_FloatBoolFunc:
+			if err := ValidateFloatAndBoolToIntFunctionReferences(v.FloatBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToIntFunction_Argument_FloatIntFunc:
+			if err := ValidateFloatAndIntToIntFunctionReferences(v.FloatIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToIntFunction_Argument_FloatFloatFunc:
+			if err := ValidateFloatAndFloatToIntFunctionReferences(v.FloatFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToIntFunction_Argument_FloatStringFunc:
+			if err := ValidateFloatAndStringToIntFunctionReferences(v.FloatStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToIntFunction_Argument_StringBoolFunc:
+			if err := ValidateStringAndBoolToIntFunctionReferences(v.StringBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToIntFunction_Argument_StringIntFunc:
+			if err := ValidateStringAndIntToIntFunctionReferences(v.StringIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToIntFunction_Argument_StringFloatFunc:
+			if err := ValidateStringAndFloatToIntFunctionReferences(v.StringFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToIntFunction_Argument_StringStringFunc:
+			if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToIntFunction_Argument_BoolsFunc:
+			if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToIntFunction_Argument_IntsFunc:
+			if err := ValidateIntsToIntFunctionReferences(v.IntsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToIntFunction_Argument_FloatsFunc:
+			if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToIntFunction_Argument_StringsFunc:
+			if err := ValidateStringsToIntFunctionReferences(v.StringsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToIntFunction_Argument_If:
+			if err := ValidateIntValueIf(v.If, state, input); err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("unrecognized argument type from IntsToIntFunction_Argument: %T", v)
+		}
+	}
+
+	return nil
+}
+
+func ValidateIntsToFloatFunctionReferences(val *pb.IntsToFloatFunction, state, input *desc.MessageDescriptor) error {
+	if val == nil {
+		return fmt.Errorf("IntsToFloatFunction function missing")
+	}
+
+	for _, arg := range val.Arguments {
+		switch v := arg.Argument.(type) {
+		case *pb.IntsToFloatFunction_Argument_Constant:
+		case *pb.IntsToFloatFunction_Argument_Input:
+			if err := ValidateReference(v.Input, input, TypeInt); err != nil {
+				return err
+			}
+		case *pb.IntsToFloatFunction_Argument_State:
+			if err := ValidateReference(v.State, state, TypeInt); err != nil {
+				return err
+			}
+		case *pb.IntsToFloatFunction_Argument_BoolFunc:
+			if err := ValidateBoolToIntFunctionReferences(v.BoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToFloatFunction_Argument_IntFunc:
+			if err := ValidateIntToIntFunctionReferences(v.IntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToFloatFunction_Argument_FloatFunc:
+			if err := ValidateFloatToIntFunctionReferences(v.FloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToFloatFunction_Argument_StringFunc:
+			if err := ValidateStringToIntFunctionReferences(v.StringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToFloatFunction_Argument_BoolBoolFunc:
+			if err := ValidateBoolAndBoolToIntFunctionReferences(v.BoolBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToFloatFunction_Argument_BoolIntFunc:
+			if err := ValidateBoolAndIntToIntFunctionReferences(v.BoolIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToFloatFunction_Argument_BoolFloatFunc:
+			if err := ValidateBoolAndFloatToIntFunctionReferences(v.BoolFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToFloatFunction_Argument_BoolStringFunc:
+			if err := ValidateBoolAndStringToIntFunctionReferences(v.BoolStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToFloatFunction_Argument_IntBoolFunc:
+			if err := ValidateIntAndBoolToIntFunctionReferences(v.IntBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToFloatFunction_Argument_IntIntFunc:
+			if err := ValidateIntAndIntToIntFunctionReferences(v.IntIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToFloatFunction_Argument_IntFloatFunc:
+			if err := ValidateIntAndFloatToIntFunctionReferences(v.IntFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToFloatFunction_Argument_IntStringFunc:
+			if err := ValidateIntAndStringToIntFunctionReferences(v.IntStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToFloatFunction_Argument_FloatBoolFunc:
+			if err := ValidateFloatAndBoolToIntFunctionReferences(v.FloatBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToFloatFunction_Argument_FloatIntFunc:
+			if err := ValidateFloatAndIntToIntFunctionReferences(v.FloatIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToFloatFunction_Argument_FloatFloatFunc:
+			if err := ValidateFloatAndFloatToIntFunctionReferences(v.FloatFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToFloatFunction_Argument_FloatStringFunc:
+			if err := ValidateFloatAndStringToIntFunctionReferences(v.FloatStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToFloatFunction_Argument_StringBoolFunc:
+			if err := ValidateStringAndBoolToIntFunctionReferences(v.StringBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToFloatFunction_Argument_StringIntFunc:
+			if err := ValidateStringAndIntToIntFunctionReferences(v.StringIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToFloatFunction_Argument_StringFloatFunc:
+			if err := ValidateStringAndFloatToIntFunctionReferences(v.StringFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToFloatFunction_Argument_StringStringFunc:
+			if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToFloatFunction_Argument_BoolsFunc:
+			if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToFloatFunction_Argument_IntsFunc:
+			if err := ValidateIntsToIntFunctionReferences(v.IntsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToFloatFunction_Argument_FloatsFunc:
+			if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToFloatFunction_Argument_StringsFunc:
+			if err := ValidateStringsToIntFunctionReferences(v.StringsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToFloatFunction_Argument_If:
+			if err := ValidateIntValueIf(v.If, state, input); err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("unrecognized argument type from IntsToFloatFunction_Argument: %T", v)
+		}
+	}
+
+	return nil
+}
+
+func ValidateIntsToStringFunctionReferences(val *pb.IntsToStringFunction, state, input *desc.MessageDescriptor) error {
+	if val == nil {
+		return fmt.Errorf("IntsToStringFunction function missing")
+	}
+
+	for _, arg := range val.Arguments {
+		switch v := arg.Argument.(type) {
+		case *pb.IntsToStringFunction_Argument_Constant:
+		case *pb.IntsToStringFunction_Argument_Input:
+			if err := ValidateReference(v.Input, input, TypeInt); err != nil {
+				return err
+			}
+		case *pb.IntsToStringFunction_Argument_State:
+			if err := ValidateReference(v.State, state, TypeInt); err != nil {
+				return err
+			}
+		case *pb.IntsToStringFunction_Argument_BoolFunc:
+			if err := ValidateBoolToIntFunctionReferences(v.BoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToStringFunction_Argument_IntFunc:
+			if err := ValidateIntToIntFunctionReferences(v.IntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToStringFunction_Argument_FloatFunc:
+			if err := ValidateFloatToIntFunctionReferences(v.FloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToStringFunction_Argument_StringFunc:
+			if err := ValidateStringToIntFunctionReferences(v.StringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToStringFunction_Argument_BoolBoolFunc:
+			if err := ValidateBoolAndBoolToIntFunctionReferences(v.BoolBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToStringFunction_Argument_BoolIntFunc:
+			if err := ValidateBoolAndIntToIntFunctionReferences(v.BoolIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToStringFunction_Argument_BoolFloatFunc:
+			if err := ValidateBoolAndFloatToIntFunctionReferences(v.BoolFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToStringFunction_Argument_BoolStringFunc:
+			if err := ValidateBoolAndStringToIntFunctionReferences(v.BoolStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToStringFunction_Argument_IntBoolFunc:
+			if err := ValidateIntAndBoolToIntFunctionReferences(v.IntBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToStringFunction_Argument_IntIntFunc:
+			if err := ValidateIntAndIntToIntFunctionReferences(v.IntIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToStringFunction_Argument_IntFloatFunc:
+			if err := ValidateIntAndFloatToIntFunctionReferences(v.IntFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToStringFunction_Argument_IntStringFunc:
+			if err := ValidateIntAndStringToIntFunctionReferences(v.IntStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToStringFunction_Argument_FloatBoolFunc:
+			if err := ValidateFloatAndBoolToIntFunctionReferences(v.FloatBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToStringFunction_Argument_FloatIntFunc:
+			if err := ValidateFloatAndIntToIntFunctionReferences(v.FloatIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToStringFunction_Argument_FloatFloatFunc:
+			if err := ValidateFloatAndFloatToIntFunctionReferences(v.FloatFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToStringFunction_Argument_FloatStringFunc:
+			if err := ValidateFloatAndStringToIntFunctionReferences(v.FloatStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToStringFunction_Argument_StringBoolFunc:
+			if err := ValidateStringAndBoolToIntFunctionReferences(v.StringBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToStringFunction_Argument_StringIntFunc:
+			if err := ValidateStringAndIntToIntFunctionReferences(v.StringIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToStringFunction_Argument_StringFloatFunc:
+			if err := ValidateStringAndFloatToIntFunctionReferences(v.StringFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToStringFunction_Argument_StringStringFunc:
+			if err := ValidateStringAndStringToIntFunctionReferences(v.StringStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToStringFunction_Argument_BoolsFunc:
+			if err := ValidateBoolsToIntFunctionReferences(v.BoolsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToStringFunction_Argument_IntsFunc:
+			if err := ValidateIntsToIntFunctionReferences(v.IntsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToStringFunction_Argument_FloatsFunc:
+			if err := ValidateFloatsToIntFunctionReferences(v.FloatsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToStringFunction_Argument_StringsFunc:
+			if err := ValidateStringsToIntFunctionReferences(v.StringsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.IntsToStringFunction_Argument_If:
+			if err := ValidateIntValueIf(v.If, state, input); err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("unrecognized argument type from IntsToStringFunction_Argument: %T", v)
+		}
+	}
+
+	return nil
+}
+
+func ValidateFloatsToBoolFunctionReferences(val *pb.FloatsToBoolFunction, state, input *desc.MessageDescriptor) error {
+	if val == nil {
+		return fmt.Errorf("FloatsToBoolFunction function missing")
+	}
+
+	for _, arg := range val.Arguments {
+		switch v := arg.Argument.(type) {
+		case *pb.FloatsToBoolFunction_Argument_Constant:
+		case *pb.FloatsToBoolFunction_Argument_Input:
+			if err := ValidateReference(v.Input, input, TypeFloat); err != nil {
+				return err
+			}
+		case *pb.FloatsToBoolFunction_Argument_State:
+			if err := ValidateReference(v.State, state, TypeFloat); err != nil {
+				return err
+			}
+		case *pb.FloatsToBoolFunction_Argument_BoolFunc:
+			if err := ValidateBoolToFloatFunctionReferences(v.BoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToBoolFunction_Argument_IntFunc:
+			if err := ValidateIntToFloatFunctionReferences(v.IntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToBoolFunction_Argument_FloatFunc:
+			if err := ValidateFloatToFloatFunctionReferences(v.FloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToBoolFunction_Argument_StringFunc:
+			if err := ValidateStringToFloatFunctionReferences(v.StringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToBoolFunction_Argument_BoolBoolFunc:
+			if err := ValidateBoolAndBoolToFloatFunctionReferences(v.BoolBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToBoolFunction_Argument_BoolIntFunc:
+			if err := ValidateBoolAndIntToFloatFunctionReferences(v.BoolIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToBoolFunction_Argument_BoolFloatFunc:
+			if err := ValidateBoolAndFloatToFloatFunctionReferences(v.BoolFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToBoolFunction_Argument_BoolStringFunc:
+			if err := ValidateBoolAndStringToFloatFunctionReferences(v.BoolStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToBoolFunction_Argument_IntBoolFunc:
+			if err := ValidateIntAndBoolToFloatFunctionReferences(v.IntBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToBoolFunction_Argument_IntIntFunc:
+			if err := ValidateIntAndIntToFloatFunctionReferences(v.IntIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToBoolFunction_Argument_IntFloatFunc:
+			if err := ValidateIntAndFloatToFloatFunctionReferences(v.IntFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToBoolFunction_Argument_IntStringFunc:
+			if err := ValidateIntAndStringToFloatFunctionReferences(v.IntStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToBoolFunction_Argument_FloatBoolFunc:
+			if err := ValidateFloatAndBoolToFloatFunctionReferences(v.FloatBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToBoolFunction_Argument_FloatIntFunc:
+			if err := ValidateFloatAndIntToFloatFunctionReferences(v.FloatIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToBoolFunction_Argument_FloatFloatFunc:
+			if err := ValidateFloatAndFloatToFloatFunctionReferences(v.FloatFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToBoolFunction_Argument_FloatStringFunc:
+			if err := ValidateFloatAndStringToFloatFunctionReferences(v.FloatStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToBoolFunction_Argument_StringBoolFunc:
+			if err := ValidateStringAndBoolToFloatFunctionReferences(v.StringBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToBoolFunction_Argument_StringIntFunc:
+			if err := ValidateStringAndIntToFloatFunctionReferences(v.StringIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToBoolFunction_Argument_StringFloatFunc:
+			if err := ValidateStringAndFloatToFloatFunctionReferences(v.StringFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToBoolFunction_Argument_StringStringFunc:
+			if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToBoolFunction_Argument_BoolsFunc:
+			if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToBoolFunction_Argument_IntsFunc:
+			if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToBoolFunction_Argument_FloatsFunc:
+			if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToBoolFunction_Argument_StringsFunc:
+			if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToBoolFunction_Argument_If:
+			if err := ValidateFloatValueIf(v.If, state, input); err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("unrecognized argument type from FloatsToBoolFunction_Argument: %T", v)
+		}
+	}
+
+	return nil
+}
+
+func ValidateFloatsToIntFunctionReferences(val *pb.FloatsToIntFunction, state, input *desc.MessageDescriptor) error {
+	if val == nil {
+		return fmt.Errorf("FloatsToIntFunction function missing")
+	}
+
+	for _, arg := range val.Arguments {
+		switch v := arg.Argument.(type) {
+		case *pb.FloatsToIntFunction_Argument_Constant:
+		case *pb.FloatsToIntFunction_Argument_Input:
+			if err := ValidateReference(v.Input, input, TypeFloat); err != nil {
+				return err
+			}
+		case *pb.FloatsToIntFunction_Argument_State:
+			if err := ValidateReference(v.State, state, TypeFloat); err != nil {
+				return err
+			}
+		case *pb.FloatsToIntFunction_Argument_BoolFunc:
+			if err := ValidateBoolToFloatFunctionReferences(v.BoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToIntFunction_Argument_IntFunc:
+			if err := ValidateIntToFloatFunctionReferences(v.IntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToIntFunction_Argument_FloatFunc:
+			if err := ValidateFloatToFloatFunctionReferences(v.FloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToIntFunction_Argument_StringFunc:
+			if err := ValidateStringToFloatFunctionReferences(v.StringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToIntFunction_Argument_BoolBoolFunc:
+			if err := ValidateBoolAndBoolToFloatFunctionReferences(v.BoolBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToIntFunction_Argument_BoolIntFunc:
+			if err := ValidateBoolAndIntToFloatFunctionReferences(v.BoolIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToIntFunction_Argument_BoolFloatFunc:
+			if err := ValidateBoolAndFloatToFloatFunctionReferences(v.BoolFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToIntFunction_Argument_BoolStringFunc:
+			if err := ValidateBoolAndStringToFloatFunctionReferences(v.BoolStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToIntFunction_Argument_IntBoolFunc:
+			if err := ValidateIntAndBoolToFloatFunctionReferences(v.IntBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToIntFunction_Argument_IntIntFunc:
+			if err := ValidateIntAndIntToFloatFunctionReferences(v.IntIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToIntFunction_Argument_IntFloatFunc:
+			if err := ValidateIntAndFloatToFloatFunctionReferences(v.IntFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToIntFunction_Argument_IntStringFunc:
+			if err := ValidateIntAndStringToFloatFunctionReferences(v.IntStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToIntFunction_Argument_FloatBoolFunc:
+			if err := ValidateFloatAndBoolToFloatFunctionReferences(v.FloatBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToIntFunction_Argument_FloatIntFunc:
+			if err := ValidateFloatAndIntToFloatFunctionReferences(v.FloatIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToIntFunction_Argument_FloatFloatFunc:
+			if err := ValidateFloatAndFloatToFloatFunctionReferences(v.FloatFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToIntFunction_Argument_FloatStringFunc:
+			if err := ValidateFloatAndStringToFloatFunctionReferences(v.FloatStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToIntFunction_Argument_StringBoolFunc:
+			if err := ValidateStringAndBoolToFloatFunctionReferences(v.StringBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToIntFunction_Argument_StringIntFunc:
+			if err := ValidateStringAndIntToFloatFunctionReferences(v.StringIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToIntFunction_Argument_StringFloatFunc:
+			if err := ValidateStringAndFloatToFloatFunctionReferences(v.StringFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToIntFunction_Argument_StringStringFunc:
+			if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToIntFunction_Argument_BoolsFunc:
+			if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToIntFunction_Argument_IntsFunc:
+			if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToIntFunction_Argument_FloatsFunc:
+			if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToIntFunction_Argument_StringsFunc:
+			if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToIntFunction_Argument_If:
+			if err := ValidateFloatValueIf(v.If, state, input); err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("unrecognized argument type from FloatsToIntFunction_Argument: %T", v)
+		}
+	}
+
+	return nil
+}
+
+func ValidateFloatsToFloatFunctionReferences(val *pb.FloatsToFloatFunction, state, input *desc.MessageDescriptor) error {
+	if val == nil {
+		return fmt.Errorf("FloatsToFloatFunction function missing")
+	}
+
+	for _, arg := range val.Arguments {
+		switch v := arg.Argument.(type) {
+		case *pb.FloatsToFloatFunction_Argument_Constant:
+		case *pb.FloatsToFloatFunction_Argument_Input:
+			if err := ValidateReference(v.Input, input, TypeFloat); err != nil {
+				return err
+			}
+		case *pb.FloatsToFloatFunction_Argument_State:
+			if err := ValidateReference(v.State, state, TypeFloat); err != nil {
+				return err
+			}
+		case *pb.FloatsToFloatFunction_Argument_BoolFunc:
+			if err := ValidateBoolToFloatFunctionReferences(v.BoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToFloatFunction_Argument_IntFunc:
+			if err := ValidateIntToFloatFunctionReferences(v.IntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToFloatFunction_Argument_FloatFunc:
+			if err := ValidateFloatToFloatFunctionReferences(v.FloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToFloatFunction_Argument_StringFunc:
+			if err := ValidateStringToFloatFunctionReferences(v.StringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToFloatFunction_Argument_BoolBoolFunc:
+			if err := ValidateBoolAndBoolToFloatFunctionReferences(v.BoolBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToFloatFunction_Argument_BoolIntFunc:
+			if err := ValidateBoolAndIntToFloatFunctionReferences(v.BoolIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToFloatFunction_Argument_BoolFloatFunc:
+			if err := ValidateBoolAndFloatToFloatFunctionReferences(v.BoolFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToFloatFunction_Argument_BoolStringFunc:
+			if err := ValidateBoolAndStringToFloatFunctionReferences(v.BoolStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToFloatFunction_Argument_IntBoolFunc:
+			if err := ValidateIntAndBoolToFloatFunctionReferences(v.IntBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToFloatFunction_Argument_IntIntFunc:
+			if err := ValidateIntAndIntToFloatFunctionReferences(v.IntIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToFloatFunction_Argument_IntFloatFunc:
+			if err := ValidateIntAndFloatToFloatFunctionReferences(v.IntFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToFloatFunction_Argument_IntStringFunc:
+			if err := ValidateIntAndStringToFloatFunctionReferences(v.IntStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToFloatFunction_Argument_FloatBoolFunc:
+			if err := ValidateFloatAndBoolToFloatFunctionReferences(v.FloatBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToFloatFunction_Argument_FloatIntFunc:
+			if err := ValidateFloatAndIntToFloatFunctionReferences(v.FloatIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToFloatFunction_Argument_FloatFloatFunc:
+			if err := ValidateFloatAndFloatToFloatFunctionReferences(v.FloatFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToFloatFunction_Argument_FloatStringFunc:
+			if err := ValidateFloatAndStringToFloatFunctionReferences(v.FloatStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToFloatFunction_Argument_StringBoolFunc:
+			if err := ValidateStringAndBoolToFloatFunctionReferences(v.StringBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToFloatFunction_Argument_StringIntFunc:
+			if err := ValidateStringAndIntToFloatFunctionReferences(v.StringIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToFloatFunction_Argument_StringFloatFunc:
+			if err := ValidateStringAndFloatToFloatFunctionReferences(v.StringFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToFloatFunction_Argument_StringStringFunc:
+			if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToFloatFunction_Argument_BoolsFunc:
+			if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToFloatFunction_Argument_IntsFunc:
+			if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToFloatFunction_Argument_FloatsFunc:
+			if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToFloatFunction_Argument_StringsFunc:
+			if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToFloatFunction_Argument_If:
+			if err := ValidateFloatValueIf(v.If, state, input); err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("unrecognized argument type from FloatsToFloatFunction_Argument: %T", v)
+		}
+	}
+
+	return nil
+}
+
+func ValidateFloatsToStringFunctionReferences(val *pb.FloatsToStringFunction, state, input *desc.MessageDescriptor) error {
+	if val == nil {
+		return fmt.Errorf("FloatsToStringFunction function missing")
+	}
+
+	for _, arg := range val.Arguments {
+		switch v := arg.Argument.(type) {
+		case *pb.FloatsToStringFunction_Argument_Constant:
+		case *pb.FloatsToStringFunction_Argument_Input:
+			if err := ValidateReference(v.Input, input, TypeFloat); err != nil {
+				return err
+			}
+		case *pb.FloatsToStringFunction_Argument_State:
+			if err := ValidateReference(v.State, state, TypeFloat); err != nil {
+				return err
+			}
+		case *pb.FloatsToStringFunction_Argument_BoolFunc:
+			if err := ValidateBoolToFloatFunctionReferences(v.BoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToStringFunction_Argument_IntFunc:
+			if err := ValidateIntToFloatFunctionReferences(v.IntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToStringFunction_Argument_FloatFunc:
+			if err := ValidateFloatToFloatFunctionReferences(v.FloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToStringFunction_Argument_StringFunc:
+			if err := ValidateStringToFloatFunctionReferences(v.StringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToStringFunction_Argument_BoolBoolFunc:
+			if err := ValidateBoolAndBoolToFloatFunctionReferences(v.BoolBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToStringFunction_Argument_BoolIntFunc:
+			if err := ValidateBoolAndIntToFloatFunctionReferences(v.BoolIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToStringFunction_Argument_BoolFloatFunc:
+			if err := ValidateBoolAndFloatToFloatFunctionReferences(v.BoolFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToStringFunction_Argument_BoolStringFunc:
+			if err := ValidateBoolAndStringToFloatFunctionReferences(v.BoolStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToStringFunction_Argument_IntBoolFunc:
+			if err := ValidateIntAndBoolToFloatFunctionReferences(v.IntBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToStringFunction_Argument_IntIntFunc:
+			if err := ValidateIntAndIntToFloatFunctionReferences(v.IntIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToStringFunction_Argument_IntFloatFunc:
+			if err := ValidateIntAndFloatToFloatFunctionReferences(v.IntFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToStringFunction_Argument_IntStringFunc:
+			if err := ValidateIntAndStringToFloatFunctionReferences(v.IntStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToStringFunction_Argument_FloatBoolFunc:
+			if err := ValidateFloatAndBoolToFloatFunctionReferences(v.FloatBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToStringFunction_Argument_FloatIntFunc:
+			if err := ValidateFloatAndIntToFloatFunctionReferences(v.FloatIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToStringFunction_Argument_FloatFloatFunc:
+			if err := ValidateFloatAndFloatToFloatFunctionReferences(v.FloatFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToStringFunction_Argument_FloatStringFunc:
+			if err := ValidateFloatAndStringToFloatFunctionReferences(v.FloatStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToStringFunction_Argument_StringBoolFunc:
+			if err := ValidateStringAndBoolToFloatFunctionReferences(v.StringBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToStringFunction_Argument_StringIntFunc:
+			if err := ValidateStringAndIntToFloatFunctionReferences(v.StringIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToStringFunction_Argument_StringFloatFunc:
+			if err := ValidateStringAndFloatToFloatFunctionReferences(v.StringFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToStringFunction_Argument_StringStringFunc:
+			if err := ValidateStringAndStringToFloatFunctionReferences(v.StringStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToStringFunction_Argument_BoolsFunc:
+			if err := ValidateBoolsToFloatFunctionReferences(v.BoolsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToStringFunction_Argument_IntsFunc:
+			if err := ValidateIntsToFloatFunctionReferences(v.IntsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToStringFunction_Argument_FloatsFunc:
+			if err := ValidateFloatsToFloatFunctionReferences(v.FloatsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToStringFunction_Argument_StringsFunc:
+			if err := ValidateStringsToFloatFunctionReferences(v.StringsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.FloatsToStringFunction_Argument_If:
+			if err := ValidateFloatValueIf(v.If, state, input); err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("unrecognized argument type from FloatsToStringFunction_Argument: %T", v)
+		}
+	}
+
+	return nil
+}
+
+func ValidateStringsToBoolFunctionReferences(val *pb.StringsToBoolFunction, state, input *desc.MessageDescriptor) error {
+	if val == nil {
+		return fmt.Errorf("StringsToBoolFunction function missing")
+	}
+
+	for _, arg := range val.Arguments {
+		switch v := arg.Argument.(type) {
+		case *pb.StringsToBoolFunction_Argument_Constant:
+		case *pb.StringsToBoolFunction_Argument_Input:
+			if err := ValidateReference(v.Input, input, TypeString); err != nil {
+				return err
+			}
+		case *pb.StringsToBoolFunction_Argument_State:
+			if err := ValidateReference(v.State, state, TypeString); err != nil {
+				return err
+			}
+		case *pb.StringsToBoolFunction_Argument_BoolFunc:
+			if err := ValidateBoolToStringFunctionReferences(v.BoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToBoolFunction_Argument_IntFunc:
+			if err := ValidateIntToStringFunctionReferences(v.IntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToBoolFunction_Argument_FloatFunc:
+			if err := ValidateFloatToStringFunctionReferences(v.FloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToBoolFunction_Argument_StringFunc:
+			if err := ValidateStringToStringFunctionReferences(v.StringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToBoolFunction_Argument_BoolBoolFunc:
+			if err := ValidateBoolAndBoolToStringFunctionReferences(v.BoolBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToBoolFunction_Argument_BoolIntFunc:
+			if err := ValidateBoolAndIntToStringFunctionReferences(v.BoolIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToBoolFunction_Argument_BoolFloatFunc:
+			if err := ValidateBoolAndFloatToStringFunctionReferences(v.BoolFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToBoolFunction_Argument_BoolStringFunc:
+			if err := ValidateBoolAndStringToStringFunctionReferences(v.BoolStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToBoolFunction_Argument_IntBoolFunc:
+			if err := ValidateIntAndBoolToStringFunctionReferences(v.IntBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToBoolFunction_Argument_IntIntFunc:
+			if err := ValidateIntAndIntToStringFunctionReferences(v.IntIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToBoolFunction_Argument_IntFloatFunc:
+			if err := ValidateIntAndFloatToStringFunctionReferences(v.IntFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToBoolFunction_Argument_IntStringFunc:
+			if err := ValidateIntAndStringToStringFunctionReferences(v.IntStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToBoolFunction_Argument_FloatBoolFunc:
+			if err := ValidateFloatAndBoolToStringFunctionReferences(v.FloatBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToBoolFunction_Argument_FloatIntFunc:
+			if err := ValidateFloatAndIntToStringFunctionReferences(v.FloatIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToBoolFunction_Argument_FloatFloatFunc:
+			if err := ValidateFloatAndFloatToStringFunctionReferences(v.FloatFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToBoolFunction_Argument_FloatStringFunc:
+			if err := ValidateFloatAndStringToStringFunctionReferences(v.FloatStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToBoolFunction_Argument_StringBoolFunc:
+			if err := ValidateStringAndBoolToStringFunctionReferences(v.StringBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToBoolFunction_Argument_StringIntFunc:
+			if err := ValidateStringAndIntToStringFunctionReferences(v.StringIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToBoolFunction_Argument_StringFloatFunc:
+			if err := ValidateStringAndFloatToStringFunctionReferences(v.StringFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToBoolFunction_Argument_StringStringFunc:
+			if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToBoolFunction_Argument_BoolsFunc:
+			if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToBoolFunction_Argument_IntsFunc:
+			if err := ValidateIntsToStringFunctionReferences(v.IntsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToBoolFunction_Argument_FloatsFunc:
+			if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToBoolFunction_Argument_StringsFunc:
+			if err := ValidateStringsToStringFunctionReferences(v.StringsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToBoolFunction_Argument_If:
+			if err := ValidateStringValueIf(v.If, state, input); err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("unrecognized argument type from StringsToBoolFunction_Argument: %T", v)
+		}
+	}
+
+	return nil
+}
+
+func ValidateStringsToIntFunctionReferences(val *pb.StringsToIntFunction, state, input *desc.MessageDescriptor) error {
+	if val == nil {
+		return fmt.Errorf("StringsToIntFunction function missing")
+	}
+
+	for _, arg := range val.Arguments {
+		switch v := arg.Argument.(type) {
+		case *pb.StringsToIntFunction_Argument_Constant:
+		case *pb.StringsToIntFunction_Argument_Input:
+			if err := ValidateReference(v.Input, input, TypeString); err != nil {
+				return err
+			}
+		case *pb.StringsToIntFunction_Argument_State:
+			if err := ValidateReference(v.State, state, TypeString); err != nil {
+				return err
+			}
+		case *pb.StringsToIntFunction_Argument_BoolFunc:
+			if err := ValidateBoolToStringFunctionReferences(v.BoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToIntFunction_Argument_IntFunc:
+			if err := ValidateIntToStringFunctionReferences(v.IntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToIntFunction_Argument_FloatFunc:
+			if err := ValidateFloatToStringFunctionReferences(v.FloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToIntFunction_Argument_StringFunc:
+			if err := ValidateStringToStringFunctionReferences(v.StringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToIntFunction_Argument_BoolBoolFunc:
+			if err := ValidateBoolAndBoolToStringFunctionReferences(v.BoolBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToIntFunction_Argument_BoolIntFunc:
+			if err := ValidateBoolAndIntToStringFunctionReferences(v.BoolIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToIntFunction_Argument_BoolFloatFunc:
+			if err := ValidateBoolAndFloatToStringFunctionReferences(v.BoolFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToIntFunction_Argument_BoolStringFunc:
+			if err := ValidateBoolAndStringToStringFunctionReferences(v.BoolStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToIntFunction_Argument_IntBoolFunc:
+			if err := ValidateIntAndBoolToStringFunctionReferences(v.IntBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToIntFunction_Argument_IntIntFunc:
+			if err := ValidateIntAndIntToStringFunctionReferences(v.IntIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToIntFunction_Argument_IntFloatFunc:
+			if err := ValidateIntAndFloatToStringFunctionReferences(v.IntFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToIntFunction_Argument_IntStringFunc:
+			if err := ValidateIntAndStringToStringFunctionReferences(v.IntStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToIntFunction_Argument_FloatBoolFunc:
+			if err := ValidateFloatAndBoolToStringFunctionReferences(v.FloatBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToIntFunction_Argument_FloatIntFunc:
+			if err := ValidateFloatAndIntToStringFunctionReferences(v.FloatIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToIntFunction_Argument_FloatFloatFunc:
+			if err := ValidateFloatAndFloatToStringFunctionReferences(v.FloatFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToIntFunction_Argument_FloatStringFunc:
+			if err := ValidateFloatAndStringToStringFunctionReferences(v.FloatStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToIntFunction_Argument_StringBoolFunc:
+			if err := ValidateStringAndBoolToStringFunctionReferences(v.StringBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToIntFunction_Argument_StringIntFunc:
+			if err := ValidateStringAndIntToStringFunctionReferences(v.StringIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToIntFunction_Argument_StringFloatFunc:
+			if err := ValidateStringAndFloatToStringFunctionReferences(v.StringFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToIntFunction_Argument_StringStringFunc:
+			if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToIntFunction_Argument_BoolsFunc:
+			if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToIntFunction_Argument_IntsFunc:
+			if err := ValidateIntsToStringFunctionReferences(v.IntsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToIntFunction_Argument_FloatsFunc:
+			if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToIntFunction_Argument_StringsFunc:
+			if err := ValidateStringsToStringFunctionReferences(v.StringsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToIntFunction_Argument_If:
+			if err := ValidateStringValueIf(v.If, state, input); err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("unrecognized argument type from StringsToIntFunction_Argument: %T", v)
+		}
+	}
+
+	return nil
+}
+
+func ValidateStringsToFloatFunctionReferences(val *pb.StringsToFloatFunction, state, input *desc.MessageDescriptor) error {
+	if val == nil {
+		return fmt.Errorf("StringsToFloatFunction function missing")
+	}
+
+	for _, arg := range val.Arguments {
+		switch v := arg.Argument.(type) {
+		case *pb.StringsToFloatFunction_Argument_Constant:
+		case *pb.StringsToFloatFunction_Argument_Input:
+			if err := ValidateReference(v.Input, input, TypeString); err != nil {
+				return err
+			}
+		case *pb.StringsToFloatFunction_Argument_State:
+			if err := ValidateReference(v.State, state, TypeString); err != nil {
+				return err
+			}
+		case *pb.StringsToFloatFunction_Argument_BoolFunc:
+			if err := ValidateBoolToStringFunctionReferences(v.BoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToFloatFunction_Argument_IntFunc:
+			if err := ValidateIntToStringFunctionReferences(v.IntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToFloatFunction_Argument_FloatFunc:
+			if err := ValidateFloatToStringFunctionReferences(v.FloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToFloatFunction_Argument_StringFunc:
+			if err := ValidateStringToStringFunctionReferences(v.StringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToFloatFunction_Argument_BoolBoolFunc:
+			if err := ValidateBoolAndBoolToStringFunctionReferences(v.BoolBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToFloatFunction_Argument_BoolIntFunc:
+			if err := ValidateBoolAndIntToStringFunctionReferences(v.BoolIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToFloatFunction_Argument_BoolFloatFunc:
+			if err := ValidateBoolAndFloatToStringFunctionReferences(v.BoolFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToFloatFunction_Argument_BoolStringFunc:
+			if err := ValidateBoolAndStringToStringFunctionReferences(v.BoolStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToFloatFunction_Argument_IntBoolFunc:
+			if err := ValidateIntAndBoolToStringFunctionReferences(v.IntBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToFloatFunction_Argument_IntIntFunc:
+			if err := ValidateIntAndIntToStringFunctionReferences(v.IntIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToFloatFunction_Argument_IntFloatFunc:
+			if err := ValidateIntAndFloatToStringFunctionReferences(v.IntFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToFloatFunction_Argument_IntStringFunc:
+			if err := ValidateIntAndStringToStringFunctionReferences(v.IntStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToFloatFunction_Argument_FloatBoolFunc:
+			if err := ValidateFloatAndBoolToStringFunctionReferences(v.FloatBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToFloatFunction_Argument_FloatIntFunc:
+			if err := ValidateFloatAndIntToStringFunctionReferences(v.FloatIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToFloatFunction_Argument_FloatFloatFunc:
+			if err := ValidateFloatAndFloatToStringFunctionReferences(v.FloatFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToFloatFunction_Argument_FloatStringFunc:
+			if err := ValidateFloatAndStringToStringFunctionReferences(v.FloatStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToFloatFunction_Argument_StringBoolFunc:
+			if err := ValidateStringAndBoolToStringFunctionReferences(v.StringBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToFloatFunction_Argument_StringIntFunc:
+			if err := ValidateStringAndIntToStringFunctionReferences(v.StringIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToFloatFunction_Argument_StringFloatFunc:
+			if err := ValidateStringAndFloatToStringFunctionReferences(v.StringFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToFloatFunction_Argument_StringStringFunc:
+			if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToFloatFunction_Argument_BoolsFunc:
+			if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToFloatFunction_Argument_IntsFunc:
+			if err := ValidateIntsToStringFunctionReferences(v.IntsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToFloatFunction_Argument_FloatsFunc:
+			if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToFloatFunction_Argument_StringsFunc:
+			if err := ValidateStringsToStringFunctionReferences(v.StringsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToFloatFunction_Argument_If:
+			if err := ValidateStringValueIf(v.If, state, input); err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("unrecognized argument type from StringsToFloatFunction_Argument: %T", v)
+		}
+	}
+
+	return nil
+}
+
+func ValidateStringsToStringFunctionReferences(val *pb.StringsToStringFunction, state, input *desc.MessageDescriptor) error {
+	if val == nil {
+		return fmt.Errorf("StringsToStringFunction function missing")
+	}
+
+	for _, arg := range val.Arguments {
+		switch v := arg.Argument.(type) {
+		case *pb.StringsToStringFunction_Argument_Constant:
+		case *pb.StringsToStringFunction_Argument_Input:
+			if err := ValidateReference(v.Input, input, TypeString); err != nil {
+				return err
+			}
+		case *pb.StringsToStringFunction_Argument_State:
+			if err := ValidateReference(v.State, state, TypeString); err != nil {
+				return err
+			}
+		case *pb.StringsToStringFunction_Argument_BoolFunc:
+			if err := ValidateBoolToStringFunctionReferences(v.BoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToStringFunction_Argument_IntFunc:
+			if err := ValidateIntToStringFunctionReferences(v.IntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToStringFunction_Argument_FloatFunc:
+			if err := ValidateFloatToStringFunctionReferences(v.FloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToStringFunction_Argument_StringFunc:
+			if err := ValidateStringToStringFunctionReferences(v.StringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToStringFunction_Argument_BoolBoolFunc:
+			if err := ValidateBoolAndBoolToStringFunctionReferences(v.BoolBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToStringFunction_Argument_BoolIntFunc:
+			if err := ValidateBoolAndIntToStringFunctionReferences(v.BoolIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToStringFunction_Argument_BoolFloatFunc:
+			if err := ValidateBoolAndFloatToStringFunctionReferences(v.BoolFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToStringFunction_Argument_BoolStringFunc:
+			if err := ValidateBoolAndStringToStringFunctionReferences(v.BoolStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToStringFunction_Argument_IntBoolFunc:
+			if err := ValidateIntAndBoolToStringFunctionReferences(v.IntBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToStringFunction_Argument_IntIntFunc:
+			if err := ValidateIntAndIntToStringFunctionReferences(v.IntIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToStringFunction_Argument_IntFloatFunc:
+			if err := ValidateIntAndFloatToStringFunctionReferences(v.IntFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToStringFunction_Argument_IntStringFunc:
+			if err := ValidateIntAndStringToStringFunctionReferences(v.IntStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToStringFunction_Argument_FloatBoolFunc:
+			if err := ValidateFloatAndBoolToStringFunctionReferences(v.FloatBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToStringFunction_Argument_FloatIntFunc:
+			if err := ValidateFloatAndIntToStringFunctionReferences(v.FloatIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToStringFunction_Argument_FloatFloatFunc:
+			if err := ValidateFloatAndFloatToStringFunctionReferences(v.FloatFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToStringFunction_Argument_FloatStringFunc:
+			if err := ValidateFloatAndStringToStringFunctionReferences(v.FloatStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToStringFunction_Argument_StringBoolFunc:
+			if err := ValidateStringAndBoolToStringFunctionReferences(v.StringBoolFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToStringFunction_Argument_StringIntFunc:
+			if err := ValidateStringAndIntToStringFunctionReferences(v.StringIntFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToStringFunction_Argument_StringFloatFunc:
+			if err := ValidateStringAndFloatToStringFunctionReferences(v.StringFloatFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToStringFunction_Argument_StringStringFunc:
+			if err := ValidateStringAndStringToStringFunctionReferences(v.StringStringFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToStringFunction_Argument_BoolsFunc:
+			if err := ValidateBoolsToStringFunctionReferences(v.BoolsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToStringFunction_Argument_IntsFunc:
+			if err := ValidateIntsToStringFunctionReferences(v.IntsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToStringFunction_Argument_FloatsFunc:
+			if err := ValidateFloatsToStringFunctionReferences(v.FloatsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToStringFunction_Argument_StringsFunc:
+			if err := ValidateStringsToStringFunctionReferences(v.StringsFunc, state, input); err != nil {
+				return err
+			}
+		case *pb.StringsToStringFunction_Argument_If:
+			if err := ValidateStringValueIf(v.If, state, input); err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("unrecognized argument type from StringsToStringFunction_Argument: %T", v)
+		}
 	}
 
 	return nil

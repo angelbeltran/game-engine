@@ -106,60 +106,53 @@ func (e *gameEngine) Accept(ctx context.Context, in *RoleChoice) (*Response, err
 
 	// Enforce the rules
 
-	allowed := go_func.BoolAndBoolToBool_AND(bool(go_func.BoolAndBoolToBool_AND(bool(state.Started), bool(go_func.BoolAndBoolToBool_OR(bool(go_func.BoolAndBoolToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(1), int(in.Player))), bool(go_func.IntAndIntToBool_EQ(int(0), int(state.Players.Player_1.Role))),
-	)), bool(go_func.BoolAndBoolToBool_OR(bool(go_func.BoolAndBoolToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(2), int(in.Player))), bool(go_func.IntAndIntToBool_EQ(int(0), int(state.Players.Player_2.Role))),
-	)), bool(go_func.BoolAndBoolToBool_OR(bool(go_func.BoolAndBoolToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(3), int(in.Player))), bool(go_func.IntAndIntToBool_EQ(int(0), int(state.Players.Player_3.Role))),
-	)), bool(go_func.BoolAndBoolToBool_OR(bool(go_func.BoolAndBoolToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(4), int(in.Player))), bool(go_func.IntAndIntToBool_EQ(int(0), int(state.Players.Player_4.Role))),
-	)), bool(go_func.BoolAndBoolToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(5), int(in.Player))), bool(go_func.IntAndIntToBool_EQ(int(0), int(state.Players.Player_5.Role))),
-	)),
-	)),
-	)),
-	)),
-	)),
-	)), bool(func() bool {
-		if go_func.IntAndIntToBool_EQ(int(1), int(in.Role)) {
-			return go_func.BoolToBool_NOT(bool(state.Roles.Prospector1.Available))
-		}
-
-		return func() bool {
-			if go_func.IntAndIntToBool_EQ(int(2), int(in.Role)) {
-				return go_func.BoolToBool_NOT(bool(state.Roles.Prospector2.Available))
-			}
-
-			return func() bool {
-				if go_func.IntAndIntToBool_EQ(int(3), int(in.Role)) {
-					return go_func.BoolToBool_NOT(bool(state.Roles.Builder.Available))
-				}
-
-				return func() bool {
-					if go_func.IntAndIntToBool_EQ(int(4), int(in.Role)) {
-						return go_func.BoolToBool_NOT(bool(state.Roles.Captain.Available))
-					}
-
-					return func() bool {
-						if go_func.IntAndIntToBool_EQ(int(5), int(in.Role)) {
-							return go_func.BoolToBool_NOT(bool(state.Roles.Craftsman.Available))
-						}
-
-						return func() bool {
-							if go_func.IntAndIntToBool_EQ(int(6), int(in.Role)) {
-								return go_func.BoolToBool_NOT(bool(state.Roles.Mayor.Available))
-							}
-
-							return func() bool {
-								if go_func.IntAndIntToBool_EQ(int(7), int(in.Role)) {
-									return go_func.BoolToBool_NOT(bool(state.Roles.Settler.Available))
-								}
-
-								return go_func.BoolAndBoolToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(8), int(in.Role))), bool(go_func.BoolToBool_NOT(bool(state.Roles.Trader.Available))),
-								)
-							}()
-						}()
-					}()
-				}()
-			}()
-		}()
-	}()),
+	allowed := go_func.BoolsToBool_AND(bool(state.Started), bool(go_func.BoolsToBool_OR(bool(go_func.BoolAndBoolToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(1), int(in.Player))), bool(go_func.IntAndIntToBool_EQ(int(0), int(state.Players.Player_1.Role))),
+	),
+	), bool(go_func.BoolAndBoolToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(2), int(in.Player))), bool(go_func.IntAndIntToBool_EQ(int(0), int(state.Players.Player_2.Role))),
+	),
+	), bool(go_func.BoolAndBoolToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(3), int(in.Player))), bool(go_func.IntAndIntToBool_EQ(int(0), int(state.Players.Player_3.Role))),
+	),
+	), bool(go_func.BoolAndBoolToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(4), int(in.Player))), bool(go_func.IntAndIntToBool_EQ(int(0), int(state.Players.Player_4.Role))),
+	),
+	), bool(go_func.BoolAndBoolToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(5), int(in.Player))), bool(go_func.IntAndIntToBool_EQ(int(0), int(state.Players.Player_5.Role))),
+	),
+	),
+	),
+	), bool(go_func.BoolsToBool_OR(bool(go_func.BoolsToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(1), int(in.Role)),
+	), bool(go_func.BoolToBool_NOT(bool(state.Roles.Prospector1.Available)),
+	),
+	),
+	), bool(go_func.BoolsToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(2), int(in.Role)),
+	), bool(go_func.BoolToBool_NOT(bool(state.Roles.Prospector2.Available)),
+	),
+	),
+	), bool(go_func.BoolsToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(3), int(in.Role)),
+	), bool(go_func.BoolToBool_NOT(bool(state.Roles.Builder.Available)),
+	),
+	),
+	), bool(go_func.BoolsToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(4), int(in.Role)),
+	), bool(go_func.BoolToBool_NOT(bool(state.Roles.Captain.Available)),
+	),
+	),
+	), bool(go_func.BoolsToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(5), int(in.Role)),
+	), bool(go_func.BoolToBool_NOT(bool(state.Roles.Craftsman.Available)),
+	),
+	),
+	), bool(go_func.BoolsToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(6), int(in.Role)),
+	), bool(go_func.BoolToBool_NOT(bool(state.Roles.Mayor.Available)),
+	),
+	),
+	), bool(go_func.BoolsToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(7), int(in.Role)),
+	), bool(go_func.BoolToBool_NOT(bool(state.Roles.Settler.Available)),
+	),
+	),
+	), bool(go_func.BoolsToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(8), int(in.Role)),
+	), bool(go_func.BoolToBool_NOT(bool(state.Roles.Trader.Available)),
+	),
+	),
+	),
+	),
+	),
 	)
 	if !allowed {
 		return &Response{

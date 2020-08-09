@@ -31,6 +31,7 @@ type (
 	functionDefinitions struct {
 		Unary  map[string]map[string][]string
 		Binary map[string]map[string]map[string][]string
+		Nary   map[string]map[string][]string
 	}
 )
 

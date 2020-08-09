@@ -185,35 +185,32 @@ service Actions {
   // General gameplay
 
   rpc Accept(RoleChoice) returns (Response) {
-    // TODO: figure how to model map accesses
-    // TODO: finish this
     option (game_engine.action).rule = {
-      bool_bool_func: {
+      bools_func: {
         name: AND
-
-        bool_bool_func_1: {
-          name: AND
-          state_1: { path: [ 'started' ] }
-
-          bool_bool_func_2: {
+        arguments: { state: { path: [ 'started' ] } }
+        arguments: {
+          bools_func: {
             name: OR
-            bool_bool_func_1: {
-              name: AND
-              int_int_func_1: {
-                name: EQ
-                constant_1: 1
-                input_2: { path: [ 'player' ] }
-              }
-              int_int_func_2: {
-                name: EQ
-                constant_1: 0
-                state_2: { path: [ 'players', 'player_1', 'role' ] }
+
+            arguments: {
+              bool_bool_func: {
+                name: AND
+                int_int_func_1: {
+                  name: EQ
+                  constant_1: 1
+                  input_2: { path: [ 'player' ] }
+                }
+                int_int_func_2: {
+                  name: EQ
+                  constant_1: 0
+                  state_2: { path: [ 'players', 'player_1', 'role' ] }
+                }
               }
             }
 
-            bool_bool_func_2: {
-              name: OR
-              bool_bool_func_1: {
+            arguments: {
+              bool_bool_func: {
                 name: AND
                 int_int_func_1: {
                   name: EQ
@@ -226,206 +223,209 @@ service Actions {
                   state_2: { path: [ 'players', 'player_2', 'role' ] }
                 }
               }
+            }
 
-              bool_bool_func_2: {
-                name: OR
-                bool_bool_func_1: {
-                  name: AND
-                  int_int_func_1: {
-                    name: EQ
-                    constant_1: 3
-                    input_2: { path: [ 'player' ] }
-                  }
-                  int_int_func_2: {
-                    name: EQ
-                    constant_1: 0
-                    state_2: { path: [ 'players', 'player_3', 'role' ] }
-                  }
+            arguments: {
+              bool_bool_func: {
+                name: AND
+                int_int_func_1: {
+                  name: EQ
+                  constant_1: 3
+                  input_2: { path: [ 'player' ] }
                 }
+                int_int_func_2: {
+                  name: EQ
+                  constant_1: 0
+                  state_2: { path: [ 'players', 'player_3', 'role' ] }
+                }
+              }
+            }
 
-                bool_bool_func_2: {
-                  name: OR
-                  bool_bool_func_1: {
-                    name: AND
-                    int_int_func_1: {
-                      name: EQ
-                      constant_1: 4
-                      input_2: { path: [ 'player' ] }
-                    }
-                    int_int_func_2: {
-                      name: EQ
-                      constant_1: 0
-                      state_2: { path: [ 'players', 'player_4', 'role' ] }
-                    }
-                  }
+            arguments: {
+              bool_bool_func: {
+                name: AND
+                int_int_func_1: {
+                  name: EQ
+                  constant_1: 4
+                  input_2: { path: [ 'player' ] }
+                }
+                int_int_func_2: {
+                  name: EQ
+                  constant_1: 0
+                  state_2: { path: [ 'players', 'player_4', 'role' ] }
+                }
+              }
+            }
 
-                  bool_bool_func_2: {
-                    name: AND
-                    int_int_func_1: {
-                      name: EQ
-                      constant_1: 5
-                      input_2: { path: [ 'player' ] }
-                    }
-                    int_int_func_2: {
-                      name: EQ
-                      constant_1: 0
-                      state_2: { path: [ 'players', 'player_5', 'role' ] }
-                    }
-                  }
+            arguments: {
+              bool_bool_func: {
+                name: AND
+                int_int_func_1: {
+                  name: EQ
+                  constant_1: 5
+                  input_2: { path: [ 'player' ] }
+                }
+                int_int_func_2: {
+                  name: EQ
+                  constant_1: 0
+                  state_2: { path: [ 'players', 'player_5', 'role' ] }
                 }
               }
             }
           }
         }
 
-        if_2: {
-          predicate: {
-            int_int_func: {
-              name: EQ
-              constant_1: 1
-              input_2: { path: [ 'role' ] }
-            }
-          }
-          then: {
-            bool_func: {
-              name: NOT
-              state: { path: [ 'roles', 'prospector1', 'available' ] }
-            }
-          }
+        arguments: {
+          bools_func: {
+            name: OR
 
-          else: {
-            if: {
-              predicate: {
-                int_int_func: {
-                  name: EQ
-                  constant_1: 2
-                  input_2: { path: [ 'role' ] }
+            arguments: {
+              bools_func: {
+                name: AND
+                arguments: {
+                  int_int_func: {
+                    name: EQ
+                    constant_1: 1
+                    input_2: { path: [ 'role' ] }
+                  }
+                }
+                arguments: {
+                  bool_func: {
+                    name: NOT
+                    state: { path: [ 'roles', 'prospector1', 'available' ] }
+                  }
                 }
               }
-              then: {
-                bool_func: {
-                  name: NOT
-                  state: { path: [ 'roles', 'prospector2', 'available' ] }
+            }
+
+            arguments: {
+              bools_func: {
+                name: AND
+                arguments: {
+                  int_int_func: {
+                    name: EQ
+                    constant_1: 2
+                    input_2: { path: [ 'role' ] }
+                  }
+                }
+                arguments: {
+                  bool_func: {
+                    name: NOT
+                    state: { path: [ 'roles', 'prospector2', 'available' ] }
+                  }
                 }
               }
+            }
 
-              else: {
-                if: {
-                  predicate: {
-                    int_int_func: {
-                      name: EQ
-                      constant_1: 3
-                      input_2: { path: [ 'role' ] }
-                    }
+            arguments: {
+              bools_func: {
+                name: AND
+                arguments: {
+                  int_int_func: {
+                    name: EQ
+                    constant_1: 3
+                    input_2: { path: [ 'role' ] }
                   }
-                  then: {
-                    bool_func: {
-                      name: NOT
-                      state: { path: [ 'roles', 'builder', 'available' ] }
-                    }
+                }
+                arguments: {
+                  bool_func: {
+                    name: NOT
+                    state: { path: [ 'roles', 'builder', 'available' ] }
                   }
+                }
+              }
+            }
 
-                  else: {
-                    if: {
-                      predicate: {
-                        int_int_func: {
-                          name: EQ
-                          constant_1: 4
-                          input_2: { path: [ 'role' ] }
-                        }
-                      }
-                      then: {
-                        bool_func: {
-                          name: NOT
-                          state: { path: [ 'roles', 'captain', 'available' ] }
-                        }
-                      }
+            arguments: {
+              bools_func: {
+                name: AND
+                arguments: {
+                  int_int_func: {
+                    name: EQ
+                    constant_1: 4
+                    input_2: { path: [ 'role' ] }
+                  }
+                }
+                arguments: {
+                  bool_func: {
+                    name: NOT
+                    state: { path: [ 'roles', 'captain', 'available' ] }
+                  }
+                }
+              }
+            }
 
-                      else: {
-                        if: {
-                          predicate: {
-                            int_int_func: {
-                              name: EQ
-                              constant_1: 5
-                              input_2: { path: [ 'role' ] }
-                            }
-                          }
-                          then: {
-                            bool_func: {
-                              name: NOT
-                              state: {
-                                path: [ 'roles', 'craftsman', 'available' ]
-                              }
-                            }
-                          }
+            arguments: {
+              bools_func: {
+                name: AND
+                arguments: {
+                  int_int_func: {
+                    name: EQ
+                    constant_1: 5
+                    input_2: { path: [ 'role' ] }
+                  }
+                }
+                arguments: {
+                  bool_func: {
+                    name: NOT
+                    state: { path: [ 'roles', 'craftsman', 'available' ] }
+                  }
+                }
+              }
+            }
 
-                          else: {
-                            if: {
-                              predicate: {
-                                int_int_func: {
-                                  name: EQ
-                                  constant_1: 6
-                                  input_2: { path: [ 'role' ] }
-                                }
-                              }
-                              then: {
-                                bool_func: {
-                                  name: NOT
-                                  state: {
-                                    path: [ 'roles', 'mayor', 'available' ]
-                                  }
-                                }
-                              }
+            arguments: {
+              bools_func: {
+                name: AND
+                arguments: {
+                  int_int_func: {
+                    name: EQ
+                    constant_1: 6
+                    input_2: { path: [ 'role' ] }
+                  }
+                }
+                arguments: {
+                  bool_func: {
+                    name: NOT
+                    state: { path: [ 'roles', 'mayor', 'available' ] }
+                  }
+                }
+              }
+            }
 
-                              else: {
-                                if: {
-                                  predicate: {
-                                    int_int_func: {
-                                      name: EQ
-                                      constant_1: 7
-                                      input_2: { path: [ 'role' ] }
-                                    }
-                                  }
-                                  then: {
-                                    bool_func: {
-                                      name: NOT
-                                      state: {
-                                        path: [
-                                          'roles',
-                                          'settler',
-                                          'available'
-                                        ]
-                                      }
-                                    }
-                                  }
+            arguments: {
+              bools_func: {
+                name: AND
+                arguments: {
+                  int_int_func: {
+                    name: EQ
+                    constant_1: 7
+                    input_2: { path: [ 'role' ] }
+                  }
+                }
+                arguments: {
+                  bool_func: {
+                    name: NOT
+                    state: { path: [ 'roles', 'settler', 'available' ] }
+                  }
+                }
+              }
+            }
 
-                                  else: {
-                                    bool_bool_func: {
-                                      name: AND
-                                      int_int_func_1: {
-                                        name: EQ
-                                        constant_1: 8
-                                        input_2: { path: [ 'role' ] }
-                                      }
-                                      bool_func_2: {
-                                        name: NOT
-                                        state: {
-                                          path: [
-                                            'roles',
-                                            'trader',
-                                            'available'
-                                          ]
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
+            arguments: {
+              bools_func: {
+                name: AND
+                arguments: {
+                  int_int_func: {
+                    name: EQ
+                    constant_1: 8
+                    input_2: { path: [ 'role' ] }
+                  }
+                }
+                arguments: {
+                  bool_func: {
+                    name: NOT
+                    state: { path: [ 'roles', 'trader', 'available' ] }
                   }
                 }
               }

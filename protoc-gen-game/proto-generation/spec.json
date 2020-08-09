@@ -193,6 +193,28 @@
 					]
 				}
 			}
-		}
+	        },
+
+                "nary": {
+                        "bool": {
+                                "bool": [
+                                        "eq",
+                                        "neq",
+                                        "and",
+                                        "or"
+                                ]
+                        },
+                        "int": {
+                                "int": [
+                                        "add",
+                                        "mult"
+                                ]
+                        },
+                        "string": {
+                                "string": [
+                                        "concat"
+                                ]
+                        }
+                }
 	}
 }

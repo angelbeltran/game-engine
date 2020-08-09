@@ -5,6 +5,8 @@ Pet project. Defining game rules and dynamics via Protobufs in Go.
 - [x] reference input in rules
 - [x] multiple effects (list)
 - [x] define responses (not just errors)
+- [x] variadic function (eg, "and" and "or")
+- [ ] dynamic state/input field references
 - [ ] fail effects if input or state field is not initialized
 - [ ] support binding errors per rule at anywhere in the rule tree
 - [ ] initialize state per game

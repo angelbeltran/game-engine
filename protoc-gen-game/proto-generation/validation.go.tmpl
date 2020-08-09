@@ -139,6 +139,12 @@ func Validate{{ $valueType }}References(val *pb.{{ $valueType }}, state, input *
 		return Validate{{ $domain1 }}And{{ $domain2 }}To{{ $type }}FunctionReferences(v.{{ $suffix }}, state, input)
 {{- end }}
 {{- end }}
+{{- range $_, $domain := $types }}
+{{- $domain = capitalize $domain }}
+{{- $suffix := printf "%ssFunc" $domain }}
+	case *pb.{{ $valueType }}_{{ $suffix }}:
+		return Validate{{ $domain }}sTo{{ $type }}FunctionReferences(v.{{ $suffix }}, state, input)
+{{- end }}
 	case *pb.{{ $valueType }}_If:
 		return Validate{{ $valueType }}If(v.If, state, input)
 	default:
@@ -181,6 +187,12 @@ func Validate{{ $funcType }}References(val *pb.{{ $funcType }}, state, input *de
 	case *pb.{{ $funcType }}_{{ $suffix }}:
 		return Validate{{ $otherDomain1 }}And{{ $otherDomain2 }}To{{ $domain }}FunctionReferences(v.{{ $suffix }}, state, input)
 {{- end }}
+{{- end }}
+{{- range $_, $otherDomain := $types }}
+{{- $otherDomain = capitalize $otherDomain }}
+{{- $suffix := printf "%ssFunc" $otherDomain }}
+	case *pb.{{ $funcType }}_{{ $suffix }}:
+		return Validate{{ $otherDomain }}sTo{{ $domain }}FunctionReferences(v.{{ $suffix }}, state, input)
 {{- end }}
 	case *pb.{{ $funcType }}_If:
 		return Validate{{ $domain }}ValueIf(v.If, state, input)
@@ -238,6 +250,14 @@ func Validate{{ $funcType }}References(val *pb.{{ $funcType }}, state, input *de
 		}
 {{- end }}
 {{- end }}
+{{- range $_, $otherDomain := $types }}
+{{- $otherDomain = capitalize $otherDomain }}
+{{- $suffix := printf "%ssFunc_1" $otherDomain }}
+	case *pb.{{ $funcType }}_{{ $suffix }}:
+		if err := Validate{{ $otherDomain }}sTo{{ $domain1 }}FunctionReferences(v.{{ $suffix }}, state, input); err != nil {
+			return err
+		}
+{{- end }}
 	case *pb.{{ $funcType }}_If_1:
 		if err := Validate{{ $domain1 }}ValueIf(v.If_1, state, input); err != nil {
 			return err
@@ -274,6 +294,14 @@ func Validate{{ $funcType }}References(val *pb.{{ $funcType }}, state, input *de
 		}
 {{- end }}
 {{- end }}
+{{- range $_, $otherDomain := $types }}
+{{- $otherDomain = capitalize $otherDomain }}
+{{- $suffix := printf "%ssFunc_2" $otherDomain }}
+	case *pb.{{ $funcType }}_{{ $suffix }}:
+		if err := Validate{{ $otherDomain }}sTo{{ $domain2 }}FunctionReferences(v.{{ $suffix }}, state, input); err != nil {
+			return err
+		}
+{{- end }}
 	case *pb.{{ $funcType }}_If_2:
 		if err := Validate{{ $domain2 }}ValueIf(v.If_2, state, input); err != nil {
 			return err
@@ -285,6 +313,73 @@ func Validate{{ $funcType }}References(val *pb.{{ $funcType }}, state, input *de
 	return nil
 }
 {{- end }}
+{{- end }}
+{{- end }}
+
+// N-ary Function Validation
+
+{{- range $_, $domain := $types }}
+{{- $domain = capitalize $domain }}
+{{- range $_, $codomain := $types }}
+{{- $codomain = capitalize $codomain }}
+{{- $funcType := (printf "%ssTo%sFunction" $domain $codomain) }}
+
+func Validate{{ $funcType }}References(val *pb.{{ $funcType }}, state, input *desc.MessageDescriptor) error {
+	if val == nil {
+		return fmt.Errorf("{{ $funcType }} function missing")
+	}
+
+	{{- $argType := printf "%s_Argument" $funcType }}
+
+	for _, arg := range val.Arguments {
+		switch v := arg.Argument.(type) {
+		case *pb.{{ $argType }}_Constant:
+		case *pb.{{ $argType }}_Input:
+			if err := ValidateReference(v.Input, input, Type{{ $domain }}); err != nil {
+				return err
+			}
+		case *pb.{{ $argType }}_State:
+			if err := ValidateReference(v.State, state, Type{{ $domain }}); err != nil {
+				return err
+			}
+	{{- range $_, $otherDomain := $types }}
+	{{- $otherDomain = capitalize $otherDomain }}
+	{{- $suffix := printf "%sFunc" $otherDomain }}
+		case *pb.{{ $argType }}_{{ $suffix }}:
+			if err := Validate{{ $otherDomain }}To{{ $domain }}FunctionReferences(v.{{ $suffix }}, state, input); err != nil {
+				return err
+			}
+	{{- end }}
+	{{- range $_, $otherDomain1 := $types }}
+	{{- $otherDomain1 = capitalize $otherDomain1 }}
+	{{- range $_, $otherDomain2 := $types }}
+	{{- $otherDomain2 = capitalize $otherDomain2 }}
+	{{- $suffix := printf "%s%sFunc" $otherDomain1 $otherDomain2 }}
+		case *pb.{{ $argType }}_{{ $suffix }}:
+			if err := Validate{{ $otherDomain1 }}And{{ $otherDomain2 }}To{{ $domain }}FunctionReferences(v.{{ $suffix }}, state, input); err != nil {
+				return err
+			}
+	{{- end }}
+	{{- end }}
+	{{- range $_, $otherDomain := $types }}
+	{{- $otherDomain = capitalize $otherDomain }}
+	{{- $suffix := printf "%ssFunc" $otherDomain }}
+		case *pb.{{ $argType }}_{{ $suffix }}:
+			if err := Validate{{ $otherDomain }}sTo{{ $domain }}FunctionReferences(v.{{ $suffix }}, state, input); err != nil {
+				return err
+			}
+	{{- end }}
+		case *pb.{{ $argType }}_If:
+			if err := Validate{{ $domain }}ValueIf(v.If, state, input); err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("unrecognized argument type from {{ $argType }}: %T", v)
+		}
+	}
+
+	return nil
+}
 {{- end }}
 {{- end }}
 
