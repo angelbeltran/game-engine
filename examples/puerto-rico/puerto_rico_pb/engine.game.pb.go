@@ -33,10 +33,7 @@ func (e *gameEngine) SetPlayers(ctx context.Context, in *Count) (*Response, erro
 
 	// Enforce the rules
 
-	allowed :=
-		go_func.BoolAndBoolToBool_AND(bool(go_func.BoolToBool_NOT(bool(state.Started))), bool(
-			go_func.IntAndIntToBool_LTE(int(3), int(in.Count))),
-		)
+	allowed := go_func.BoolAndBoolToBool_AND(bool(go_func.BoolToBool_NOT(bool(state.Started))), bool(go_func.IntAndIntToBool_LTE(int(3), int(in.Count))))
 	if !allowed {
 		return &Response{
 			Error: &game_engine_pb.Error{
@@ -48,20 +45,15 @@ func (e *gameEngine) SetPlayers(ctx context.Context, in *Count) (*Response, erro
 
 	// Apply any effects
 
-	state.Players.Player_1.Present =
-		go_func.IntAndIntToBool_LTE(int(3), int(in.Count))
+	state.Players.Player_1.Present = go_func.IntAndIntToBool_LTE(int(3), int(in.Count))
 
-	state.Players.Player_2.Present =
-		go_func.IntAndIntToBool_LTE(int(3), int(in.Count))
+	state.Players.Player_2.Present = go_func.IntAndIntToBool_LTE(int(3), int(in.Count))
 
-	state.Players.Player_3.Present =
-		go_func.IntAndIntToBool_LTE(int(3), int(in.Count))
+	state.Players.Player_3.Present = go_func.IntAndIntToBool_LTE(int(3), int(in.Count))
 
-	state.Players.Player_4.Present =
-		go_func.IntAndIntToBool_LTE(int(4), int(in.Count))
+	state.Players.Player_4.Present = go_func.IntAndIntToBool_LTE(int(4), int(in.Count))
 
-	state.Players.Player_5.Present =
-		go_func.IntAndIntToBool_LTE(int(5), int(in.Count))
+	state.Players.Player_5.Present = go_func.IntAndIntToBool_LTE(int(5), int(in.Count))
 
 	// Construct the response
 	res := NewResponse()
@@ -74,23 +66,18 @@ func (e *gameEngine) SetPlayers(ctx context.Context, in *Count) (*Response, erro
 
 	return &res, nil
 }
+
 func (e *gameEngine) Start(ctx context.Context, in *EmptyMsg) (*Response, error) {
 	state.Lock()
 	defer state.Unlock()
 
 	// Enforce the rules
 
-	allowed :=
-		go_func.BoolAndBoolToBool_AND(bool(go_func.BoolToBool_NOT(bool(state.Started))), bool(
-			go_func.BoolAndBoolToBool_AND(bool(state.Players.Player_1.Present), bool(
-				go_func.BoolAndBoolToBool_AND(bool(state.Players.Player_2.Present), bool(
-					go_func.BoolAndBoolToBool_AND(bool(state.Players.Player_3.Present), bool(
-						go_func.BoolAndBoolToBool_OR(bool(state.Players.Player_4.Present), bool(go_func.BoolToBool_NOT(bool(state.Players.Player_5.Present))),
-						)),
-					)),
-				)),
-			)),
-		)
+	allowed := go_func.BoolAndBoolToBool_AND(bool(go_func.BoolToBool_NOT(bool(state.Started))), bool(go_func.BoolAndBoolToBool_AND(bool(state.Players.Player_1.Present), bool(go_func.BoolAndBoolToBool_AND(bool(state.Players.Player_2.Present), bool(go_func.BoolAndBoolToBool_AND(bool(state.Players.Player_3.Present), bool(go_func.BoolAndBoolToBool_OR(bool(state.Players.Player_4.Present), bool(go_func.BoolToBool_NOT(bool(state.Players.Player_5.Present))))),
+	)),
+	)),
+	)),
+	)
 	if !allowed {
 		return &Response{
 			Error: &game_engine_pb.Error{
@@ -106,17 +93,99 @@ func (e *gameEngine) Start(ctx context.Context, in *EmptyMsg) (*Response, error)
 
 	// Construct the response
 	res := NewResponse()
+	res.State.Started = state.Started
 
 	return &res, nil
 }
-func (e *gameEngine) Accept(ctx context.Context, in *RoleChoice) (*Response, error) {
 
-	return &Response{
-		Error: &game_engine_pb.Error{
-			Msg: "unimplemented",
-		},
-	}, nil
+func (e *gameEngine) Accept(ctx context.Context, in *RoleChoice) (*Response, error) {
+	state.Lock()
+	defer state.Unlock()
+
+	// Enforce the rules
+
+	allowed := go_func.BoolAndBoolToBool_AND(bool(go_func.BoolAndBoolToBool_AND(bool(state.Started), bool(go_func.BoolAndBoolToBool_OR(bool(go_func.BoolAndBoolToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(1), int(in.Player))), bool(go_func.IntAndIntToBool_EQ(int(0), int(state.Players.Player_1.Role))))), bool(go_func.BoolAndBoolToBool_OR(bool(go_func.BoolAndBoolToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(2), int(in.Player))), bool(go_func.IntAndIntToBool_EQ(int(0), int(state.Players.Player_2.Role))))), bool(go_func.BoolAndBoolToBool_OR(bool(go_func.BoolAndBoolToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(3), int(in.Player))), bool(go_func.IntAndIntToBool_EQ(int(0), int(state.Players.Player_3.Role))))), bool(go_func.BoolAndBoolToBool_OR(bool(go_func.BoolAndBoolToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(4), int(in.Player))), bool(go_func.IntAndIntToBool_EQ(int(0), int(state.Players.Player_4.Role))))), bool(go_func.BoolAndBoolToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(5), int(in.Player))), bool(go_func.IntAndIntToBool_EQ(int(0), int(state.Players.Player_5.Role))))),
+	)),
+	)),
+	)),
+	)),
+	)), bool(func() bool {
+		if go_func.IntAndIntToBool_EQ(int(1), int(in.Role)) {
+			return go_func.BoolToBool_NOT(bool(state.Roles.Prospector1.Available))
+		}
+
+		return func() bool {
+			if go_func.IntAndIntToBool_EQ(int(2), int(in.Role)) {
+				return go_func.BoolToBool_NOT(bool(state.Roles.Prospector2.Available))
+			}
+
+			return func() bool {
+				if go_func.IntAndIntToBool_EQ(int(3), int(in.Role)) {
+					return go_func.BoolToBool_NOT(bool(state.Roles.Builder.Available))
+				}
+
+				return func() bool {
+					if go_func.IntAndIntToBool_EQ(int(4), int(in.Role)) {
+						return go_func.BoolToBool_NOT(bool(state.Roles.Captain.Available))
+					}
+
+					return func() bool {
+						if go_func.IntAndIntToBool_EQ(int(5), int(in.Role)) {
+							return go_func.BoolToBool_NOT(bool(state.Roles.Craftsman.Available))
+						}
+
+						return func() bool {
+							if go_func.IntAndIntToBool_EQ(int(6), int(in.Role)) {
+								return go_func.BoolToBool_NOT(bool(state.Roles.Mayor.Available))
+							}
+
+							return func() bool {
+								if go_func.IntAndIntToBool_EQ(int(7), int(in.Role)) {
+									return go_func.BoolToBool_NOT(bool(state.Roles.Settler.Available))
+								}
+
+								return go_func.BoolAndBoolToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(8), int(in.Role))), bool(go_func.BoolToBool_NOT(bool(state.Roles.Trader.Available))))
+							}()
+						}()
+					}()
+				}()
+			}()
+		}()
+	}()),
+	)
+	if !allowed {
+		return &Response{
+			Error: &game_engine_pb.Error{
+				Code: "446eda13-7e86-40c5-55c0-ac363015f92d",
+				Msg:  "dummy error",
+			},
+		}, nil
+	}
+
+	// Apply any effects
+
+	state.Roles.Prospector1.Available = go_func.BoolAndBoolToBool_OR(bool(state.Roles.Prospector1.Available), bool(go_func.IntAndIntToBool_EQ(int(1), int(in.Role))))
+
+	state.Roles.Prospector2.Available = go_func.BoolAndBoolToBool_OR(bool(state.Roles.Prospector2.Available), bool(go_func.IntAndIntToBool_EQ(int(2), int(in.Role))))
+
+	state.Roles.Builder.Available = go_func.BoolAndBoolToBool_OR(bool(state.Roles.Builder.Available), bool(go_func.IntAndIntToBool_EQ(int(3), int(in.Role))))
+
+	state.Roles.Captain.Available = go_func.BoolAndBoolToBool_OR(bool(state.Roles.Captain.Available), bool(go_func.IntAndIntToBool_EQ(int(4), int(in.Role))))
+
+	state.Roles.Craftsman.Available = go_func.BoolAndBoolToBool_OR(bool(state.Roles.Craftsman.Available), bool(go_func.IntAndIntToBool_EQ(int(5), int(in.Role))))
+
+	state.Roles.Mayor.Available = go_func.BoolAndBoolToBool_OR(bool(state.Roles.Mayor.Available), bool(go_func.IntAndIntToBool_EQ(int(6), int(in.Role))))
+
+	state.Roles.Settler.Available = go_func.BoolAndBoolToBool_OR(bool(state.Roles.Settler.Available), bool(go_func.IntAndIntToBool_EQ(int(7), int(in.Role))))
+
+	state.Roles.Trader.Available = go_func.BoolAndBoolToBool_OR(bool(state.Roles.Trader.Available), bool(go_func.IntAndIntToBool_EQ(int(8), int(in.Role))))
+
+	// Construct the response
+	res := NewResponse()
+
+	return &res, nil
 }
+
 func (e *gameEngine) Purchase(ctx context.Context, in *BuildingChoice) (*Response, error) {
 
 	return &Response{
@@ -125,6 +194,7 @@ func (e *gameEngine) Purchase(ctx context.Context, in *BuildingChoice) (*Respons
 		},
 	}, nil
 }
+
 func (e *gameEngine) Load(ctx context.Context, in *GoodToShip) (*Response, error) {
 
 	return &Response{
@@ -133,6 +203,7 @@ func (e *gameEngine) Load(ctx context.Context, in *GoodToShip) (*Response, error
 		},
 	}, nil
 }
+
 func (e *gameEngine) Craft(ctx context.Context, in *EmptyMsg) (*Response, error) {
 
 	return &Response{
@@ -141,6 +212,7 @@ func (e *gameEngine) Craft(ctx context.Context, in *EmptyMsg) (*Response, error)
 		},
 	}, nil
 }
+
 func (e *gameEngine) CraftExtra(ctx context.Context, in *GoodChoice) (*Response, error) {
 
 	return &Response{
@@ -149,6 +221,7 @@ func (e *gameEngine) CraftExtra(ctx context.Context, in *GoodChoice) (*Response,
 		},
 	}, nil
 }
+
 func (e *gameEngine) WelcomeColonist(ctx context.Context, in *EmptyMsg) (*Response, error) {
 
 	return &Response{
@@ -157,6 +230,7 @@ func (e *gameEngine) WelcomeColonist(ctx context.Context, in *EmptyMsg) (*Respon
 		},
 	}, nil
 }
+
 func (e *gameEngine) WelcomeColonistFromSupply(ctx context.Context, in *EmptyMsg) (*Response, error) {
 
 	return &Response{
@@ -165,6 +239,7 @@ func (e *gameEngine) WelcomeColonistFromSupply(ctx context.Context, in *EmptyMsg
 		},
 	}, nil
 }
+
 func (e *gameEngine) ApplyColonistToBuilding(ctx context.Context, in *BuildingChoice) (*Response, error) {
 
 	return &Response{
@@ -173,6 +248,7 @@ func (e *gameEngine) ApplyColonistToBuilding(ctx context.Context, in *BuildingCh
 		},
 	}, nil
 }
+
 func (e *gameEngine) ApplyColonistToPlantation(ctx context.Context, in *PlantationChoice) (*Response, error) {
 
 	return &Response{
@@ -181,6 +257,7 @@ func (e *gameEngine) ApplyColonistToPlantation(ctx context.Context, in *Plantati
 		},
 	}, nil
 }
+
 func (e *gameEngine) ApplyColonistToQuarry(ctx context.Context, in *EmptyMsg) (*Response, error) {
 
 	return &Response{
@@ -189,6 +266,7 @@ func (e *gameEngine) ApplyColonistToQuarry(ctx context.Context, in *EmptyMsg) (*
 		},
 	}, nil
 }
+
 func (e *gameEngine) RefillColonistShip(ctx context.Context, in *EmptyMsg) (*Response, error) {
 
 	return &Response{
@@ -197,6 +275,7 @@ func (e *gameEngine) RefillColonistShip(ctx context.Context, in *EmptyMsg) (*Res
 		},
 	}, nil
 }
+
 func (e *gameEngine) Settle(ctx context.Context, in *PlantationChoice) (*Response, error) {
 
 	return &Response{
@@ -205,6 +284,7 @@ func (e *gameEngine) Settle(ctx context.Context, in *PlantationChoice) (*Respons
 		},
 	}, nil
 }
+
 func (e *gameEngine) ConstructQuarry(ctx context.Context, in *EmptyMsg) (*Response, error) {
 
 	return &Response{
@@ -213,6 +293,7 @@ func (e *gameEngine) ConstructQuarry(ctx context.Context, in *EmptyMsg) (*Respon
 		},
 	}, nil
 }
+
 func (e *gameEngine) Trade(ctx context.Context, in *GoodChoice) (*Response, error) {
 
 	return &Response{
@@ -221,6 +302,7 @@ func (e *gameEngine) Trade(ctx context.Context, in *GoodChoice) (*Response, erro
 		},
 	}, nil
 }
+
 func (e *gameEngine) EndAction(ctx context.Context, in *PlayerChoice) (*Response, error) {
 
 	return &Response{

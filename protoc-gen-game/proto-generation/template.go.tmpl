@@ -53,6 +53,11 @@ func GenerateService(w io.Writer, opts TemplateParams) error {
 		{{- end }}
 		{{- end }}
 		{{- end }}
+		{{- range $type := $types }}
+		{{- $ifType := printf "%sValueIf" (capitalize $type) }}
+		{{- $ident := printf "New%sParams" $ifType }}
+		"{{ $ident }}": {{ $ident }},
+		{{- end }}
 	}).Parse(Template)
 	if err != nil {
 		return fmt.Errorf("failed to parse service template: %w", err)
@@ -179,7 +184,7 @@ func (e *gameEngine) {{ $bundle.Method.GetName }}(ctx context.Context, in *{{ $b
 
 	{{- end }}
 }
-{{- end }}
+{{ end }}
 
 var state = NewGameState()
 
@@ -309,8 +314,8 @@ func NewResponse() {{ $responseType }} {
 {{ "{{-" }} else if .Value.Get{{ $domain1 }}{{ $domain2 }}Func {{ "}}{{" }} template "{{ $domain1 }}And{{ $domain2 }}To{{ $type }}Function" New{{ $domain1 }}And{{ $domain2 }}To{{ $type }}FunctionParams .Value.Get{{ $domain1 }}{{ $domain2 }}Func .InputVariable .StateVariable {{ "}}" }}
 {{- end }}
 {{- end }}
-{{ `{{-` }} else if .Value.GetIf {{ `}}{{` }} template "{{ $type }}ValueIf" New{{ $type }}ValueParams .Value.GetIf .InputVariable .StateVariable {{ `}}` }}
-{{ "{{-" }} else {{ "}}{{" }} .Value.GetConstant {{ "}}" }}
+{{ `{{-` }} else if .Value.GetIf {{ `}}{{` }} template "{{ $type }}ValueIf" New{{ $type }}ValueIfParams .Value.GetIf .InputVariable .StateVariable {{ `}}` }}
+{{ "{{-" }} else {{ "}}{{" }} printf "%v" .Value.GetConstant {{ "}}" }}
 {{`{{- end }}`}}
 {{`{{- end }}`}}
 
@@ -353,7 +358,7 @@ go_func.{{- $domain }}To{{ $codomain }}_{{ `{{- camelCase .Function.Name.String 
 	{{- end }}
 	{{- end }}
 
-	{{ `{{-` }} else if .If {{ `}}{{` }} template "{{ $domain }}ValueIf" New{{ $domain }}ValueParams .If .InputVariable .StateVariable {{ `}}` }}
+	{{ `{{-` }} else if .If {{ `}}{{` }} template "{{ $domain }}ValueIf" New{{ $domain }}ValueIfParams .If .InputVariable .StateVariable {{ `}}` }}
 
 	{{ `{{-` }} end {{ `}}` }},
 {{ `))` }}
@@ -375,10 +380,9 @@ go_func.{{- $domain }}To{{ $codomain }}_{{ `{{- camelCase .Function.Name.String 
 {{- $funcTypeName := printf "%sAnd%sTo%sFunction" $domain1 $domain2 $codomain }}
 {{ `{{-` }} define "{{ $funcTypeName }}" {{ `-}}` }}
 {{ `{{- /*`}} Expects a {{ $funcTypeName }}Params {{ `*/}}` }}
-{{ `{{-` }} if not .Function.Name {{ `}}{{` }} failNoFunctionName "{{ $funcTypeName }}" {{ `}}{{` }} end {{ `}}` }}
+{{ `{{-` }} if not .Function.Name {{ `}}{{` }} failNoFunctionName "{{ $funcTypeName }}" {{ `}}{{` }} end {{ `}}` -}}
 go_func.{{- $domain1 }}And{{ $domain2 }}To{{ $codomain }}_{{ `{{- camelCase .Function.Name.String }}(` }}{{ $domain1GoType }}(
-	{{ `{{-` }} if .Function.GetConstant_1 {{ `}}{{` }} .Function.GetConstant_1 {{ `}}` }}
-	{{ `{{-` }} else if .Function.GetInput_1 {{ `}}{{` }} template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 {{ `}}` }}
+	{{ `{{-` }} if .Function.GetInput_1 {{ `}}{{` }} template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 {{ `}}` }}
 	{{ `{{-` }} else if .Function.GetState_1 {{ `}}{{` }} template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 {{ `}}` }}
 
 	{{- /* Unary function output at input 1 */}}
@@ -402,7 +406,9 @@ go_func.{{- $domain1 }}And{{ $domain2 }}To{{ $codomain }}_{{ `{{- camelCase .Fun
 	{{- end }}
 	{{- end }}
 
-	{{ `{{-` }} else if .Function.GetIf_1 {{ `}}{{` }} template "{{ $domain1 }}ValueIf" New{{ $domain1 }}ValueParams .Function.GetIf_1 .InputVariable .StateVariable {{ `}}` }}
+	{{ `{{-` }} else if .Function.GetIf_1 {{ `}}{{` }} template "{{ $domain1 }}ValueIf" New{{ $domain1 }}ValueIfParams .Function.GetIf_1 .InputVariable .StateVariable {{ `}}` }}
+
+	{{ `{{-` }} else {{ `}}{{` }} printf "%v" .Function.GetConstant_1 {{ `}}` }}
 
 	{{ `{{-` }} end {{ `}}` }}), {{ $domain2GoType }}(
 
@@ -430,7 +436,7 @@ go_func.{{- $domain1 }}And{{ $domain2 }}To{{ $codomain }}_{{ `{{- camelCase .Fun
 	{{- end }}
 	{{- end }}
 
-	{{ `{{-` }} else if .Function.GetIf_2 {{ `}}{{` }} template "{{ $domain2 }}ValueIf" New{{ $domain2 }}ValueParams .Function.GetIf_2 .InputVariable .StateVariable {{ `}}` }}
+	{{ `{{-` }} else if .Function.GetIf_2 {{ `}}{{` }} template "{{ $domain2 }}ValueIf" New{{ $domain2 }}ValueIfParams .Function.GetIf_2 .InputVariable .StateVariable {{ `}}` }}
 
 	{{ `{{-` }} end {{ `}}` }}),
 {{ `)` }}
@@ -445,7 +451,7 @@ go_func.{{- $domain1 }}And{{ $domain2 }}To{{ $codomain }}_{{ `{{- camelCase .Fun
 {{- $lowerCaseType := $type }}
 {{- $type = capitalize $type }}
 {{ `{{-` }} define "{{ $type }}ValueIf" {{ `-}}` }}
-{{ `{{- /* Expects a *pb.` }}{{ $type }}{{`ValueIf */}}` }}
+{{ `{{- /* Expects a ` }}{{ $type }}{{`ValueIfParams */}}` -}}
 func() {{ $lowerCaseType }} {
 	if {{ `{{` }} template "BoolValue" NewBoolValueParams .If.Predicate .InputVariable .StateVariable {{ `}}` }} {
 		return {{ `{{` }} template "{{ $type }}Value" New{{ $type }}ValueParams .If.Then .InputVariable .StateVariable {{ `}}` }}
@@ -553,6 +559,27 @@ func New{{ $funcType }}Params(function *pb.{{ $funcType }}, input, state string)
 {{- end }}
 {{- end }}
 {{- end }}
+
+// If-Else Control Structures
+{{- range $type := $types }}
+{{- $ifType := printf "%sValueIf" (capitalize $type) }}
+
+type {{ $ifType }}Params struct {
+	If *pb.{{ $ifType }}
+	InputVariable string
+	StateVariable string
+}
+
+func New{{ $ifType }}Params(v *pb.{{ $ifType }}, input, state string) {{ $ifType }}Params {
+	return {{ $ifType }}Params{
+		If: v,
+		InputVariable: input,
+		StateVariable: state,
+	}
+}
+{{- end }}
+
+// Others
 
 type EffectParams struct {
 	Effect *pb.Effect

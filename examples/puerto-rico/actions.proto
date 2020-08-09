@@ -18,135 +18,6 @@ service Actions {
 
   // Game start
 
-  // TODO: test enums
-
-  /*
-  rpc SetPlayers(Count) returns (Response) {
-    option (game_engine.action).effect = {
-      update: {
-        dest: { path: [ 'players', 'player_1', 'present' ] }
-        src: { value: { bool: true } }
-
-        // key describes the type of value being set. The path at dest is
-        // verified to have this type
-        bool: {
-          // could be constant value.
-          constant: true
-
-          // could be reference to the rpc input or state.
-          // can only define one of these.
-          input: [ 'some', 'input', 'property' ]
-          // state: [ 'player1', 'is', 'the', 'best' ]
-
-          // could be the result of a function. the field name indicates the
-          // function's signature. here, there is a single argument, a bool.
-          bool_func: {
-            name: NOT
-
-            // precisely one of the following must be specified.
-
-            // 'input' indicates a property of the rpc method's input that houls
-            // should be used as the argument of the function.
-            input: [ 'some', 'property', 'of', 'the', 'input' ]
-
-            // 'state' indicates the same as 'input', but for the state.
-            state: [ 'some', 'property', 'of', 'the', 'state' ]
-
-            // another function's output could be used as the input here! this
-            // allows for functional composition and arbitrarily complex and
-            // useful functions to be constructed. the field name indicates the
-            // function's signature. here, the argument is binary function
-            // requiring two values, two strings. look at the 'int_int_func'
-            // example below for an explanation of binrary functions.
-            string_string_func: {
-              name: EQ
-
-              state1: [
-                'some',
-                'string',
-                'property',
-                'of',
-                'interest',
-              ]
-              constant: 'some value to compare against'
-            }
-          }
-
-          // this function requires two integer arguments
-          int_int_func: {
-            name: GTE
-
-            // exactly one of 'input1' or 'state1' must be provided, or a
-            // function whose output type matches.
-            state1: [ 'player_1', 'cash' ]
-            // input1: [ 'player_1', 'cash' ]
-            // string_func: { name: LEN state: [ 'player_1', 'name' ] }
-
-            // exactly one of 'input2', 'state2', or 'constant' must be
-            // provided. 'constant' can be used to curry binary functions into
-            // custom unary functions.
-            constant: 450
-          }
-
-          // 'if' allows the value to depend on a predicate,
-          // (input, state) -> {true, false}.
-          //
-          // the if block inherits the output type of the context the block is
-          // placed in. here, the 'if' block must output a 'bool'
-          if: {
-            // predicate is an object that resolves to a bool. in fact it should
-            // be the same kind being described so far. obviously, these
-            // structures can be very deeply nested!
-            predicate: {}
-
-            // then is an object that resolves to the 'it's output type, in
-            // this example, a bool. 'if' resolves to this value if predicate
-            // resolves to true.
-            then: {}
-
-            // else is like 'then', but is resolved to if predicate resolves to
-            // false.
-            else: {}
-          }
-        }
-      }
-    };
-
-    option (game_engine.action).effect = {
-      update: {
-        dest: { path: [ 'quarries' ] }
-        src: { input: { path: [ 'count' ] } }
-      }
-    };
-
-    option (game_engine.action).rule = {
-      single: {
-        left: { value: { bool: true } }
-        operator: EQ
-        right: { value: { bool: true } }
-      }
-    };
-
-    option (game_engine.action).response = {
-      path: [ 'started' ]
-    };
-    option (game_engine.action).response = {
-      path: [ 'players', 'player_1', 'present' ]
-    };
-    option (game_engine.action).response = {
-      path: [ 'players', 'player_2', 'present' ]
-    };
-    option (game_engine.action).response = {
-      path: [ 'players', 'player_3', 'buildings' ]
-    };
-
-    option (game_engine.action).error = {
-      code: "826de622-ad54-4b65-3395-bb4d3828e67b"
-      msg: "dummy error"
-    };
-  };
-  */
-
   rpc SetPlayers(Count) returns (Response) {
     option (game_engine.action).rule = {
       bool_bool_func: {
@@ -264,13 +135,6 @@ service Actions {
   };
 
   rpc Start(EmptyMsg) returns (Response) {
-    option (game_engine.action).effect = {
-      update: {
-        state: { path: [ 'started' ] }
-        value: { bool: { constant: true } }
-      }
-    };
-
     option (game_engine.action).rule = {
       bool_bool_func: {
         name: AND
@@ -301,66 +165,16 @@ service Actions {
       }
     };
 
-    /*
-    option (game_engine.action).rule = {
-      and: {
-        rules: [
-          {
-            single: {
-              left: { prop: { path: [ 'started' ] } }
-              operator: EQ
-              right: { value: { bool: false } }
-            }
-          },
-          {
-            single: {
-              left: { prop: { path: [ 'players', 'player_1', 'present' ] } }
-              operator: EQ
-              right: { value: { bool: true } }
-            }
-          },
-          {
-            single: {
-              left: { prop: { path: [ 'players', 'player_2', 'present' ] } }
-              operator: EQ
-              right: { value: { bool: true } }
-            }
-          },
-          {
-            single: {
-              left: { prop: { path: [ 'players', 'player_3', 'present' ] } }
-              operator: EQ
-              right: { value: { bool: true } }
-            }
-          },
-          {
-            or: {
-              rules: [
-                {
-                  single: {
-                    left: {
-                      prop: { path: [ 'players', 'player_4', 'present' ] }
-                    }
-                    operator: EQ
-                    right: { value: { bool: true } }
-                  }
-                },
-                {
-                  single: {
-                    left: {
-                      prop: { path: [ 'players', 'player_5', 'present' ] }
-                    }
-                    operator: EQ
-                    right: { value: { bool: false } }
-                  }
-                }
-              ]
-            }
-          }
-        ]
+    option (game_engine.action).effect = {
+      update: {
+        state: { path: [ 'started' ] }
+        value: { bool: { constant: true } }
       }
     };
-    */
+
+    option (game_engine.action).response = {
+      path: [ 'started' ]
+    };
 
     option (game_engine.action).error = {
       code: "57e0c77b-3e2b-431c-c5ed-ee81a89d5ee6"
@@ -370,7 +184,414 @@ service Actions {
 
   // General gameplay
 
-  rpc Accept(RoleChoice) returns (Response);
+  rpc Accept(RoleChoice) returns (Response) {
+    // TODO: figure how to model map accesses
+    // TODO: finish this
+    option (game_engine.action).rule = {
+      bool_bool_func: {
+        name: AND
+
+        bool_bool_func_1: {
+          name: AND
+          state_1: { path: [ 'started' ] }
+
+          bool_bool_func_2: {
+            name: OR
+            bool_bool_func_1: {
+              name: AND
+              int_int_func_1: {
+                name: EQ
+                constant_1: 1
+                input_2: { path: [ 'player' ] }
+              }
+              int_int_func_2: {
+                name: EQ
+                constant_1: 0
+                state_2: { path: [ 'players', 'player_1', 'role' ] }
+              }
+            }
+
+            bool_bool_func_2: {
+              name: OR
+              bool_bool_func_1: {
+                name: AND
+                int_int_func_1: {
+                  name: EQ
+                  constant_1: 2
+                  input_2: { path: [ 'player' ] }
+                }
+                int_int_func_2: {
+                  name: EQ
+                  constant_1: 0
+                  state_2: { path: [ 'players', 'player_2', 'role' ] }
+                }
+              }
+
+              bool_bool_func_2: {
+                name: OR
+                bool_bool_func_1: {
+                  name: AND
+                  int_int_func_1: {
+                    name: EQ
+                    constant_1: 3
+                    input_2: { path: [ 'player' ] }
+                  }
+                  int_int_func_2: {
+                    name: EQ
+                    constant_1: 0
+                    state_2: { path: [ 'players', 'player_3', 'role' ] }
+                  }
+                }
+
+                bool_bool_func_2: {
+                  name: OR
+                  bool_bool_func_1: {
+                    name: AND
+                    int_int_func_1: {
+                      name: EQ
+                      constant_1: 4
+                      input_2: { path: [ 'player' ] }
+                    }
+                    int_int_func_2: {
+                      name: EQ
+                      constant_1: 0
+                      state_2: { path: [ 'players', 'player_4', 'role' ] }
+                    }
+                  }
+
+                  bool_bool_func_2: {
+                    name: AND
+                    int_int_func_1: {
+                      name: EQ
+                      constant_1: 5
+                      input_2: { path: [ 'player' ] }
+                    }
+                    int_int_func_2: {
+                      name: EQ
+                      constant_1: 0
+                      state_2: { path: [ 'players', 'player_5', 'role' ] }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        if_2: {
+          predicate: {
+            int_int_func: {
+              name: EQ
+              constant_1: 1
+              input_2: { path: [ 'role' ] }
+            }
+          }
+          then: {
+            bool_func: {
+              name: NOT
+              state: { path: [ 'roles', 'prospector1', 'available' ] }
+            }
+          }
+
+          else: {
+            if: {
+              predicate: {
+                int_int_func: {
+                  name: EQ
+                  constant_1: 2
+                  input_2: { path: [ 'role' ] }
+                }
+              }
+              then: {
+                bool_func: {
+                  name: NOT
+                  state: { path: [ 'roles', 'prospector2', 'available' ] }
+                }
+              }
+
+              else: {
+                if: {
+                  predicate: {
+                    int_int_func: {
+                      name: EQ
+                      constant_1: 3
+                      input_2: { path: [ 'role' ] }
+                    }
+                  }
+                  then: {
+                    bool_func: {
+                      name: NOT
+                      state: { path: [ 'roles', 'builder', 'available' ] }
+                    }
+                  }
+
+                  else: {
+                    if: {
+                      predicate: {
+                        int_int_func: {
+                          name: EQ
+                          constant_1: 4
+                          input_2: { path: [ 'role' ] }
+                        }
+                      }
+                      then: {
+                        bool_func: {
+                          name: NOT
+                          state: { path: [ 'roles', 'captain', 'available' ] }
+                        }
+                      }
+
+                      else: {
+                        if: {
+                          predicate: {
+                            int_int_func: {
+                              name: EQ
+                              constant_1: 5
+                              input_2: { path: [ 'role' ] }
+                            }
+                          }
+                          then: {
+                            bool_func: {
+                              name: NOT
+                              state: {
+                                path: [ 'roles', 'craftsman', 'available' ]
+                              }
+                            }
+                          }
+
+                          else: {
+                            if: {
+                              predicate: {
+                                int_int_func: {
+                                  name: EQ
+                                  constant_1: 6
+                                  input_2: { path: [ 'role' ] }
+                                }
+                              }
+                              then: {
+                                bool_func: {
+                                  name: NOT
+                                  state: {
+                                    path: [ 'roles', 'mayor', 'available' ]
+                                  }
+                                }
+                              }
+
+                              else: {
+                                if: {
+                                  predicate: {
+                                    int_int_func: {
+                                      name: EQ
+                                      constant_1: 7
+                                      input_2: { path: [ 'role' ] }
+                                    }
+                                  }
+                                  then: {
+                                    bool_func: {
+                                      name: NOT
+                                      state: {
+                                        path: [
+                                          'roles',
+                                          'settler',
+                                          'available'
+                                        ]
+                                      }
+                                    }
+                                  }
+
+                                  else: {
+                                    bool_bool_func: {
+                                      name: AND
+                                      int_int_func_1: {
+                                        name: EQ
+                                        constant_1: 8
+                                        input_2: { path: [ 'role' ] }
+                                      }
+                                      bool_func_2: {
+                                        name: NOT
+                                        state: {
+                                          path: [
+                                            'roles',
+                                            'trader',
+                                            'available'
+                                          ]
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+
+    option (game_engine.action).effect = {
+      update: {
+        state: { path: [ 'roles', 'prospector1', 'available' ] }
+        value: {
+          bool: {
+            bool_bool_func: {
+              name: OR
+              state_1: { path: [ 'roles', 'prospector1', 'available' ] }
+              int_int_func_2: {
+                name: EQ
+                constant_1: 1
+                input_2: { path: [ 'role' ] }
+              }
+            }
+          }
+        }
+      }
+    };
+
+    option (game_engine.action).effect = {
+      update: {
+        state: { path: [ 'roles', 'prospector2', 'available' ] }
+        value: {
+          bool: {
+            bool_bool_func: {
+              name: OR
+              state_1: { path: [ 'roles', 'prospector2', 'available' ] }
+              int_int_func_2: {
+                name: EQ
+                constant_1: 2
+                input_2: { path: [ 'role' ] }
+              }
+            }
+          }
+        }
+      }
+    };
+
+    option (game_engine.action).effect = {
+      update: {
+        state: { path: [ 'roles', 'builder', 'available' ] }
+        value: {
+          bool: {
+            bool_bool_func: {
+              name: OR
+              state_1: { path: [ 'roles', 'builder', 'available' ] }
+              int_int_func_2: {
+                name: EQ
+                constant_1: 3
+                input_2: { path: [ 'role' ] }
+              }
+            }
+          }
+        }
+      }
+    };
+
+    option (game_engine.action).effect = {
+      update: {
+        state: { path: [ 'roles', 'captain', 'available' ] }
+        value: {
+          bool: {
+            bool_bool_func: {
+              name: OR
+              state_1: { path: [ 'roles', 'captain', 'available' ] }
+              int_int_func_2: {
+                name: EQ
+                constant_1: 4
+                input_2: { path: [ 'role' ] }
+              }
+            }
+          }
+        }
+      }
+    };
+
+    option (game_engine.action).effect = {
+      update: {
+        state: { path: [ 'roles', 'craftsman', 'available' ] }
+        value: {
+          bool: {
+            bool_bool_func: {
+              name: OR
+              state_1: { path: [ 'roles', 'craftsman', 'available' ] }
+              int_int_func_2: {
+                name: EQ
+                constant_1: 5
+                input_2: { path: [ 'role' ] }
+              }
+            }
+          }
+        }
+      }
+    };
+
+    option (game_engine.action).effect = {
+      update: {
+        state: { path: [ 'roles', 'mayor', 'available' ] }
+        value: {
+          bool: {
+            bool_bool_func: {
+              name: OR
+              state_1: { path: [ 'roles', 'mayor', 'available' ] }
+              int_int_func_2: {
+                name: EQ
+                constant_1: 6
+                input_2: { path: [ 'role' ] }
+              }
+            }
+          }
+        }
+      }
+    };
+
+    option (game_engine.action).effect = {
+      update: {
+        state: { path: [ 'roles', 'settler', 'available' ] }
+        value: {
+          bool: {
+            bool_bool_func: {
+              name: OR
+              state_1: { path: [ 'roles', 'settler', 'available' ] }
+              int_int_func_2: {
+                name: EQ
+                constant_1: 7
+                input_2: { path: [ 'role' ] }
+              }
+            }
+          }
+        }
+      }
+    };
+
+    option (game_engine.action).effect = {
+      update: {
+        state: { path: [ 'roles', 'trader', 'available' ] }
+        value: {
+          bool: {
+            bool_bool_func: {
+              name: OR
+              state_1: { path: [ 'roles', 'trader', 'available' ] }
+              int_int_func_2: {
+                name: EQ
+                constant_1: 8
+                input_2: { path: [ 'role' ] }
+              }
+            }
+          }
+        }
+      }
+    };
+
+    option (game_engine.action).error = {
+      code: "446eda13-7e86-40c5-55c0-ac363015f92d"
+      msg: "dummy error"
+    };
+  };
 
   // Action: Builder
   rpc Purchase(BuildingChoice) returns (Response);
@@ -416,7 +637,8 @@ message Count {
 }
 
 message RoleChoice {
-  RoleID role = 1;
+  PlayerID player = 1;
+  RoleID role = 2;
 }
 
 message BuildingChoice {
