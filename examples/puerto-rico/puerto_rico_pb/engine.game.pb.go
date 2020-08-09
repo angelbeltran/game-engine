@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/angelbeltran/game-engine/protoc-gen-game/game_engine_pb"
+	"github.com/angelbeltran/game-engine/protoc-gen-game/proto-generation/go_func"
 	"google.golang.org/grpc"
 	"net"
 	"sync"
@@ -31,8 +32,7 @@ func (e *gameEngine) SetPlayers(ctx context.Context, in *Count) (*Response, erro
 	defer state.Unlock()
 
 	// Enforce the rules
-	allowed := true == true
-
+	allowed := true
 	if !allowed {
 		return &Response{
 			Error: &game_engine_pb.Error{
@@ -42,80 +42,36 @@ func (e *gameEngine) SetPlayers(ctx context.Context, in *Count) (*Response, erro
 		}, nil
 	}
 
-	// Apply any effects
+	// TODO: Apply any effects
 
-	if state.Players == nil {
-		state.Players = &State_Players{}
-	}
-	if state.Players.Player_1 == nil {
-		state.Players.Player_1 = &Player{}
-	}
-	state.Players.Player_1.Present = true
+	// TODO: Construct the response
 
-	state.Quarries = in.Count
-
-	// Construct the response
-	res := Response{
-		State: new(State),
-	}
-
-	res.State.Started = state.Started
-
-	if state.Players == nil {
-		state.Players = &State_Players{}
-	}
-	if state.Players.Player_1 == nil {
-		state.Players.Player_1 = &Player{}
-	}
-
-	if res.State.Players == nil {
-		res.State.Players = &State_Players{}
-	}
-	if res.State.Players.Player_1 == nil {
-		res.State.Players.Player_1 = &Player{}
-	}
-	res.State.Players.Player_1.Present = state.Players.Player_1.Present
-
-	if state.Players == nil {
-		state.Players = &State_Players{}
-	}
-	if state.Players.Player_2 == nil {
-		state.Players.Player_2 = &Player{}
-	}
-
-	if res.State.Players == nil {
-		res.State.Players = &State_Players{}
-	}
-	if res.State.Players.Player_2 == nil {
-		res.State.Players.Player_2 = &Player{}
-	}
-	res.State.Players.Player_2.Present = state.Players.Player_2.Present
-
-	if state.Players == nil {
-		state.Players = &State_Players{}
-	}
-	if state.Players.Player_3 == nil {
-		state.Players.Player_3 = &Player{}
-	}
-
-	if res.State.Players == nil {
-		res.State.Players = &State_Players{}
-	}
-	if res.State.Players.Player_3 == nil {
-		res.State.Players.Player_3 = &Player{}
-	}
-	res.State.Players.Player_3.Buildings = state.Players.Player_3.Buildings
-
-	return &res, nil
+	return &Response{}, nil
 }
-
 func (e *gameEngine) Start(ctx context.Context, in *EmptyMsg) (*Response, error) {
 	state.Lock()
 	defer state.Unlock()
 
 	// Enforce the rules
-	allowed := (state.Started == false) && (state.Players != nil && state.Players.Player_1 != nil && state.Players.Player_1.Present == true) && (state.Players != nil && state.Players.Player_2 != nil && state.Players.Player_2.Present == true) && (state.Players != nil && state.Players.Player_3 != nil && state.Players.Player_3.Present == true) && ((state.Players != nil && state.Players.Player_4 != nil && state.Players.Player_4.Present == true) || (state.Players != nil && state.Players.Player_5 != nil && state.Players.Player_5.Present == false))
-
+	allowed :=
+		go_func.BoolAndBoolToBool_AND(go_func.BoolToBool_NOT(
+			state.Started,
+		),
+			go_func.BoolAndBoolToBool_AND(
+				state.Players.Player_1.Present,
+				go_func.BoolAndBoolToBool_AND(
+					state.Players.Player_2.Present,
+					go_func.BoolAndBoolToBool_AND(
+						state.Players.Player_3.Present,
+						go_func.BoolAndBoolToBool_OR(
+							state.Players.Player_4.Present, go_func.BoolToBool_NOT(
+								state.Players.Player_5.Present,
+							),
+						),
+					),
+				),
+			),
+		)
 	if !allowed {
 		return &Response{
 			Error: &game_engine_pb.Error{
@@ -125,131 +81,126 @@ func (e *gameEngine) Start(ctx context.Context, in *EmptyMsg) (*Response, error)
 		}, nil
 	}
 
-	// Apply any effects
+	// TODO: Apply any effects
 
-	state.Started = true
+	// TODO: Construct the response
 
-	// Construct the response
-	res := Response{
-		State: new(State),
-	}
-
-	return &res, nil
+	return &Response{}, nil
 }
-
 func (e *gameEngine) Accept(ctx context.Context, in *RoleChoice) (*Response, error) {
+
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
 }
-
 func (e *gameEngine) Purchase(ctx context.Context, in *BuildingChoice) (*Response, error) {
+
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
 }
-
 func (e *gameEngine) Load(ctx context.Context, in *GoodToShip) (*Response, error) {
+
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
 }
-
 func (e *gameEngine) Craft(ctx context.Context, in *EmptyMsg) (*Response, error) {
+
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
 }
-
 func (e *gameEngine) CraftExtra(ctx context.Context, in *GoodChoice) (*Response, error) {
+
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
 }
-
 func (e *gameEngine) WelcomeColonist(ctx context.Context, in *EmptyMsg) (*Response, error) {
+
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
 }
-
 func (e *gameEngine) WelcomeColonistFromSupply(ctx context.Context, in *EmptyMsg) (*Response, error) {
+
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
 }
-
 func (e *gameEngine) ApplyColonistToBuilding(ctx context.Context, in *BuildingChoice) (*Response, error) {
+
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
 }
-
 func (e *gameEngine) ApplyColonistToPlantation(ctx context.Context, in *PlantationChoice) (*Response, error) {
+
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
 }
-
 func (e *gameEngine) ApplyColonistToQuarry(ctx context.Context, in *EmptyMsg) (*Response, error) {
+
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
 }
-
 func (e *gameEngine) RefillColonistShip(ctx context.Context, in *EmptyMsg) (*Response, error) {
+
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
 }
-
 func (e *gameEngine) Settle(ctx context.Context, in *PlantationChoice) (*Response, error) {
+
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
 }
-
 func (e *gameEngine) ConstructQuarry(ctx context.Context, in *EmptyMsg) (*Response, error) {
+
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
 }
-
 func (e *gameEngine) Trade(ctx context.Context, in *GoodChoice) (*Response, error) {
+
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
 		},
 	}, nil
 }
-
 func (e *gameEngine) EndAction(ctx context.Context, in *PlayerChoice) (*Response, error) {
+
 	return &Response{
 		Error: &game_engine_pb.Error{
 			Msg: "unimplemented",
@@ -257,7 +208,58 @@ func (e *gameEngine) EndAction(ctx context.Context, in *PlayerChoice) (*Response
 	}, nil
 }
 
-var state struct {
+type GameState struct {
 	State
 	sync.Mutex
 }
+
+func NewGameState() GameState {
+	var s GameState
+
+	s.State.Players = new(State_Players)
+	s.State.Players.Player_1 = new(Player)
+	s.State.Players.Player_1.Buildings = new(Player_Buildings)
+	s.State.Players.Player_1.Plantations = new(Player_Plantations)
+	s.State.Players.Player_1.Goods = new(Player_Goods)
+	s.State.Players.Player_2 = new(Player)
+	s.State.Players.Player_2.Buildings = new(Player_Buildings)
+	s.State.Players.Player_2.Plantations = new(Player_Plantations)
+	s.State.Players.Player_2.Goods = new(Player_Goods)
+	s.State.Players.Player_3 = new(Player)
+	s.State.Players.Player_3.Buildings = new(Player_Buildings)
+	s.State.Players.Player_3.Plantations = new(Player_Plantations)
+	s.State.Players.Player_3.Goods = new(Player_Goods)
+	s.State.Players.Player_4 = new(Player)
+	s.State.Players.Player_4.Buildings = new(Player_Buildings)
+	s.State.Players.Player_4.Plantations = new(Player_Plantations)
+	s.State.Players.Player_4.Goods = new(Player_Goods)
+	s.State.Players.Player_5 = new(Player)
+	s.State.Players.Player_5.Buildings = new(Player_Buildings)
+	s.State.Players.Player_5.Plantations = new(Player_Plantations)
+	s.State.Players.Player_5.Goods = new(Player_Goods)
+	s.State.Roles = new(State_Roles)
+	s.State.Roles.Prospector1 = new(Role)
+	s.State.Roles.Prospector2 = new(Role)
+	s.State.Roles.Builder = new(Role)
+	s.State.Roles.Captain = new(Role)
+	s.State.Roles.Craftsman = new(Role)
+	s.State.Roles.Mayor = new(Role)
+	s.State.Roles.Settler = new(Role)
+	s.State.Roles.Trader = new(Role)
+	s.State.Plantations = new(State_Plantations)
+	s.State.Plantations.Displayed = new(State_Plantations_Displayed)
+	s.State.Plantations.Facedown = new(State_Plantations_Counts)
+	s.State.Plantations.Discarded = new(State_Plantations_Counts)
+	s.State.Goods = new(State_Goods)
+	s.State.Buildings = new(State_Buildings)
+	s.State.CargoShips = new(State_CargoShips)
+	s.State.CargoShips.Ship_4 = new(CargoShip)
+	s.State.CargoShips.Ship_5 = new(CargoShip)
+	s.State.CargoShips.Ship_6 = new(CargoShip)
+	s.State.CargoShips.Ship_7 = new(CargoShip)
+	s.State.CargoShips.Ship_8 = new(CargoShip)
+
+	return s
+}
+
+var state = NewGameState()

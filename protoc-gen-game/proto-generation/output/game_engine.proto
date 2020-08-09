@@ -4024,7 +4024,6 @@ message FloatAndFloatToFloatFunction {
     SUB = 2;
     MULT = 3;
     DIV = 4;
-    MOD = 5;
   }
 
   ID name = 1;

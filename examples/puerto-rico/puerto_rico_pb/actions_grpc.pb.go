@@ -17,7 +17,6 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ActionsClient interface {
-	// TODO: test enums
 	SetPlayers(ctx context.Context, in *Count, opts ...grpc.CallOption) (*Response, error)
 	Start(ctx context.Context, in *EmptyMsg, opts ...grpc.CallOption) (*Response, error)
 	Accept(ctx context.Context, in *RoleChoice, opts ...grpc.CallOption) (*Response, error)
@@ -208,7 +207,6 @@ func (c *actionsClient) EndAction(ctx context.Context, in *PlayerChoice, opts ..
 // All implementations must embed UnimplementedActionsServer
 // for forward compatibility
 type ActionsServer interface {
-	// TODO: test enums
 	SetPlayers(context.Context, *Count) (*Response, error)
 	Start(context.Context, *EmptyMsg) (*Response, error)
 	Accept(context.Context, *RoleChoice) (*Response, error)

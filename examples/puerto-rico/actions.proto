@@ -19,19 +19,106 @@ service Actions {
   // Game start
 
   // TODO: test enums
+
+  /*
   rpc SetPlayers(Count) returns (Response) {
     option (game_engine.action).effect = {
       update: {
         dest: { path: [ 'players', 'player_1', 'present' ] }
         src: { value: { bool: true } }
+
+        // key describes the type of value being set. The path at dest is
+        // verified to have this type
+        bool: {
+          // could be constant value.
+          constant: true
+
+          // could be reference to the rpc input or state.
+          // can only define one of these.
+          input: [ 'some', 'input', 'property' ]
+          // state: [ 'player1', 'is', 'the', 'best' ]
+
+          // could be the result of a function. the field name indicates the
+          // function's signature. here, there is a single argument, a bool.
+          bool_func: {
+            name: NOT
+
+            // precisely one of the following must be specified.
+
+            // 'input' indicates a property of the rpc method's input that houls
+            // should be used as the argument of the function.
+            input: [ 'some', 'property', 'of', 'the', 'input' ]
+
+            // 'state' indicates the same as 'input', but for the state.
+            state: [ 'some', 'property', 'of', 'the', 'state' ]
+
+            // another function's output could be used as the input here! this
+            // allows for functional composition and arbitrarily complex and
+            // useful functions to be constructed. the field name indicates the
+            // function's signature. here, the argument is binary function
+            // requiring two values, two strings. look at the 'int_int_func'
+            // example below for an explanation of binrary functions.
+            string_string_func: {
+              name: EQ
+
+              state1: [
+                'some',
+                'string',
+                'property',
+                'of',
+                'interest',
+              ]
+              constant: 'some value to compare against'
+            }
+          }
+
+          // this function requires two integer arguments
+          int_int_func: {
+            name: GTE
+
+            // exactly one of 'input1' or 'state1' must be provided, or a
+            // function whose output type matches.
+            state1: [ 'player_1', 'cash' ]
+            // input1: [ 'player_1', 'cash' ]
+            // string_func: { name: LEN state: [ 'player_1', 'name' ] }
+
+            // exactly one of 'input2', 'state2', or 'constant' must be
+            // provided. 'constant' can be used to curry binary functions into
+            // custom unary functions.
+            constant: 450
+          }
+
+          // 'if' allows the value to depend on a predicate,
+          // (input, state) -> {true, false}.
+          //
+          // the if block inherits the output type of the context the block is
+          // placed in. here, the 'if' block must output a 'bool'
+          if: {
+            // predicate is an object that resolves to a bool. in fact it should
+            // be the same kind being described so far. obviously, these
+            // structures can be very deeply nested!
+            predicate: {}
+
+            // then is an object that resolves to the 'it's output type, in
+            // this example, a bool. 'if' resolves to this value if predicate
+            // resolves to true.
+            then: {}
+
+            // else is like 'then', but is resolved to if predicate resolves to
+            // false.
+            else: {}
+          }
+        }
       }
     };
+
     option (game_engine.action).effect = {
       update: {
         dest: { path: [ 'quarries' ] }
         src: { input: { path: [ 'count' ] } }
       }
     };
+
     option (game_engine.action).rule = {
       single: {
         left: { value: { bool: true } }
@@ -39,6 +126,7 @@ service Actions {
         right: { value: { bool: true } }
       }
     };
+
     option (game_engine.action).response = {
       path: [ 'started' ]
     };
@@ -51,6 +139,109 @@ service Actions {
     option (game_engine.action).response = {
       path: [ 'players', 'player_3', 'buildings' ]
     };
+
+    option (game_engine.action).error = {
+      code: "826de622-ad54-4b65-3395-bb4d3828e67b"
+      msg: "dummy error"
+    };
+  };
+  */
+
+  rpc SetPlayers(Count) returns (Response) {
+    option (game_engine.action).effect = {
+      update: {
+        state: { path: [ 'players', 'player_1', 'present' ] }
+        value: {
+          bool: {
+            int_int_func: {
+              name: LTE
+              constant_1: 3
+              input_2: { path: [ 'count' ] }
+            }
+          }
+        }
+      }
+    };
+
+    option (game_engine.action).effect = {
+      update: {
+        state: { path: [ 'players', 'player_2', 'present' ] }
+        value: {
+          bool: {
+            int_int_func: {
+              name: LTE
+              constant_1: 3
+              input_2: { path: [ 'count' ] }
+            }
+          }
+        }
+      }
+    };
+
+    option (game_engine.action).effect = {
+      update: {
+        state: { path: [ 'players', 'player_3', 'present' ] }
+        value: {
+          bool: {
+            int_int_func: {
+              name: LTE
+              constant_1: 3
+              input_2: { path: [ 'count' ] }
+            }
+          }
+        }
+      }
+    };
+
+    option (game_engine.action).effect = {
+      update: {
+        state: { path: [ 'players', 'player_4', 'present' ] }
+        value: {
+          bool: {
+            int_int_func: {
+              name: LTE
+              constant_1: 4
+              input_2: { path: [ 'count' ] }
+            }
+          }
+        }
+      }
+    };
+
+    option (game_engine.action).effect = {
+      update: {
+        state: { path: [ 'players', 'player_5', 'present' ] }
+        value: {
+          bool: {
+            int_int_func: {
+              name: LTE
+              constant_1: 5
+              input_2: { path: [ 'count' ] }
+            }
+          }
+        }
+      }
+    };
+
+    option (game_engine.action).rule = {
+      constant: true
+    };
+
+    option (game_engine.action).response = {
+      path: [ 'started' ]
+    };
+    option (game_engine.action).response = {
+      path: [ 'players', 'player_1', 'present' ]
+    };
+    option (game_engine.action).response = {
+      path: [ 'players', 'player_2', 'present' ]
+    };
+    /*
+    option (game_engine.action).response = {
+      path: [ 'players', 'player_3', 'buildings' ]
+    };
+    */
+
     option (game_engine.action).error = {
       code: "826de622-ad54-4b65-3395-bb4d3828e67b"
       msg: "dummy error"
@@ -60,10 +251,42 @@ service Actions {
   rpc Start(EmptyMsg) returns (Response) {
     option (game_engine.action).effect = {
       update: {
-        dest: { path: [ 'started' ] }
-        src: { value: { bool: true } }
+        state: { path: [ 'started' ] }
+        value: { bool: { constant: true } }
       }
     };
+
+    option (game_engine.action).rule = {
+      bool_bool_func: {
+        name: AND
+        bool_func_1: {
+          name: NOT
+          state: { path: [ 'started' ] }
+        }
+        bool_bool_func_2: {
+          name: AND
+          state_1: { path: [ 'players', 'player_1', 'present' ] }
+          bool_bool_func_2: {
+            name: AND
+            state_1: { path: [ 'players', 'player_2', 'present' ] }
+            bool_bool_func_2: {
+              name: AND
+              state_1: { path: [ 'players', 'player_3', 'present' ] }
+              bool_bool_func_2: {
+                name: OR
+                state_1: { path: [ 'players', 'player_4', 'present' ] }
+                bool_func_2: {
+                  name: NOT
+                  state: { path: [ 'players', 'player_5', 'present' ] }
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+
+    /*
     option (game_engine.action).rule = {
       and: {
         rules: [
@@ -122,6 +345,8 @@ service Actions {
         ]
       }
     };
+    */
+
     option (game_engine.action).error = {
       code: "57e0c77b-3e2b-431c-c5ed-ee81a89d5ee6"
       msg: "game has already started"

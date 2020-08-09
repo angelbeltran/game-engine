@@ -207,14 +207,6 @@ func FloatAndFloatToFloat_DIV(v, w float64) float64 {
 	return v / w
 }
 
-func FloatAndFloatToFloat_MOD(v, w float64) float64 {
-	if v == 0 || w == 0 {
-		return 0
-	}
-
-	return v % w
-}
-
 func StringAndStringToBool_EQ(v, w string) bool {
 	return v == w
 }

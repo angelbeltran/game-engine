@@ -134,8 +134,6 @@ func GenerateService(w io.Writer, opts TemplateParams) error {
 		return fmt.Errorf("failed to read unformated templates: %w", err)
 	}
 
-	fmt.Println("UNFORMATTED:", string(b))
-
 	b, err = format.Source(b)
 	if err != nil {
 		return fmt.Errorf("failed to format generated templates: %w", err)

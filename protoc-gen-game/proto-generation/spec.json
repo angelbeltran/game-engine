@@ -167,8 +167,7 @@
 						"add",
 						"sub",
 						"mult",
-						"div",
-						"mod"
+						"div"
 					]
 				}
 			},
