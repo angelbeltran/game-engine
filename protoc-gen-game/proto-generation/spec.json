@@ -1,0 +1,192 @@
+{
+	"types": [
+		"bool",
+		"int",
+		"float",
+		"string"
+	],
+
+        "protobufTypesToTypes": {
+                "8": "bool",
+
+                "3": "int",
+                "4": "int",
+                "5": "int",
+                "6": "int",
+                "7": "int",
+                "13": "int",
+                "15": "int",
+                "16": "int",
+                "17": "int",
+                "18": "int",
+
+                "1": "float",
+                "2": "float",
+
+                "9": "string",
+                "14": "string"
+
+        },
+
+        "typesToProtobufTypes": {
+                "bool": "bool",
+                "int": "int64",
+                "float": "float",
+                "string": "string"
+        },
+
+        "protobufTypesToTypeDescriptions": {
+                "8": "BOOL",
+
+                "3": "INT64",
+                "4": "UINT64",
+                "5": "INT32",
+                "6": "FIXED64",
+                "7": "FIXED32",
+                "13": "UINT32",
+                "15": "SFIXED32",
+                "16": "SFIXED64",
+                "17": "SINT32",
+                "18": "SINT64",
+
+                "1": "DOUBLE",
+                "2": "FLOAT",
+
+                "9": "STRING",
+                "14": "ENUM"
+        },
+
+	"functions": {
+
+		"unary": {
+			"bool": {
+				"bool": [
+					"not"
+				],
+				"int": [
+					"cast"
+				],
+				"float": [
+					"cast"
+				],
+				"string": [
+					"cast"
+				]
+			},
+			"int": {
+				"bool": [
+					"cast"
+				],
+				"int": [
+					"neg",
+					"inc",
+					"dec"
+				],
+				"float": [
+					"cast"
+				],
+				"string": [
+					"cast"
+				]
+			},
+			"float": {
+				"bool": [
+					"cast"
+				],
+				"int": [
+					"cast"
+				],
+				"float": [
+					"neg",
+					"inc",
+					"dec"
+				],
+				"string": [
+					"cast"
+				]
+			},
+			"string": {
+				"bool": [
+					"cast"
+				],
+				"int": [
+					"len"
+				],
+				"string": [
+					"upper",
+					"lower"
+				]
+			}
+		},
+
+		"binary": {
+			"bool": {
+				"bool": {
+					"bool": [
+						"eq",
+                                                "neq",
+                                                "gt",
+                                                "lt",
+                                                "gte",
+                                                "lte",
+						"and",
+						"or"
+					]
+				}
+			},
+			"int": {
+				"int": {
+                                        "bool": [
+						"eq",
+                                                "neq",
+                                                "gt",
+                                                "lt",
+                                                "gte",
+                                                "lte"
+                                        ],
+					"int": [
+						"add",
+						"sub",
+						"mult",
+						"div",
+						"mod"
+					]
+				}
+			},
+			"float": {
+				"float": {
+                                        "bool": [
+						"eq",
+                                                "neq",
+                                                "gt",
+                                                "lt",
+                                                "gte",
+                                                "lte"
+                                        ],
+					"float": [
+						"add",
+						"sub",
+						"mult",
+						"div",
+						"mod"
+					]
+				}
+			},
+			"string": {
+				"string": {
+                                        "bool": [
+						"eq",
+                                                "neq",
+                                                "gt",
+                                                "lt",
+                                                "gte",
+                                                "lte"
+                                        ],
+					"string": [
+						"concat"
+					]
+				}
+			}
+		}
+	}
+}

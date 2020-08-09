@@ -25,33 +25,33 @@ func getResponseDescriptor(files []*desc.FileDescriptor) (*desc.MessageDescripto
 
 func validateResponseMessage(state, response *desc.MessageDescriptor) error {
 	var (
-		sd *desc.FieldDescriptor
-		ed *desc.FieldDescriptor
+		stateField *desc.FieldDescriptor
+		errorField *desc.FieldDescriptor
 	)
 
 	for _, f := range response.GetFields() {
 		switch f.GetName() {
 		case responseStateFieldName:
-			sd = f
+			stateField = f
 		case responseErrorFieldName:
-			ed = f
+			errorField = f
 		}
 	}
 
-	if sd == nil {
+	if stateField == nil {
 		return fmt.Errorf("no state field defined")
 	}
-	if ed == nil {
+	if errorField == nil {
 		return fmt.Errorf("no error field defined")
 	}
 
-	sdt := sd.GetMessageType()
-	if sdt == nil || sdt.GetFullyQualifiedName() != state.GetFullyQualifiedName() {
+	stateType := stateField.GetMessageType()
+	if stateType == nil || stateType.GetFullyQualifiedName() != state.GetFullyQualifiedName() {
 		return fmt.Errorf("the '%s' field must be the state message", responseStateFieldName)
 	}
 
-	edt := ed.GetMessageType()
-	if edt == nil || edt.GetFullyQualifiedName() != protoPackageName+"."+errorTypeName {
+	errorType := errorField.GetMessageType()
+	if errorType == nil || errorType.GetFullyQualifiedName() != protoPackageName+"."+errorTypeName {
 		return fmt.Errorf("the '%s' field must be the error message", responseErrorFieldName)
 	}
 

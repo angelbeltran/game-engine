@@ -1,0 +1,210 @@
+syntax = "proto3";
+package game_engine;
+
+import "google/protobuf/descriptor.proto";
+
+option go_package = "github.com/angelbeltran/game-engine/protoc-gen-game/game_engine_pb";
+
+// Action extensions
+
+// TODO: deliberate the extension numbers
+extend google.protobuf.ServiceOptions {
+  optional bool is_action_service = 50000;
+}
+
+extend google.protobuf.MethodOptions {
+  optional Action action = 50001;
+}
+
+extend google.protobuf.MessageOptions {
+  optional bool is_game_state = 50002;
+  optional bool is_action_service_response = 50003;
+}
+
+message Action {
+  repeated Effect effect = 1;
+  BoolValue rule = 2;
+  repeated Reference response = 3;
+  Error error = 4;
+}
+
+message Effect {
+  message Update {
+    Reference state = 1;
+    Value value = 2;
+  }
+
+  oneof operation {
+    Update update = 1;
+  }
+}
+
+message Error {
+  bool success = 1;
+  string code = 2;
+  string msg = 3;
+}
+
+//
+// Language
+//
+
+// Untyped Variables
+
+message Reference {  // renamed from 'Path'
+  repeated string path = 1;
+}
+
+// Types
+
+enum Type {
+  UNDEFINED = 0;
+{{- range $i, $type := .Types }}
+  {{ toUpper $type }} = {{ inc $i }};
+{{- end }}
+}
+
+// Values
+{{- $types := .Types }}
+
+message Value {
+  oneof value {
+{{- range $i, $type := $types }}
+    {{ capitalize $type }}Value {{ $type }} = {{ add 1 $i }};
+{{- end }}
+  }
+}
+
+{{- range $_, $type := $types }}
+
+message {{ capitalize $type }}Value {
+  oneof value {
+    bool constant = 1;
+
+    Reference input = 2;
+    Reference state = 3;
+{{ range $i, $domain := $types }}
+    {{ capitalize $domain }}To{{ capitalize $type }}Function {{ $domain }}_func = {{ add 10 $i }};
+{{- end }}
+{{- range $i, $domain1 := $types }}
+{{ range $j, $domain2 := $types }}
+    {{ capitalize $domain1 }}And{{ capitalize $domain2 }}To{{ capitalize $type }}Function {{ $domain1 }}_{{ $domain2 }}_func = {{ add 100 (multiply 10 $i) $j }};
+{{- end }}
+{{- end }}
+
+    {{ capitalize $type }}ValueIf if = 200;
+  }
+}
+{{- end }}
+
+// Unary Functions
+{{- $functions := .Functions }}
+{{- range $i, $domain := $types }}
+{{- range $j, $codomain := $types }}
+
+message {{ capitalize $domain }}To{{ capitalize $codomain }}Function {
+  enum ID {
+    UNDEFINED = 0;
+{{- if index $functions.Unary $domain }}
+{{- if index $functions.Unary $domain $codomain }}
+{{- range $k, $name := index $functions.Unary $domain $codomain }}
+    {{ toUpper $name }} = {{ add 1 $k }};
+{{- end }}
+{{- end }}
+{{- end }}
+  }
+
+  ID name = 1;
+
+  oneof argument {
+    Reference input = 2;
+    Reference state = 3;
+
+{{- $messageDomain := $domain }}
+{{ range $k, $domain := $types }}
+    {{ capitalize $domain }}To{{ capitalize $messageDomain }}Function {{ $domain }}_func = {{ add 10 $k }};
+{{- end }}
+{{- range $k, $domain1 := $types }}
+{{ range $l, $domain2 := $types }}
+    {{ capitalize $domain1 }}And{{ capitalize $domain2 }}To{{ capitalize $messageDomain }}Function {{ $domain1 }}_{{ $domain2 }}_func = {{ add 100 (multiply 10 $k) $l }};
+{{- end }}
+{{- end }}
+
+    {{ capitalize $domain }}ValueIf if = 1000;
+  }
+}
+{{- end }}
+{{- end }}
+
+// Binary Functions
+{{- $functions := .Functions }}
+{{- $typesToProtobufTypes := .TypesToProtobufTypes }}
+{{- range $i, $domain1 := $types }}
+{{- range $j, $domain2 := $types }}
+{{- range $k, $codomain := $types }}
+
+message {{ capitalize $domain1 }}And{{ capitalize $domain2 }}To{{ capitalize $codomain }}Function {
+  enum ID {
+    UNDEFINED = 0;
+{{- if index $functions.Binary $domain1 }}
+{{- if index $functions.Binary $domain1 $domain2 }}
+{{- if index $functions.Binary $domain1 $domain2 $codomain }}
+{{- range $l, $name := index $functions.Binary $domain1 $domain2 $codomain }}
+    {{ toUpper $name }} = {{ add 1 $l }};
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+  }
+
+  ID name = 1;
+
+{{- $messageDomain1 := $domain1 }}
+
+  oneof argument_1 {
+    {{ index $typesToProtobufTypes $domain1 }} constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+{{ range $l, $domain := $types }}
+    {{ capitalize $domain }}To{{ capitalize $messageDomain1 }}Function {{ $domain }}_func_1 = {{ add 10 $l }};
+{{- end }}
+{{- range $l, $domain1 := $types }}
+{{ range $m, $domain2 := $types }}
+    {{ capitalize $domain1 }}And{{ capitalize $domain2 }}To{{ capitalize $messageDomain1 }}Function {{ $domain1 }}_{{ $domain2 }}_func_1 = {{ add 100 (multiply 10 $l) $m }};
+{{- end }}
+{{- end }}
+
+    {{ capitalize $domain1 }}ValueIf if_1 = 1000;
+  }
+
+{{- $messageDomain2 := $domain2 }}
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+{{ range $l, $domain := $types }}
+    {{ capitalize $domain }}To{{ capitalize $messageDomain2 }}Function {{ $domain }}_func_2 = {{ add 2000 10 $l }};
+{{- end }}
+{{- range $l, $domain1 := $types }}
+{{ range $m, $domain2 := $types }}
+    {{ capitalize $domain1 }}And{{ capitalize $domain2 }}To{{ capitalize $messageDomain2 }}Function {{ $domain1 }}_{{ $domain2 }}_func_2 = {{ add 2000 100 (multiply 10 $l) $m }};
+{{- end }}
+{{- end }}
+
+    {{ capitalize $domain2 }}ValueIf if_2 = 3000;
+  }
+}
+{{- end }}
+{{- end }}
+{{- end }}
+
+// If-Else Control Structures
+{{- range $i, $type := $types }}
+
+message {{ capitalize $type }}ValueIf {
+  BoolValue predicate = 1;
+  {{ capitalize $type }}Value then = 2;
+  {{ capitalize $type }}Value else = 3;
+}
+{{- end }}

@@ -1,0 +1,5684 @@
+syntax = "proto3";
+package game_engine;
+
+import "google/protobuf/descriptor.proto";
+
+option go_package = "github.com/angelbeltran/game-engine/protoc-gen-game/game_engine_pb";
+
+// Action extensions
+
+// TODO: deliberate the extension numbers
+extend google.protobuf.ServiceOptions {
+  optional bool is_action_service = 50000;
+}
+
+extend google.protobuf.MethodOptions {
+  optional Action action = 50001;
+}
+
+extend google.protobuf.MessageOptions {
+  optional bool is_game_state = 50002;
+  optional bool is_action_service_response = 50003;
+}
+
+message Action {
+  repeated Effect effect = 1;
+  BoolValue rule = 2;
+  repeated Reference response = 3;
+  Error error = 4;
+}
+
+message Effect {
+  message Update {
+    Reference state = 1;
+    Value value = 2;
+  }
+
+  oneof operation {
+    Update update = 1;
+  }
+}
+
+message Error {
+  bool success = 1;
+  string code = 2;
+  string msg = 3;
+}
+
+//
+// Language
+//
+
+// Untyped Variables
+
+message Reference {  // renamed from 'Path'
+  repeated string path = 1;
+}
+
+// Types
+
+enum Type {
+  UNDEFINED = 0;
+  BOOL = 1;
+  INT = 2;
+  FLOAT = 3;
+  STRING = 4;
+}
+
+// Values
+
+message Value {
+  oneof value {
+    BoolValue bool = 1;
+    IntValue int = 2;
+    FloatValue float = 3;
+    StringValue string = 4;
+  }
+}
+
+message BoolValue {
+  oneof value {
+    bool constant = 1;
+
+    Reference input = 2;
+    Reference state = 3;
+
+    BoolToBoolFunction bool_func = 10;
+    IntToBoolFunction int_func = 11;
+    FloatToBoolFunction float_func = 12;
+    StringToBoolFunction string_func = 13;
+
+    BoolAndBoolToBoolFunction bool_bool_func = 100;
+    BoolAndIntToBoolFunction bool_int_func = 101;
+    BoolAndFloatToBoolFunction bool_float_func = 102;
+    BoolAndStringToBoolFunction bool_string_func = 103;
+
+    IntAndBoolToBoolFunction int_bool_func = 110;
+    IntAndIntToBoolFunction int_int_func = 111;
+    IntAndFloatToBoolFunction int_float_func = 112;
+    IntAndStringToBoolFunction int_string_func = 113;
+
+    FloatAndBoolToBoolFunction float_bool_func = 120;
+    FloatAndIntToBoolFunction float_int_func = 121;
+    FloatAndFloatToBoolFunction float_float_func = 122;
+    FloatAndStringToBoolFunction float_string_func = 123;
+
+    StringAndBoolToBoolFunction string_bool_func = 130;
+    StringAndIntToBoolFunction string_int_func = 131;
+    StringAndFloatToBoolFunction string_float_func = 132;
+    StringAndStringToBoolFunction string_string_func = 133;
+
+    BoolValueIf if = 200;
+  }
+}
+
+message IntValue {
+  oneof value {
+    bool constant = 1;
+
+    Reference input = 2;
+    Reference state = 3;
+
+    BoolToIntFunction bool_func = 10;
+    IntToIntFunction int_func = 11;
+    FloatToIntFunction float_func = 12;
+    StringToIntFunction string_func = 13;
+
+    BoolAndBoolToIntFunction bool_bool_func = 100;
+    BoolAndIntToIntFunction bool_int_func = 101;
+    BoolAndFloatToIntFunction bool_float_func = 102;
+    BoolAndStringToIntFunction bool_string_func = 103;
+
+    IntAndBoolToIntFunction int_bool_func = 110;
+    IntAndIntToIntFunction int_int_func = 111;
+    IntAndFloatToIntFunction int_float_func = 112;
+    IntAndStringToIntFunction int_string_func = 113;
+
+    FloatAndBoolToIntFunction float_bool_func = 120;
+    FloatAndIntToIntFunction float_int_func = 121;
+    FloatAndFloatToIntFunction float_float_func = 122;
+    FloatAndStringToIntFunction float_string_func = 123;
+
+    StringAndBoolToIntFunction string_bool_func = 130;
+    StringAndIntToIntFunction string_int_func = 131;
+    StringAndFloatToIntFunction string_float_func = 132;
+    StringAndStringToIntFunction string_string_func = 133;
+
+    IntValueIf if = 200;
+  }
+}
+
+message FloatValue {
+  oneof value {
+    bool constant = 1;
+
+    Reference input = 2;
+    Reference state = 3;
+
+    BoolToFloatFunction bool_func = 10;
+    IntToFloatFunction int_func = 11;
+    FloatToFloatFunction float_func = 12;
+    StringToFloatFunction string_func = 13;
+
+    BoolAndBoolToFloatFunction bool_bool_func = 100;
+    BoolAndIntToFloatFunction bool_int_func = 101;
+    BoolAndFloatToFloatFunction bool_float_func = 102;
+    BoolAndStringToFloatFunction bool_string_func = 103;
+
+    IntAndBoolToFloatFunction int_bool_func = 110;
+    IntAndIntToFloatFunction int_int_func = 111;
+    IntAndFloatToFloatFunction int_float_func = 112;
+    IntAndStringToFloatFunction int_string_func = 113;
+
+    FloatAndBoolToFloatFunction float_bool_func = 120;
+    FloatAndIntToFloatFunction float_int_func = 121;
+    FloatAndFloatToFloatFunction float_float_func = 122;
+    FloatAndStringToFloatFunction float_string_func = 123;
+
+    StringAndBoolToFloatFunction string_bool_func = 130;
+    StringAndIntToFloatFunction string_int_func = 131;
+    StringAndFloatToFloatFunction string_float_func = 132;
+    StringAndStringToFloatFunction string_string_func = 133;
+
+    FloatValueIf if = 200;
+  }
+}
+
+message StringValue {
+  oneof value {
+    bool constant = 1;
+
+    Reference input = 2;
+    Reference state = 3;
+
+    BoolToStringFunction bool_func = 10;
+    IntToStringFunction int_func = 11;
+    FloatToStringFunction float_func = 12;
+    StringToStringFunction string_func = 13;
+
+    BoolAndBoolToStringFunction bool_bool_func = 100;
+    BoolAndIntToStringFunction bool_int_func = 101;
+    BoolAndFloatToStringFunction bool_float_func = 102;
+    BoolAndStringToStringFunction bool_string_func = 103;
+
+    IntAndBoolToStringFunction int_bool_func = 110;
+    IntAndIntToStringFunction int_int_func = 111;
+    IntAndFloatToStringFunction int_float_func = 112;
+    IntAndStringToStringFunction int_string_func = 113;
+
+    FloatAndBoolToStringFunction float_bool_func = 120;
+    FloatAndIntToStringFunction float_int_func = 121;
+    FloatAndFloatToStringFunction float_float_func = 122;
+    FloatAndStringToStringFunction float_string_func = 123;
+
+    StringAndBoolToStringFunction string_bool_func = 130;
+    StringAndIntToStringFunction string_int_func = 131;
+    StringAndFloatToStringFunction string_float_func = 132;
+    StringAndStringToStringFunction string_string_func = 133;
+
+    StringValueIf if = 200;
+  }
+}
+
+// Unary Functions
+
+message BoolToBoolFunction {
+  enum ID {
+    UNDEFINED = 0;
+    NOT = 1;
+  }
+
+  ID name = 1;
+
+  oneof argument {
+    Reference input = 2;
+    Reference state = 3;
+
+    BoolToBoolFunction bool_func = 10;
+    IntToBoolFunction int_func = 11;
+    FloatToBoolFunction float_func = 12;
+    StringToBoolFunction string_func = 13;
+
+    BoolAndBoolToBoolFunction bool_bool_func = 100;
+    BoolAndIntToBoolFunction bool_int_func = 101;
+    BoolAndFloatToBoolFunction bool_float_func = 102;
+    BoolAndStringToBoolFunction bool_string_func = 103;
+
+    IntAndBoolToBoolFunction int_bool_func = 110;
+    IntAndIntToBoolFunction int_int_func = 111;
+    IntAndFloatToBoolFunction int_float_func = 112;
+    IntAndStringToBoolFunction int_string_func = 113;
+
+    FloatAndBoolToBoolFunction float_bool_func = 120;
+    FloatAndIntToBoolFunction float_int_func = 121;
+    FloatAndFloatToBoolFunction float_float_func = 122;
+    FloatAndStringToBoolFunction float_string_func = 123;
+
+    StringAndBoolToBoolFunction string_bool_func = 130;
+    StringAndIntToBoolFunction string_int_func = 131;
+    StringAndFloatToBoolFunction string_float_func = 132;
+    StringAndStringToBoolFunction string_string_func = 133;
+
+    BoolValueIf if = 1000;
+  }
+}
+
+message BoolToIntFunction {
+  enum ID {
+    UNDEFINED = 0;
+    CAST = 1;
+  }
+
+  ID name = 1;
+
+  oneof argument {
+    Reference input = 2;
+    Reference state = 3;
+
+    BoolToBoolFunction bool_func = 10;
+    IntToBoolFunction int_func = 11;
+    FloatToBoolFunction float_func = 12;
+    StringToBoolFunction string_func = 13;
+
+    BoolAndBoolToBoolFunction bool_bool_func = 100;
+    BoolAndIntToBoolFunction bool_int_func = 101;
+    BoolAndFloatToBoolFunction bool_float_func = 102;
+    BoolAndStringToBoolFunction bool_string_func = 103;
+
+    IntAndBoolToBoolFunction int_bool_func = 110;
+    IntAndIntToBoolFunction int_int_func = 111;
+    IntAndFloatToBoolFunction int_float_func = 112;
+    IntAndStringToBoolFunction int_string_func = 113;
+
+    FloatAndBoolToBoolFunction float_bool_func = 120;
+    FloatAndIntToBoolFunction float_int_func = 121;
+    FloatAndFloatToBoolFunction float_float_func = 122;
+    FloatAndStringToBoolFunction float_string_func = 123;
+
+    StringAndBoolToBoolFunction string_bool_func = 130;
+    StringAndIntToBoolFunction string_int_func = 131;
+    StringAndFloatToBoolFunction string_float_func = 132;
+    StringAndStringToBoolFunction string_string_func = 133;
+
+    BoolValueIf if = 1000;
+  }
+}
+
+message BoolToFloatFunction {
+  enum ID {
+    UNDEFINED = 0;
+    CAST = 1;
+  }
+
+  ID name = 1;
+
+  oneof argument {
+    Reference input = 2;
+    Reference state = 3;
+
+    BoolToBoolFunction bool_func = 10;
+    IntToBoolFunction int_func = 11;
+    FloatToBoolFunction float_func = 12;
+    StringToBoolFunction string_func = 13;
+
+    BoolAndBoolToBoolFunction bool_bool_func = 100;
+    BoolAndIntToBoolFunction bool_int_func = 101;
+    BoolAndFloatToBoolFunction bool_float_func = 102;
+    BoolAndStringToBoolFunction bool_string_func = 103;
+
+    IntAndBoolToBoolFunction int_bool_func = 110;
+    IntAndIntToBoolFunction int_int_func = 111;
+    IntAndFloatToBoolFunction int_float_func = 112;
+    IntAndStringToBoolFunction int_string_func = 113;
+
+    FloatAndBoolToBoolFunction float_bool_func = 120;
+    FloatAndIntToBoolFunction float_int_func = 121;
+    FloatAndFloatToBoolFunction float_float_func = 122;
+    FloatAndStringToBoolFunction float_string_func = 123;
+
+    StringAndBoolToBoolFunction string_bool_func = 130;
+    StringAndIntToBoolFunction string_int_func = 131;
+    StringAndFloatToBoolFunction string_float_func = 132;
+    StringAndStringToBoolFunction string_string_func = 133;
+
+    BoolValueIf if = 1000;
+  }
+}
+
+message BoolToStringFunction {
+  enum ID {
+    UNDEFINED = 0;
+    CAST = 1;
+  }
+
+  ID name = 1;
+
+  oneof argument {
+    Reference input = 2;
+    Reference state = 3;
+
+    BoolToBoolFunction bool_func = 10;
+    IntToBoolFunction int_func = 11;
+    FloatToBoolFunction float_func = 12;
+    StringToBoolFunction string_func = 13;
+
+    BoolAndBoolToBoolFunction bool_bool_func = 100;
+    BoolAndIntToBoolFunction bool_int_func = 101;
+    BoolAndFloatToBoolFunction bool_float_func = 102;
+    BoolAndStringToBoolFunction bool_string_func = 103;
+
+    IntAndBoolToBoolFunction int_bool_func = 110;
+    IntAndIntToBoolFunction int_int_func = 111;
+    IntAndFloatToBoolFunction int_float_func = 112;
+    IntAndStringToBoolFunction int_string_func = 113;
+
+    FloatAndBoolToBoolFunction float_bool_func = 120;
+    FloatAndIntToBoolFunction float_int_func = 121;
+    FloatAndFloatToBoolFunction float_float_func = 122;
+    FloatAndStringToBoolFunction float_string_func = 123;
+
+    StringAndBoolToBoolFunction string_bool_func = 130;
+    StringAndIntToBoolFunction string_int_func = 131;
+    StringAndFloatToBoolFunction string_float_func = 132;
+    StringAndStringToBoolFunction string_string_func = 133;
+
+    BoolValueIf if = 1000;
+  }
+}
+
+message IntToBoolFunction {
+  enum ID {
+    UNDEFINED = 0;
+    CAST = 1;
+  }
+
+  ID name = 1;
+
+  oneof argument {
+    Reference input = 2;
+    Reference state = 3;
+
+    BoolToIntFunction bool_func = 10;
+    IntToIntFunction int_func = 11;
+    FloatToIntFunction float_func = 12;
+    StringToIntFunction string_func = 13;
+
+    BoolAndBoolToIntFunction bool_bool_func = 100;
+    BoolAndIntToIntFunction bool_int_func = 101;
+    BoolAndFloatToIntFunction bool_float_func = 102;
+    BoolAndStringToIntFunction bool_string_func = 103;
+
+    IntAndBoolToIntFunction int_bool_func = 110;
+    IntAndIntToIntFunction int_int_func = 111;
+    IntAndFloatToIntFunction int_float_func = 112;
+    IntAndStringToIntFunction int_string_func = 113;
+
+    FloatAndBoolToIntFunction float_bool_func = 120;
+    FloatAndIntToIntFunction float_int_func = 121;
+    FloatAndFloatToIntFunction float_float_func = 122;
+    FloatAndStringToIntFunction float_string_func = 123;
+
+    StringAndBoolToIntFunction string_bool_func = 130;
+    StringAndIntToIntFunction string_int_func = 131;
+    StringAndFloatToIntFunction string_float_func = 132;
+    StringAndStringToIntFunction string_string_func = 133;
+
+    IntValueIf if = 1000;
+  }
+}
+
+message IntToIntFunction {
+  enum ID {
+    UNDEFINED = 0;
+    NEG = 1;
+    INC = 2;
+    DEC = 3;
+  }
+
+  ID name = 1;
+
+  oneof argument {
+    Reference input = 2;
+    Reference state = 3;
+
+    BoolToIntFunction bool_func = 10;
+    IntToIntFunction int_func = 11;
+    FloatToIntFunction float_func = 12;
+    StringToIntFunction string_func = 13;
+
+    BoolAndBoolToIntFunction bool_bool_func = 100;
+    BoolAndIntToIntFunction bool_int_func = 101;
+    BoolAndFloatToIntFunction bool_float_func = 102;
+    BoolAndStringToIntFunction bool_string_func = 103;
+
+    IntAndBoolToIntFunction int_bool_func = 110;
+    IntAndIntToIntFunction int_int_func = 111;
+    IntAndFloatToIntFunction int_float_func = 112;
+    IntAndStringToIntFunction int_string_func = 113;
+
+    FloatAndBoolToIntFunction float_bool_func = 120;
+    FloatAndIntToIntFunction float_int_func = 121;
+    FloatAndFloatToIntFunction float_float_func = 122;
+    FloatAndStringToIntFunction float_string_func = 123;
+
+    StringAndBoolToIntFunction string_bool_func = 130;
+    StringAndIntToIntFunction string_int_func = 131;
+    StringAndFloatToIntFunction string_float_func = 132;
+    StringAndStringToIntFunction string_string_func = 133;
+
+    IntValueIf if = 1000;
+  }
+}
+
+message IntToFloatFunction {
+  enum ID {
+    UNDEFINED = 0;
+    CAST = 1;
+  }
+
+  ID name = 1;
+
+  oneof argument {
+    Reference input = 2;
+    Reference state = 3;
+
+    BoolToIntFunction bool_func = 10;
+    IntToIntFunction int_func = 11;
+    FloatToIntFunction float_func = 12;
+    StringToIntFunction string_func = 13;
+
+    BoolAndBoolToIntFunction bool_bool_func = 100;
+    BoolAndIntToIntFunction bool_int_func = 101;
+    BoolAndFloatToIntFunction bool_float_func = 102;
+    BoolAndStringToIntFunction bool_string_func = 103;
+
+    IntAndBoolToIntFunction int_bool_func = 110;
+    IntAndIntToIntFunction int_int_func = 111;
+    IntAndFloatToIntFunction int_float_func = 112;
+    IntAndStringToIntFunction int_string_func = 113;
+
+    FloatAndBoolToIntFunction float_bool_func = 120;
+    FloatAndIntToIntFunction float_int_func = 121;
+    FloatAndFloatToIntFunction float_float_func = 122;
+    FloatAndStringToIntFunction float_string_func = 123;
+
+    StringAndBoolToIntFunction string_bool_func = 130;
+    StringAndIntToIntFunction string_int_func = 131;
+    StringAndFloatToIntFunction string_float_func = 132;
+    StringAndStringToIntFunction string_string_func = 133;
+
+    IntValueIf if = 1000;
+  }
+}
+
+message IntToStringFunction {
+  enum ID {
+    UNDEFINED = 0;
+    CAST = 1;
+  }
+
+  ID name = 1;
+
+  oneof argument {
+    Reference input = 2;
+    Reference state = 3;
+
+    BoolToIntFunction bool_func = 10;
+    IntToIntFunction int_func = 11;
+    FloatToIntFunction float_func = 12;
+    StringToIntFunction string_func = 13;
+
+    BoolAndBoolToIntFunction bool_bool_func = 100;
+    BoolAndIntToIntFunction bool_int_func = 101;
+    BoolAndFloatToIntFunction bool_float_func = 102;
+    BoolAndStringToIntFunction bool_string_func = 103;
+
+    IntAndBoolToIntFunction int_bool_func = 110;
+    IntAndIntToIntFunction int_int_func = 111;
+    IntAndFloatToIntFunction int_float_func = 112;
+    IntAndStringToIntFunction int_string_func = 113;
+
+    FloatAndBoolToIntFunction float_bool_func = 120;
+    FloatAndIntToIntFunction float_int_func = 121;
+    FloatAndFloatToIntFunction float_float_func = 122;
+    FloatAndStringToIntFunction float_string_func = 123;
+
+    StringAndBoolToIntFunction string_bool_func = 130;
+    StringAndIntToIntFunction string_int_func = 131;
+    StringAndFloatToIntFunction string_float_func = 132;
+    StringAndStringToIntFunction string_string_func = 133;
+
+    IntValueIf if = 1000;
+  }
+}
+
+message FloatToBoolFunction {
+  enum ID {
+    UNDEFINED = 0;
+    CAST = 1;
+  }
+
+  ID name = 1;
+
+  oneof argument {
+    Reference input = 2;
+    Reference state = 3;
+
+    BoolToFloatFunction bool_func = 10;
+    IntToFloatFunction int_func = 11;
+    FloatToFloatFunction float_func = 12;
+    StringToFloatFunction string_func = 13;
+
+    BoolAndBoolToFloatFunction bool_bool_func = 100;
+    BoolAndIntToFloatFunction bool_int_func = 101;
+    BoolAndFloatToFloatFunction bool_float_func = 102;
+    BoolAndStringToFloatFunction bool_string_func = 103;
+
+    IntAndBoolToFloatFunction int_bool_func = 110;
+    IntAndIntToFloatFunction int_int_func = 111;
+    IntAndFloatToFloatFunction int_float_func = 112;
+    IntAndStringToFloatFunction int_string_func = 113;
+
+    FloatAndBoolToFloatFunction float_bool_func = 120;
+    FloatAndIntToFloatFunction float_int_func = 121;
+    FloatAndFloatToFloatFunction float_float_func = 122;
+    FloatAndStringToFloatFunction float_string_func = 123;
+
+    StringAndBoolToFloatFunction string_bool_func = 130;
+    StringAndIntToFloatFunction string_int_func = 131;
+    StringAndFloatToFloatFunction string_float_func = 132;
+    StringAndStringToFloatFunction string_string_func = 133;
+
+    FloatValueIf if = 1000;
+  }
+}
+
+message FloatToIntFunction {
+  enum ID {
+    UNDEFINED = 0;
+    CAST = 1;
+  }
+
+  ID name = 1;
+
+  oneof argument {
+    Reference input = 2;
+    Reference state = 3;
+
+    BoolToFloatFunction bool_func = 10;
+    IntToFloatFunction int_func = 11;
+    FloatToFloatFunction float_func = 12;
+    StringToFloatFunction string_func = 13;
+
+    BoolAndBoolToFloatFunction bool_bool_func = 100;
+    BoolAndIntToFloatFunction bool_int_func = 101;
+    BoolAndFloatToFloatFunction bool_float_func = 102;
+    BoolAndStringToFloatFunction bool_string_func = 103;
+
+    IntAndBoolToFloatFunction int_bool_func = 110;
+    IntAndIntToFloatFunction int_int_func = 111;
+    IntAndFloatToFloatFunction int_float_func = 112;
+    IntAndStringToFloatFunction int_string_func = 113;
+
+    FloatAndBoolToFloatFunction float_bool_func = 120;
+    FloatAndIntToFloatFunction float_int_func = 121;
+    FloatAndFloatToFloatFunction float_float_func = 122;
+    FloatAndStringToFloatFunction float_string_func = 123;
+
+    StringAndBoolToFloatFunction string_bool_func = 130;
+    StringAndIntToFloatFunction string_int_func = 131;
+    StringAndFloatToFloatFunction string_float_func = 132;
+    StringAndStringToFloatFunction string_string_func = 133;
+
+    FloatValueIf if = 1000;
+  }
+}
+
+message FloatToFloatFunction {
+  enum ID {
+    UNDEFINED = 0;
+    NEG = 1;
+    INC = 2;
+    DEC = 3;
+  }
+
+  ID name = 1;
+
+  oneof argument {
+    Reference input = 2;
+    Reference state = 3;
+
+    BoolToFloatFunction bool_func = 10;
+    IntToFloatFunction int_func = 11;
+    FloatToFloatFunction float_func = 12;
+    StringToFloatFunction string_func = 13;
+
+    BoolAndBoolToFloatFunction bool_bool_func = 100;
+    BoolAndIntToFloatFunction bool_int_func = 101;
+    BoolAndFloatToFloatFunction bool_float_func = 102;
+    BoolAndStringToFloatFunction bool_string_func = 103;
+
+    IntAndBoolToFloatFunction int_bool_func = 110;
+    IntAndIntToFloatFunction int_int_func = 111;
+    IntAndFloatToFloatFunction int_float_func = 112;
+    IntAndStringToFloatFunction int_string_func = 113;
+
+    FloatAndBoolToFloatFunction float_bool_func = 120;
+    FloatAndIntToFloatFunction float_int_func = 121;
+    FloatAndFloatToFloatFunction float_float_func = 122;
+    FloatAndStringToFloatFunction float_string_func = 123;
+
+    StringAndBoolToFloatFunction string_bool_func = 130;
+    StringAndIntToFloatFunction string_int_func = 131;
+    StringAndFloatToFloatFunction string_float_func = 132;
+    StringAndStringToFloatFunction string_string_func = 133;
+
+    FloatValueIf if = 1000;
+  }
+}
+
+message FloatToStringFunction {
+  enum ID {
+    UNDEFINED = 0;
+    CAST = 1;
+  }
+
+  ID name = 1;
+
+  oneof argument {
+    Reference input = 2;
+    Reference state = 3;
+
+    BoolToFloatFunction bool_func = 10;
+    IntToFloatFunction int_func = 11;
+    FloatToFloatFunction float_func = 12;
+    StringToFloatFunction string_func = 13;
+
+    BoolAndBoolToFloatFunction bool_bool_func = 100;
+    BoolAndIntToFloatFunction bool_int_func = 101;
+    BoolAndFloatToFloatFunction bool_float_func = 102;
+    BoolAndStringToFloatFunction bool_string_func = 103;
+
+    IntAndBoolToFloatFunction int_bool_func = 110;
+    IntAndIntToFloatFunction int_int_func = 111;
+    IntAndFloatToFloatFunction int_float_func = 112;
+    IntAndStringToFloatFunction int_string_func = 113;
+
+    FloatAndBoolToFloatFunction float_bool_func = 120;
+    FloatAndIntToFloatFunction float_int_func = 121;
+    FloatAndFloatToFloatFunction float_float_func = 122;
+    FloatAndStringToFloatFunction float_string_func = 123;
+
+    StringAndBoolToFloatFunction string_bool_func = 130;
+    StringAndIntToFloatFunction string_int_func = 131;
+    StringAndFloatToFloatFunction string_float_func = 132;
+    StringAndStringToFloatFunction string_string_func = 133;
+
+    FloatValueIf if = 1000;
+  }
+}
+
+message StringToBoolFunction {
+  enum ID {
+    UNDEFINED = 0;
+    CAST = 1;
+  }
+
+  ID name = 1;
+
+  oneof argument {
+    Reference input = 2;
+    Reference state = 3;
+
+    BoolToStringFunction bool_func = 10;
+    IntToStringFunction int_func = 11;
+    FloatToStringFunction float_func = 12;
+    StringToStringFunction string_func = 13;
+
+    BoolAndBoolToStringFunction bool_bool_func = 100;
+    BoolAndIntToStringFunction bool_int_func = 101;
+    BoolAndFloatToStringFunction bool_float_func = 102;
+    BoolAndStringToStringFunction bool_string_func = 103;
+
+    IntAndBoolToStringFunction int_bool_func = 110;
+    IntAndIntToStringFunction int_int_func = 111;
+    IntAndFloatToStringFunction int_float_func = 112;
+    IntAndStringToStringFunction int_string_func = 113;
+
+    FloatAndBoolToStringFunction float_bool_func = 120;
+    FloatAndIntToStringFunction float_int_func = 121;
+    FloatAndFloatToStringFunction float_float_func = 122;
+    FloatAndStringToStringFunction float_string_func = 123;
+
+    StringAndBoolToStringFunction string_bool_func = 130;
+    StringAndIntToStringFunction string_int_func = 131;
+    StringAndFloatToStringFunction string_float_func = 132;
+    StringAndStringToStringFunction string_string_func = 133;
+
+    StringValueIf if = 1000;
+  }
+}
+
+message StringToIntFunction {
+  enum ID {
+    UNDEFINED = 0;
+    LEN = 1;
+  }
+
+  ID name = 1;
+
+  oneof argument {
+    Reference input = 2;
+    Reference state = 3;
+
+    BoolToStringFunction bool_func = 10;
+    IntToStringFunction int_func = 11;
+    FloatToStringFunction float_func = 12;
+    StringToStringFunction string_func = 13;
+
+    BoolAndBoolToStringFunction bool_bool_func = 100;
+    BoolAndIntToStringFunction bool_int_func = 101;
+    BoolAndFloatToStringFunction bool_float_func = 102;
+    BoolAndStringToStringFunction bool_string_func = 103;
+
+    IntAndBoolToStringFunction int_bool_func = 110;
+    IntAndIntToStringFunction int_int_func = 111;
+    IntAndFloatToStringFunction int_float_func = 112;
+    IntAndStringToStringFunction int_string_func = 113;
+
+    FloatAndBoolToStringFunction float_bool_func = 120;
+    FloatAndIntToStringFunction float_int_func = 121;
+    FloatAndFloatToStringFunction float_float_func = 122;
+    FloatAndStringToStringFunction float_string_func = 123;
+
+    StringAndBoolToStringFunction string_bool_func = 130;
+    StringAndIntToStringFunction string_int_func = 131;
+    StringAndFloatToStringFunction string_float_func = 132;
+    StringAndStringToStringFunction string_string_func = 133;
+
+    StringValueIf if = 1000;
+  }
+}
+
+message StringToFloatFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument {
+    Reference input = 2;
+    Reference state = 3;
+
+    BoolToStringFunction bool_func = 10;
+    IntToStringFunction int_func = 11;
+    FloatToStringFunction float_func = 12;
+    StringToStringFunction string_func = 13;
+
+    BoolAndBoolToStringFunction bool_bool_func = 100;
+    BoolAndIntToStringFunction bool_int_func = 101;
+    BoolAndFloatToStringFunction bool_float_func = 102;
+    BoolAndStringToStringFunction bool_string_func = 103;
+
+    IntAndBoolToStringFunction int_bool_func = 110;
+    IntAndIntToStringFunction int_int_func = 111;
+    IntAndFloatToStringFunction int_float_func = 112;
+    IntAndStringToStringFunction int_string_func = 113;
+
+    FloatAndBoolToStringFunction float_bool_func = 120;
+    FloatAndIntToStringFunction float_int_func = 121;
+    FloatAndFloatToStringFunction float_float_func = 122;
+    FloatAndStringToStringFunction float_string_func = 123;
+
+    StringAndBoolToStringFunction string_bool_func = 130;
+    StringAndIntToStringFunction string_int_func = 131;
+    StringAndFloatToStringFunction string_float_func = 132;
+    StringAndStringToStringFunction string_string_func = 133;
+
+    StringValueIf if = 1000;
+  }
+}
+
+message StringToStringFunction {
+  enum ID {
+    UNDEFINED = 0;
+    UPPER = 1;
+    LOWER = 2;
+  }
+
+  ID name = 1;
+
+  oneof argument {
+    Reference input = 2;
+    Reference state = 3;
+
+    BoolToStringFunction bool_func = 10;
+    IntToStringFunction int_func = 11;
+    FloatToStringFunction float_func = 12;
+    StringToStringFunction string_func = 13;
+
+    BoolAndBoolToStringFunction bool_bool_func = 100;
+    BoolAndIntToStringFunction bool_int_func = 101;
+    BoolAndFloatToStringFunction bool_float_func = 102;
+    BoolAndStringToStringFunction bool_string_func = 103;
+
+    IntAndBoolToStringFunction int_bool_func = 110;
+    IntAndIntToStringFunction int_int_func = 111;
+    IntAndFloatToStringFunction int_float_func = 112;
+    IntAndStringToStringFunction int_string_func = 113;
+
+    FloatAndBoolToStringFunction float_bool_func = 120;
+    FloatAndIntToStringFunction float_int_func = 121;
+    FloatAndFloatToStringFunction float_float_func = 122;
+    FloatAndStringToStringFunction float_string_func = 123;
+
+    StringAndBoolToStringFunction string_bool_func = 130;
+    StringAndIntToStringFunction string_int_func = 131;
+    StringAndFloatToStringFunction string_float_func = 132;
+    StringAndStringToStringFunction string_string_func = 133;
+
+    StringValueIf if = 1000;
+  }
+}
+
+// Binary Functions
+
+message BoolAndBoolToBoolFunction {
+  enum ID {
+    UNDEFINED = 0;
+    EQ = 1;
+    NEQ = 2;
+    GT = 3;
+    LT = 4;
+    GTE = 5;
+    LTE = 6;
+    AND = 7;
+    OR = 8;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    bool constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToBoolFunction bool_func_1 = 10;
+    IntToBoolFunction int_func_1 = 11;
+    FloatToBoolFunction float_func_1 = 12;
+    StringToBoolFunction string_func_1 = 13;
+
+    BoolAndBoolToBoolFunction bool_bool_func_1 = 100;
+    BoolAndIntToBoolFunction bool_int_func_1 = 101;
+    BoolAndFloatToBoolFunction bool_float_func_1 = 102;
+    BoolAndStringToBoolFunction bool_string_func_1 = 103;
+
+    IntAndBoolToBoolFunction int_bool_func_1 = 110;
+    IntAndIntToBoolFunction int_int_func_1 = 111;
+    IntAndFloatToBoolFunction int_float_func_1 = 112;
+    IntAndStringToBoolFunction int_string_func_1 = 113;
+
+    FloatAndBoolToBoolFunction float_bool_func_1 = 120;
+    FloatAndIntToBoolFunction float_int_func_1 = 121;
+    FloatAndFloatToBoolFunction float_float_func_1 = 122;
+    FloatAndStringToBoolFunction float_string_func_1 = 123;
+
+    StringAndBoolToBoolFunction string_bool_func_1 = 130;
+    StringAndIntToBoolFunction string_int_func_1 = 131;
+    StringAndFloatToBoolFunction string_float_func_1 = 132;
+    StringAndStringToBoolFunction string_string_func_1 = 133;
+
+    BoolValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToBoolFunction bool_func_2 = 2010;
+    IntToBoolFunction int_func_2 = 2011;
+    FloatToBoolFunction float_func_2 = 2012;
+    StringToBoolFunction string_func_2 = 2013;
+
+    BoolAndBoolToBoolFunction bool_bool_func_2 = 2100;
+    BoolAndIntToBoolFunction bool_int_func_2 = 2101;
+    BoolAndFloatToBoolFunction bool_float_func_2 = 2102;
+    BoolAndStringToBoolFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToBoolFunction int_bool_func_2 = 2110;
+    IntAndIntToBoolFunction int_int_func_2 = 2111;
+    IntAndFloatToBoolFunction int_float_func_2 = 2112;
+    IntAndStringToBoolFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToBoolFunction float_bool_func_2 = 2120;
+    FloatAndIntToBoolFunction float_int_func_2 = 2121;
+    FloatAndFloatToBoolFunction float_float_func_2 = 2122;
+    FloatAndStringToBoolFunction float_string_func_2 = 2123;
+
+    StringAndBoolToBoolFunction string_bool_func_2 = 2130;
+    StringAndIntToBoolFunction string_int_func_2 = 2131;
+    StringAndFloatToBoolFunction string_float_func_2 = 2132;
+    StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolValueIf if_2 = 3000;
+  }
+}
+
+message BoolAndBoolToIntFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    bool constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToBoolFunction bool_func_1 = 10;
+    IntToBoolFunction int_func_1 = 11;
+    FloatToBoolFunction float_func_1 = 12;
+    StringToBoolFunction string_func_1 = 13;
+
+    BoolAndBoolToBoolFunction bool_bool_func_1 = 100;
+    BoolAndIntToBoolFunction bool_int_func_1 = 101;
+    BoolAndFloatToBoolFunction bool_float_func_1 = 102;
+    BoolAndStringToBoolFunction bool_string_func_1 = 103;
+
+    IntAndBoolToBoolFunction int_bool_func_1 = 110;
+    IntAndIntToBoolFunction int_int_func_1 = 111;
+    IntAndFloatToBoolFunction int_float_func_1 = 112;
+    IntAndStringToBoolFunction int_string_func_1 = 113;
+
+    FloatAndBoolToBoolFunction float_bool_func_1 = 120;
+    FloatAndIntToBoolFunction float_int_func_1 = 121;
+    FloatAndFloatToBoolFunction float_float_func_1 = 122;
+    FloatAndStringToBoolFunction float_string_func_1 = 123;
+
+    StringAndBoolToBoolFunction string_bool_func_1 = 130;
+    StringAndIntToBoolFunction string_int_func_1 = 131;
+    StringAndFloatToBoolFunction string_float_func_1 = 132;
+    StringAndStringToBoolFunction string_string_func_1 = 133;
+
+    BoolValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToBoolFunction bool_func_2 = 2010;
+    IntToBoolFunction int_func_2 = 2011;
+    FloatToBoolFunction float_func_2 = 2012;
+    StringToBoolFunction string_func_2 = 2013;
+
+    BoolAndBoolToBoolFunction bool_bool_func_2 = 2100;
+    BoolAndIntToBoolFunction bool_int_func_2 = 2101;
+    BoolAndFloatToBoolFunction bool_float_func_2 = 2102;
+    BoolAndStringToBoolFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToBoolFunction int_bool_func_2 = 2110;
+    IntAndIntToBoolFunction int_int_func_2 = 2111;
+    IntAndFloatToBoolFunction int_float_func_2 = 2112;
+    IntAndStringToBoolFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToBoolFunction float_bool_func_2 = 2120;
+    FloatAndIntToBoolFunction float_int_func_2 = 2121;
+    FloatAndFloatToBoolFunction float_float_func_2 = 2122;
+    FloatAndStringToBoolFunction float_string_func_2 = 2123;
+
+    StringAndBoolToBoolFunction string_bool_func_2 = 2130;
+    StringAndIntToBoolFunction string_int_func_2 = 2131;
+    StringAndFloatToBoolFunction string_float_func_2 = 2132;
+    StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolValueIf if_2 = 3000;
+  }
+}
+
+message BoolAndBoolToFloatFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    bool constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToBoolFunction bool_func_1 = 10;
+    IntToBoolFunction int_func_1 = 11;
+    FloatToBoolFunction float_func_1 = 12;
+    StringToBoolFunction string_func_1 = 13;
+
+    BoolAndBoolToBoolFunction bool_bool_func_1 = 100;
+    BoolAndIntToBoolFunction bool_int_func_1 = 101;
+    BoolAndFloatToBoolFunction bool_float_func_1 = 102;
+    BoolAndStringToBoolFunction bool_string_func_1 = 103;
+
+    IntAndBoolToBoolFunction int_bool_func_1 = 110;
+    IntAndIntToBoolFunction int_int_func_1 = 111;
+    IntAndFloatToBoolFunction int_float_func_1 = 112;
+    IntAndStringToBoolFunction int_string_func_1 = 113;
+
+    FloatAndBoolToBoolFunction float_bool_func_1 = 120;
+    FloatAndIntToBoolFunction float_int_func_1 = 121;
+    FloatAndFloatToBoolFunction float_float_func_1 = 122;
+    FloatAndStringToBoolFunction float_string_func_1 = 123;
+
+    StringAndBoolToBoolFunction string_bool_func_1 = 130;
+    StringAndIntToBoolFunction string_int_func_1 = 131;
+    StringAndFloatToBoolFunction string_float_func_1 = 132;
+    StringAndStringToBoolFunction string_string_func_1 = 133;
+
+    BoolValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToBoolFunction bool_func_2 = 2010;
+    IntToBoolFunction int_func_2 = 2011;
+    FloatToBoolFunction float_func_2 = 2012;
+    StringToBoolFunction string_func_2 = 2013;
+
+    BoolAndBoolToBoolFunction bool_bool_func_2 = 2100;
+    BoolAndIntToBoolFunction bool_int_func_2 = 2101;
+    BoolAndFloatToBoolFunction bool_float_func_2 = 2102;
+    BoolAndStringToBoolFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToBoolFunction int_bool_func_2 = 2110;
+    IntAndIntToBoolFunction int_int_func_2 = 2111;
+    IntAndFloatToBoolFunction int_float_func_2 = 2112;
+    IntAndStringToBoolFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToBoolFunction float_bool_func_2 = 2120;
+    FloatAndIntToBoolFunction float_int_func_2 = 2121;
+    FloatAndFloatToBoolFunction float_float_func_2 = 2122;
+    FloatAndStringToBoolFunction float_string_func_2 = 2123;
+
+    StringAndBoolToBoolFunction string_bool_func_2 = 2130;
+    StringAndIntToBoolFunction string_int_func_2 = 2131;
+    StringAndFloatToBoolFunction string_float_func_2 = 2132;
+    StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolValueIf if_2 = 3000;
+  }
+}
+
+message BoolAndBoolToStringFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    bool constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToBoolFunction bool_func_1 = 10;
+    IntToBoolFunction int_func_1 = 11;
+    FloatToBoolFunction float_func_1 = 12;
+    StringToBoolFunction string_func_1 = 13;
+
+    BoolAndBoolToBoolFunction bool_bool_func_1 = 100;
+    BoolAndIntToBoolFunction bool_int_func_1 = 101;
+    BoolAndFloatToBoolFunction bool_float_func_1 = 102;
+    BoolAndStringToBoolFunction bool_string_func_1 = 103;
+
+    IntAndBoolToBoolFunction int_bool_func_1 = 110;
+    IntAndIntToBoolFunction int_int_func_1 = 111;
+    IntAndFloatToBoolFunction int_float_func_1 = 112;
+    IntAndStringToBoolFunction int_string_func_1 = 113;
+
+    FloatAndBoolToBoolFunction float_bool_func_1 = 120;
+    FloatAndIntToBoolFunction float_int_func_1 = 121;
+    FloatAndFloatToBoolFunction float_float_func_1 = 122;
+    FloatAndStringToBoolFunction float_string_func_1 = 123;
+
+    StringAndBoolToBoolFunction string_bool_func_1 = 130;
+    StringAndIntToBoolFunction string_int_func_1 = 131;
+    StringAndFloatToBoolFunction string_float_func_1 = 132;
+    StringAndStringToBoolFunction string_string_func_1 = 133;
+
+    BoolValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToBoolFunction bool_func_2 = 2010;
+    IntToBoolFunction int_func_2 = 2011;
+    FloatToBoolFunction float_func_2 = 2012;
+    StringToBoolFunction string_func_2 = 2013;
+
+    BoolAndBoolToBoolFunction bool_bool_func_2 = 2100;
+    BoolAndIntToBoolFunction bool_int_func_2 = 2101;
+    BoolAndFloatToBoolFunction bool_float_func_2 = 2102;
+    BoolAndStringToBoolFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToBoolFunction int_bool_func_2 = 2110;
+    IntAndIntToBoolFunction int_int_func_2 = 2111;
+    IntAndFloatToBoolFunction int_float_func_2 = 2112;
+    IntAndStringToBoolFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToBoolFunction float_bool_func_2 = 2120;
+    FloatAndIntToBoolFunction float_int_func_2 = 2121;
+    FloatAndFloatToBoolFunction float_float_func_2 = 2122;
+    FloatAndStringToBoolFunction float_string_func_2 = 2123;
+
+    StringAndBoolToBoolFunction string_bool_func_2 = 2130;
+    StringAndIntToBoolFunction string_int_func_2 = 2131;
+    StringAndFloatToBoolFunction string_float_func_2 = 2132;
+    StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolValueIf if_2 = 3000;
+  }
+}
+
+message BoolAndIntToBoolFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    bool constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToBoolFunction bool_func_1 = 10;
+    IntToBoolFunction int_func_1 = 11;
+    FloatToBoolFunction float_func_1 = 12;
+    StringToBoolFunction string_func_1 = 13;
+
+    BoolAndBoolToBoolFunction bool_bool_func_1 = 100;
+    BoolAndIntToBoolFunction bool_int_func_1 = 101;
+    BoolAndFloatToBoolFunction bool_float_func_1 = 102;
+    BoolAndStringToBoolFunction bool_string_func_1 = 103;
+
+    IntAndBoolToBoolFunction int_bool_func_1 = 110;
+    IntAndIntToBoolFunction int_int_func_1 = 111;
+    IntAndFloatToBoolFunction int_float_func_1 = 112;
+    IntAndStringToBoolFunction int_string_func_1 = 113;
+
+    FloatAndBoolToBoolFunction float_bool_func_1 = 120;
+    FloatAndIntToBoolFunction float_int_func_1 = 121;
+    FloatAndFloatToBoolFunction float_float_func_1 = 122;
+    FloatAndStringToBoolFunction float_string_func_1 = 123;
+
+    StringAndBoolToBoolFunction string_bool_func_1 = 130;
+    StringAndIntToBoolFunction string_int_func_1 = 131;
+    StringAndFloatToBoolFunction string_float_func_1 = 132;
+    StringAndStringToBoolFunction string_string_func_1 = 133;
+
+    BoolValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToIntFunction bool_func_2 = 2010;
+    IntToIntFunction int_func_2 = 2011;
+    FloatToIntFunction float_func_2 = 2012;
+    StringToIntFunction string_func_2 = 2013;
+
+    BoolAndBoolToIntFunction bool_bool_func_2 = 2100;
+    BoolAndIntToIntFunction bool_int_func_2 = 2101;
+    BoolAndFloatToIntFunction bool_float_func_2 = 2102;
+    BoolAndStringToIntFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToIntFunction int_bool_func_2 = 2110;
+    IntAndIntToIntFunction int_int_func_2 = 2111;
+    IntAndFloatToIntFunction int_float_func_2 = 2112;
+    IntAndStringToIntFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToIntFunction float_bool_func_2 = 2120;
+    FloatAndIntToIntFunction float_int_func_2 = 2121;
+    FloatAndFloatToIntFunction float_float_func_2 = 2122;
+    FloatAndStringToIntFunction float_string_func_2 = 2123;
+
+    StringAndBoolToIntFunction string_bool_func_2 = 2130;
+    StringAndIntToIntFunction string_int_func_2 = 2131;
+    StringAndFloatToIntFunction string_float_func_2 = 2132;
+    StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    IntValueIf if_2 = 3000;
+  }
+}
+
+message BoolAndIntToIntFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    bool constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToBoolFunction bool_func_1 = 10;
+    IntToBoolFunction int_func_1 = 11;
+    FloatToBoolFunction float_func_1 = 12;
+    StringToBoolFunction string_func_1 = 13;
+
+    BoolAndBoolToBoolFunction bool_bool_func_1 = 100;
+    BoolAndIntToBoolFunction bool_int_func_1 = 101;
+    BoolAndFloatToBoolFunction bool_float_func_1 = 102;
+    BoolAndStringToBoolFunction bool_string_func_1 = 103;
+
+    IntAndBoolToBoolFunction int_bool_func_1 = 110;
+    IntAndIntToBoolFunction int_int_func_1 = 111;
+    IntAndFloatToBoolFunction int_float_func_1 = 112;
+    IntAndStringToBoolFunction int_string_func_1 = 113;
+
+    FloatAndBoolToBoolFunction float_bool_func_1 = 120;
+    FloatAndIntToBoolFunction float_int_func_1 = 121;
+    FloatAndFloatToBoolFunction float_float_func_1 = 122;
+    FloatAndStringToBoolFunction float_string_func_1 = 123;
+
+    StringAndBoolToBoolFunction string_bool_func_1 = 130;
+    StringAndIntToBoolFunction string_int_func_1 = 131;
+    StringAndFloatToBoolFunction string_float_func_1 = 132;
+    StringAndStringToBoolFunction string_string_func_1 = 133;
+
+    BoolValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToIntFunction bool_func_2 = 2010;
+    IntToIntFunction int_func_2 = 2011;
+    FloatToIntFunction float_func_2 = 2012;
+    StringToIntFunction string_func_2 = 2013;
+
+    BoolAndBoolToIntFunction bool_bool_func_2 = 2100;
+    BoolAndIntToIntFunction bool_int_func_2 = 2101;
+    BoolAndFloatToIntFunction bool_float_func_2 = 2102;
+    BoolAndStringToIntFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToIntFunction int_bool_func_2 = 2110;
+    IntAndIntToIntFunction int_int_func_2 = 2111;
+    IntAndFloatToIntFunction int_float_func_2 = 2112;
+    IntAndStringToIntFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToIntFunction float_bool_func_2 = 2120;
+    FloatAndIntToIntFunction float_int_func_2 = 2121;
+    FloatAndFloatToIntFunction float_float_func_2 = 2122;
+    FloatAndStringToIntFunction float_string_func_2 = 2123;
+
+    StringAndBoolToIntFunction string_bool_func_2 = 2130;
+    StringAndIntToIntFunction string_int_func_2 = 2131;
+    StringAndFloatToIntFunction string_float_func_2 = 2132;
+    StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    IntValueIf if_2 = 3000;
+  }
+}
+
+message BoolAndIntToFloatFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    bool constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToBoolFunction bool_func_1 = 10;
+    IntToBoolFunction int_func_1 = 11;
+    FloatToBoolFunction float_func_1 = 12;
+    StringToBoolFunction string_func_1 = 13;
+
+    BoolAndBoolToBoolFunction bool_bool_func_1 = 100;
+    BoolAndIntToBoolFunction bool_int_func_1 = 101;
+    BoolAndFloatToBoolFunction bool_float_func_1 = 102;
+    BoolAndStringToBoolFunction bool_string_func_1 = 103;
+
+    IntAndBoolToBoolFunction int_bool_func_1 = 110;
+    IntAndIntToBoolFunction int_int_func_1 = 111;
+    IntAndFloatToBoolFunction int_float_func_1 = 112;
+    IntAndStringToBoolFunction int_string_func_1 = 113;
+
+    FloatAndBoolToBoolFunction float_bool_func_1 = 120;
+    FloatAndIntToBoolFunction float_int_func_1 = 121;
+    FloatAndFloatToBoolFunction float_float_func_1 = 122;
+    FloatAndStringToBoolFunction float_string_func_1 = 123;
+
+    StringAndBoolToBoolFunction string_bool_func_1 = 130;
+    StringAndIntToBoolFunction string_int_func_1 = 131;
+    StringAndFloatToBoolFunction string_float_func_1 = 132;
+    StringAndStringToBoolFunction string_string_func_1 = 133;
+
+    BoolValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToIntFunction bool_func_2 = 2010;
+    IntToIntFunction int_func_2 = 2011;
+    FloatToIntFunction float_func_2 = 2012;
+    StringToIntFunction string_func_2 = 2013;
+
+    BoolAndBoolToIntFunction bool_bool_func_2 = 2100;
+    BoolAndIntToIntFunction bool_int_func_2 = 2101;
+    BoolAndFloatToIntFunction bool_float_func_2 = 2102;
+    BoolAndStringToIntFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToIntFunction int_bool_func_2 = 2110;
+    IntAndIntToIntFunction int_int_func_2 = 2111;
+    IntAndFloatToIntFunction int_float_func_2 = 2112;
+    IntAndStringToIntFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToIntFunction float_bool_func_2 = 2120;
+    FloatAndIntToIntFunction float_int_func_2 = 2121;
+    FloatAndFloatToIntFunction float_float_func_2 = 2122;
+    FloatAndStringToIntFunction float_string_func_2 = 2123;
+
+    StringAndBoolToIntFunction string_bool_func_2 = 2130;
+    StringAndIntToIntFunction string_int_func_2 = 2131;
+    StringAndFloatToIntFunction string_float_func_2 = 2132;
+    StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    IntValueIf if_2 = 3000;
+  }
+}
+
+message BoolAndIntToStringFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    bool constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToBoolFunction bool_func_1 = 10;
+    IntToBoolFunction int_func_1 = 11;
+    FloatToBoolFunction float_func_1 = 12;
+    StringToBoolFunction string_func_1 = 13;
+
+    BoolAndBoolToBoolFunction bool_bool_func_1 = 100;
+    BoolAndIntToBoolFunction bool_int_func_1 = 101;
+    BoolAndFloatToBoolFunction bool_float_func_1 = 102;
+    BoolAndStringToBoolFunction bool_string_func_1 = 103;
+
+    IntAndBoolToBoolFunction int_bool_func_1 = 110;
+    IntAndIntToBoolFunction int_int_func_1 = 111;
+    IntAndFloatToBoolFunction int_float_func_1 = 112;
+    IntAndStringToBoolFunction int_string_func_1 = 113;
+
+    FloatAndBoolToBoolFunction float_bool_func_1 = 120;
+    FloatAndIntToBoolFunction float_int_func_1 = 121;
+    FloatAndFloatToBoolFunction float_float_func_1 = 122;
+    FloatAndStringToBoolFunction float_string_func_1 = 123;
+
+    StringAndBoolToBoolFunction string_bool_func_1 = 130;
+    StringAndIntToBoolFunction string_int_func_1 = 131;
+    StringAndFloatToBoolFunction string_float_func_1 = 132;
+    StringAndStringToBoolFunction string_string_func_1 = 133;
+
+    BoolValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToIntFunction bool_func_2 = 2010;
+    IntToIntFunction int_func_2 = 2011;
+    FloatToIntFunction float_func_2 = 2012;
+    StringToIntFunction string_func_2 = 2013;
+
+    BoolAndBoolToIntFunction bool_bool_func_2 = 2100;
+    BoolAndIntToIntFunction bool_int_func_2 = 2101;
+    BoolAndFloatToIntFunction bool_float_func_2 = 2102;
+    BoolAndStringToIntFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToIntFunction int_bool_func_2 = 2110;
+    IntAndIntToIntFunction int_int_func_2 = 2111;
+    IntAndFloatToIntFunction int_float_func_2 = 2112;
+    IntAndStringToIntFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToIntFunction float_bool_func_2 = 2120;
+    FloatAndIntToIntFunction float_int_func_2 = 2121;
+    FloatAndFloatToIntFunction float_float_func_2 = 2122;
+    FloatAndStringToIntFunction float_string_func_2 = 2123;
+
+    StringAndBoolToIntFunction string_bool_func_2 = 2130;
+    StringAndIntToIntFunction string_int_func_2 = 2131;
+    StringAndFloatToIntFunction string_float_func_2 = 2132;
+    StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    IntValueIf if_2 = 3000;
+  }
+}
+
+message BoolAndFloatToBoolFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    bool constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToBoolFunction bool_func_1 = 10;
+    IntToBoolFunction int_func_1 = 11;
+    FloatToBoolFunction float_func_1 = 12;
+    StringToBoolFunction string_func_1 = 13;
+
+    BoolAndBoolToBoolFunction bool_bool_func_1 = 100;
+    BoolAndIntToBoolFunction bool_int_func_1 = 101;
+    BoolAndFloatToBoolFunction bool_float_func_1 = 102;
+    BoolAndStringToBoolFunction bool_string_func_1 = 103;
+
+    IntAndBoolToBoolFunction int_bool_func_1 = 110;
+    IntAndIntToBoolFunction int_int_func_1 = 111;
+    IntAndFloatToBoolFunction int_float_func_1 = 112;
+    IntAndStringToBoolFunction int_string_func_1 = 113;
+
+    FloatAndBoolToBoolFunction float_bool_func_1 = 120;
+    FloatAndIntToBoolFunction float_int_func_1 = 121;
+    FloatAndFloatToBoolFunction float_float_func_1 = 122;
+    FloatAndStringToBoolFunction float_string_func_1 = 123;
+
+    StringAndBoolToBoolFunction string_bool_func_1 = 130;
+    StringAndIntToBoolFunction string_int_func_1 = 131;
+    StringAndFloatToBoolFunction string_float_func_1 = 132;
+    StringAndStringToBoolFunction string_string_func_1 = 133;
+
+    BoolValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToFloatFunction bool_func_2 = 2010;
+    IntToFloatFunction int_func_2 = 2011;
+    FloatToFloatFunction float_func_2 = 2012;
+    StringToFloatFunction string_func_2 = 2013;
+
+    BoolAndBoolToFloatFunction bool_bool_func_2 = 2100;
+    BoolAndIntToFloatFunction bool_int_func_2 = 2101;
+    BoolAndFloatToFloatFunction bool_float_func_2 = 2102;
+    BoolAndStringToFloatFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToFloatFunction int_bool_func_2 = 2110;
+    IntAndIntToFloatFunction int_int_func_2 = 2111;
+    IntAndFloatToFloatFunction int_float_func_2 = 2112;
+    IntAndStringToFloatFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToFloatFunction float_bool_func_2 = 2120;
+    FloatAndIntToFloatFunction float_int_func_2 = 2121;
+    FloatAndFloatToFloatFunction float_float_func_2 = 2122;
+    FloatAndStringToFloatFunction float_string_func_2 = 2123;
+
+    StringAndBoolToFloatFunction string_bool_func_2 = 2130;
+    StringAndIntToFloatFunction string_int_func_2 = 2131;
+    StringAndFloatToFloatFunction string_float_func_2 = 2132;
+    StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    FloatValueIf if_2 = 3000;
+  }
+}
+
+message BoolAndFloatToIntFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    bool constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToBoolFunction bool_func_1 = 10;
+    IntToBoolFunction int_func_1 = 11;
+    FloatToBoolFunction float_func_1 = 12;
+    StringToBoolFunction string_func_1 = 13;
+
+    BoolAndBoolToBoolFunction bool_bool_func_1 = 100;
+    BoolAndIntToBoolFunction bool_int_func_1 = 101;
+    BoolAndFloatToBoolFunction bool_float_func_1 = 102;
+    BoolAndStringToBoolFunction bool_string_func_1 = 103;
+
+    IntAndBoolToBoolFunction int_bool_func_1 = 110;
+    IntAndIntToBoolFunction int_int_func_1 = 111;
+    IntAndFloatToBoolFunction int_float_func_1 = 112;
+    IntAndStringToBoolFunction int_string_func_1 = 113;
+
+    FloatAndBoolToBoolFunction float_bool_func_1 = 120;
+    FloatAndIntToBoolFunction float_int_func_1 = 121;
+    FloatAndFloatToBoolFunction float_float_func_1 = 122;
+    FloatAndStringToBoolFunction float_string_func_1 = 123;
+
+    StringAndBoolToBoolFunction string_bool_func_1 = 130;
+    StringAndIntToBoolFunction string_int_func_1 = 131;
+    StringAndFloatToBoolFunction string_float_func_1 = 132;
+    StringAndStringToBoolFunction string_string_func_1 = 133;
+
+    BoolValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToFloatFunction bool_func_2 = 2010;
+    IntToFloatFunction int_func_2 = 2011;
+    FloatToFloatFunction float_func_2 = 2012;
+    StringToFloatFunction string_func_2 = 2013;
+
+    BoolAndBoolToFloatFunction bool_bool_func_2 = 2100;
+    BoolAndIntToFloatFunction bool_int_func_2 = 2101;
+    BoolAndFloatToFloatFunction bool_float_func_2 = 2102;
+    BoolAndStringToFloatFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToFloatFunction int_bool_func_2 = 2110;
+    IntAndIntToFloatFunction int_int_func_2 = 2111;
+    IntAndFloatToFloatFunction int_float_func_2 = 2112;
+    IntAndStringToFloatFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToFloatFunction float_bool_func_2 = 2120;
+    FloatAndIntToFloatFunction float_int_func_2 = 2121;
+    FloatAndFloatToFloatFunction float_float_func_2 = 2122;
+    FloatAndStringToFloatFunction float_string_func_2 = 2123;
+
+    StringAndBoolToFloatFunction string_bool_func_2 = 2130;
+    StringAndIntToFloatFunction string_int_func_2 = 2131;
+    StringAndFloatToFloatFunction string_float_func_2 = 2132;
+    StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    FloatValueIf if_2 = 3000;
+  }
+}
+
+message BoolAndFloatToFloatFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    bool constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToBoolFunction bool_func_1 = 10;
+    IntToBoolFunction int_func_1 = 11;
+    FloatToBoolFunction float_func_1 = 12;
+    StringToBoolFunction string_func_1 = 13;
+
+    BoolAndBoolToBoolFunction bool_bool_func_1 = 100;
+    BoolAndIntToBoolFunction bool_int_func_1 = 101;
+    BoolAndFloatToBoolFunction bool_float_func_1 = 102;
+    BoolAndStringToBoolFunction bool_string_func_1 = 103;
+
+    IntAndBoolToBoolFunction int_bool_func_1 = 110;
+    IntAndIntToBoolFunction int_int_func_1 = 111;
+    IntAndFloatToBoolFunction int_float_func_1 = 112;
+    IntAndStringToBoolFunction int_string_func_1 = 113;
+
+    FloatAndBoolToBoolFunction float_bool_func_1 = 120;
+    FloatAndIntToBoolFunction float_int_func_1 = 121;
+    FloatAndFloatToBoolFunction float_float_func_1 = 122;
+    FloatAndStringToBoolFunction float_string_func_1 = 123;
+
+    StringAndBoolToBoolFunction string_bool_func_1 = 130;
+    StringAndIntToBoolFunction string_int_func_1 = 131;
+    StringAndFloatToBoolFunction string_float_func_1 = 132;
+    StringAndStringToBoolFunction string_string_func_1 = 133;
+
+    BoolValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToFloatFunction bool_func_2 = 2010;
+    IntToFloatFunction int_func_2 = 2011;
+    FloatToFloatFunction float_func_2 = 2012;
+    StringToFloatFunction string_func_2 = 2013;
+
+    BoolAndBoolToFloatFunction bool_bool_func_2 = 2100;
+    BoolAndIntToFloatFunction bool_int_func_2 = 2101;
+    BoolAndFloatToFloatFunction bool_float_func_2 = 2102;
+    BoolAndStringToFloatFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToFloatFunction int_bool_func_2 = 2110;
+    IntAndIntToFloatFunction int_int_func_2 = 2111;
+    IntAndFloatToFloatFunction int_float_func_2 = 2112;
+    IntAndStringToFloatFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToFloatFunction float_bool_func_2 = 2120;
+    FloatAndIntToFloatFunction float_int_func_2 = 2121;
+    FloatAndFloatToFloatFunction float_float_func_2 = 2122;
+    FloatAndStringToFloatFunction float_string_func_2 = 2123;
+
+    StringAndBoolToFloatFunction string_bool_func_2 = 2130;
+    StringAndIntToFloatFunction string_int_func_2 = 2131;
+    StringAndFloatToFloatFunction string_float_func_2 = 2132;
+    StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    FloatValueIf if_2 = 3000;
+  }
+}
+
+message BoolAndFloatToStringFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    bool constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToBoolFunction bool_func_1 = 10;
+    IntToBoolFunction int_func_1 = 11;
+    FloatToBoolFunction float_func_1 = 12;
+    StringToBoolFunction string_func_1 = 13;
+
+    BoolAndBoolToBoolFunction bool_bool_func_1 = 100;
+    BoolAndIntToBoolFunction bool_int_func_1 = 101;
+    BoolAndFloatToBoolFunction bool_float_func_1 = 102;
+    BoolAndStringToBoolFunction bool_string_func_1 = 103;
+
+    IntAndBoolToBoolFunction int_bool_func_1 = 110;
+    IntAndIntToBoolFunction int_int_func_1 = 111;
+    IntAndFloatToBoolFunction int_float_func_1 = 112;
+    IntAndStringToBoolFunction int_string_func_1 = 113;
+
+    FloatAndBoolToBoolFunction float_bool_func_1 = 120;
+    FloatAndIntToBoolFunction float_int_func_1 = 121;
+    FloatAndFloatToBoolFunction float_float_func_1 = 122;
+    FloatAndStringToBoolFunction float_string_func_1 = 123;
+
+    StringAndBoolToBoolFunction string_bool_func_1 = 130;
+    StringAndIntToBoolFunction string_int_func_1 = 131;
+    StringAndFloatToBoolFunction string_float_func_1 = 132;
+    StringAndStringToBoolFunction string_string_func_1 = 133;
+
+    BoolValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToFloatFunction bool_func_2 = 2010;
+    IntToFloatFunction int_func_2 = 2011;
+    FloatToFloatFunction float_func_2 = 2012;
+    StringToFloatFunction string_func_2 = 2013;
+
+    BoolAndBoolToFloatFunction bool_bool_func_2 = 2100;
+    BoolAndIntToFloatFunction bool_int_func_2 = 2101;
+    BoolAndFloatToFloatFunction bool_float_func_2 = 2102;
+    BoolAndStringToFloatFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToFloatFunction int_bool_func_2 = 2110;
+    IntAndIntToFloatFunction int_int_func_2 = 2111;
+    IntAndFloatToFloatFunction int_float_func_2 = 2112;
+    IntAndStringToFloatFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToFloatFunction float_bool_func_2 = 2120;
+    FloatAndIntToFloatFunction float_int_func_2 = 2121;
+    FloatAndFloatToFloatFunction float_float_func_2 = 2122;
+    FloatAndStringToFloatFunction float_string_func_2 = 2123;
+
+    StringAndBoolToFloatFunction string_bool_func_2 = 2130;
+    StringAndIntToFloatFunction string_int_func_2 = 2131;
+    StringAndFloatToFloatFunction string_float_func_2 = 2132;
+    StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    FloatValueIf if_2 = 3000;
+  }
+}
+
+message BoolAndStringToBoolFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    bool constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToBoolFunction bool_func_1 = 10;
+    IntToBoolFunction int_func_1 = 11;
+    FloatToBoolFunction float_func_1 = 12;
+    StringToBoolFunction string_func_1 = 13;
+
+    BoolAndBoolToBoolFunction bool_bool_func_1 = 100;
+    BoolAndIntToBoolFunction bool_int_func_1 = 101;
+    BoolAndFloatToBoolFunction bool_float_func_1 = 102;
+    BoolAndStringToBoolFunction bool_string_func_1 = 103;
+
+    IntAndBoolToBoolFunction int_bool_func_1 = 110;
+    IntAndIntToBoolFunction int_int_func_1 = 111;
+    IntAndFloatToBoolFunction int_float_func_1 = 112;
+    IntAndStringToBoolFunction int_string_func_1 = 113;
+
+    FloatAndBoolToBoolFunction float_bool_func_1 = 120;
+    FloatAndIntToBoolFunction float_int_func_1 = 121;
+    FloatAndFloatToBoolFunction float_float_func_1 = 122;
+    FloatAndStringToBoolFunction float_string_func_1 = 123;
+
+    StringAndBoolToBoolFunction string_bool_func_1 = 130;
+    StringAndIntToBoolFunction string_int_func_1 = 131;
+    StringAndFloatToBoolFunction string_float_func_1 = 132;
+    StringAndStringToBoolFunction string_string_func_1 = 133;
+
+    BoolValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToStringFunction bool_func_2 = 2010;
+    IntToStringFunction int_func_2 = 2011;
+    FloatToStringFunction float_func_2 = 2012;
+    StringToStringFunction string_func_2 = 2013;
+
+    BoolAndBoolToStringFunction bool_bool_func_2 = 2100;
+    BoolAndIntToStringFunction bool_int_func_2 = 2101;
+    BoolAndFloatToStringFunction bool_float_func_2 = 2102;
+    BoolAndStringToStringFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToStringFunction int_bool_func_2 = 2110;
+    IntAndIntToStringFunction int_int_func_2 = 2111;
+    IntAndFloatToStringFunction int_float_func_2 = 2112;
+    IntAndStringToStringFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToStringFunction float_bool_func_2 = 2120;
+    FloatAndIntToStringFunction float_int_func_2 = 2121;
+    FloatAndFloatToStringFunction float_float_func_2 = 2122;
+    FloatAndStringToStringFunction float_string_func_2 = 2123;
+
+    StringAndBoolToStringFunction string_bool_func_2 = 2130;
+    StringAndIntToStringFunction string_int_func_2 = 2131;
+    StringAndFloatToStringFunction string_float_func_2 = 2132;
+    StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    StringValueIf if_2 = 3000;
+  }
+}
+
+message BoolAndStringToIntFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    bool constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToBoolFunction bool_func_1 = 10;
+    IntToBoolFunction int_func_1 = 11;
+    FloatToBoolFunction float_func_1 = 12;
+    StringToBoolFunction string_func_1 = 13;
+
+    BoolAndBoolToBoolFunction bool_bool_func_1 = 100;
+    BoolAndIntToBoolFunction bool_int_func_1 = 101;
+    BoolAndFloatToBoolFunction bool_float_func_1 = 102;
+    BoolAndStringToBoolFunction bool_string_func_1 = 103;
+
+    IntAndBoolToBoolFunction int_bool_func_1 = 110;
+    IntAndIntToBoolFunction int_int_func_1 = 111;
+    IntAndFloatToBoolFunction int_float_func_1 = 112;
+    IntAndStringToBoolFunction int_string_func_1 = 113;
+
+    FloatAndBoolToBoolFunction float_bool_func_1 = 120;
+    FloatAndIntToBoolFunction float_int_func_1 = 121;
+    FloatAndFloatToBoolFunction float_float_func_1 = 122;
+    FloatAndStringToBoolFunction float_string_func_1 = 123;
+
+    StringAndBoolToBoolFunction string_bool_func_1 = 130;
+    StringAndIntToBoolFunction string_int_func_1 = 131;
+    StringAndFloatToBoolFunction string_float_func_1 = 132;
+    StringAndStringToBoolFunction string_string_func_1 = 133;
+
+    BoolValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToStringFunction bool_func_2 = 2010;
+    IntToStringFunction int_func_2 = 2011;
+    FloatToStringFunction float_func_2 = 2012;
+    StringToStringFunction string_func_2 = 2013;
+
+    BoolAndBoolToStringFunction bool_bool_func_2 = 2100;
+    BoolAndIntToStringFunction bool_int_func_2 = 2101;
+    BoolAndFloatToStringFunction bool_float_func_2 = 2102;
+    BoolAndStringToStringFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToStringFunction int_bool_func_2 = 2110;
+    IntAndIntToStringFunction int_int_func_2 = 2111;
+    IntAndFloatToStringFunction int_float_func_2 = 2112;
+    IntAndStringToStringFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToStringFunction float_bool_func_2 = 2120;
+    FloatAndIntToStringFunction float_int_func_2 = 2121;
+    FloatAndFloatToStringFunction float_float_func_2 = 2122;
+    FloatAndStringToStringFunction float_string_func_2 = 2123;
+
+    StringAndBoolToStringFunction string_bool_func_2 = 2130;
+    StringAndIntToStringFunction string_int_func_2 = 2131;
+    StringAndFloatToStringFunction string_float_func_2 = 2132;
+    StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    StringValueIf if_2 = 3000;
+  }
+}
+
+message BoolAndStringToFloatFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    bool constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToBoolFunction bool_func_1 = 10;
+    IntToBoolFunction int_func_1 = 11;
+    FloatToBoolFunction float_func_1 = 12;
+    StringToBoolFunction string_func_1 = 13;
+
+    BoolAndBoolToBoolFunction bool_bool_func_1 = 100;
+    BoolAndIntToBoolFunction bool_int_func_1 = 101;
+    BoolAndFloatToBoolFunction bool_float_func_1 = 102;
+    BoolAndStringToBoolFunction bool_string_func_1 = 103;
+
+    IntAndBoolToBoolFunction int_bool_func_1 = 110;
+    IntAndIntToBoolFunction int_int_func_1 = 111;
+    IntAndFloatToBoolFunction int_float_func_1 = 112;
+    IntAndStringToBoolFunction int_string_func_1 = 113;
+
+    FloatAndBoolToBoolFunction float_bool_func_1 = 120;
+    FloatAndIntToBoolFunction float_int_func_1 = 121;
+    FloatAndFloatToBoolFunction float_float_func_1 = 122;
+    FloatAndStringToBoolFunction float_string_func_1 = 123;
+
+    StringAndBoolToBoolFunction string_bool_func_1 = 130;
+    StringAndIntToBoolFunction string_int_func_1 = 131;
+    StringAndFloatToBoolFunction string_float_func_1 = 132;
+    StringAndStringToBoolFunction string_string_func_1 = 133;
+
+    BoolValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToStringFunction bool_func_2 = 2010;
+    IntToStringFunction int_func_2 = 2011;
+    FloatToStringFunction float_func_2 = 2012;
+    StringToStringFunction string_func_2 = 2013;
+
+    BoolAndBoolToStringFunction bool_bool_func_2 = 2100;
+    BoolAndIntToStringFunction bool_int_func_2 = 2101;
+    BoolAndFloatToStringFunction bool_float_func_2 = 2102;
+    BoolAndStringToStringFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToStringFunction int_bool_func_2 = 2110;
+    IntAndIntToStringFunction int_int_func_2 = 2111;
+    IntAndFloatToStringFunction int_float_func_2 = 2112;
+    IntAndStringToStringFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToStringFunction float_bool_func_2 = 2120;
+    FloatAndIntToStringFunction float_int_func_2 = 2121;
+    FloatAndFloatToStringFunction float_float_func_2 = 2122;
+    FloatAndStringToStringFunction float_string_func_2 = 2123;
+
+    StringAndBoolToStringFunction string_bool_func_2 = 2130;
+    StringAndIntToStringFunction string_int_func_2 = 2131;
+    StringAndFloatToStringFunction string_float_func_2 = 2132;
+    StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    StringValueIf if_2 = 3000;
+  }
+}
+
+message BoolAndStringToStringFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    bool constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToBoolFunction bool_func_1 = 10;
+    IntToBoolFunction int_func_1 = 11;
+    FloatToBoolFunction float_func_1 = 12;
+    StringToBoolFunction string_func_1 = 13;
+
+    BoolAndBoolToBoolFunction bool_bool_func_1 = 100;
+    BoolAndIntToBoolFunction bool_int_func_1 = 101;
+    BoolAndFloatToBoolFunction bool_float_func_1 = 102;
+    BoolAndStringToBoolFunction bool_string_func_1 = 103;
+
+    IntAndBoolToBoolFunction int_bool_func_1 = 110;
+    IntAndIntToBoolFunction int_int_func_1 = 111;
+    IntAndFloatToBoolFunction int_float_func_1 = 112;
+    IntAndStringToBoolFunction int_string_func_1 = 113;
+
+    FloatAndBoolToBoolFunction float_bool_func_1 = 120;
+    FloatAndIntToBoolFunction float_int_func_1 = 121;
+    FloatAndFloatToBoolFunction float_float_func_1 = 122;
+    FloatAndStringToBoolFunction float_string_func_1 = 123;
+
+    StringAndBoolToBoolFunction string_bool_func_1 = 130;
+    StringAndIntToBoolFunction string_int_func_1 = 131;
+    StringAndFloatToBoolFunction string_float_func_1 = 132;
+    StringAndStringToBoolFunction string_string_func_1 = 133;
+
+    BoolValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToStringFunction bool_func_2 = 2010;
+    IntToStringFunction int_func_2 = 2011;
+    FloatToStringFunction float_func_2 = 2012;
+    StringToStringFunction string_func_2 = 2013;
+
+    BoolAndBoolToStringFunction bool_bool_func_2 = 2100;
+    BoolAndIntToStringFunction bool_int_func_2 = 2101;
+    BoolAndFloatToStringFunction bool_float_func_2 = 2102;
+    BoolAndStringToStringFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToStringFunction int_bool_func_2 = 2110;
+    IntAndIntToStringFunction int_int_func_2 = 2111;
+    IntAndFloatToStringFunction int_float_func_2 = 2112;
+    IntAndStringToStringFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToStringFunction float_bool_func_2 = 2120;
+    FloatAndIntToStringFunction float_int_func_2 = 2121;
+    FloatAndFloatToStringFunction float_float_func_2 = 2122;
+    FloatAndStringToStringFunction float_string_func_2 = 2123;
+
+    StringAndBoolToStringFunction string_bool_func_2 = 2130;
+    StringAndIntToStringFunction string_int_func_2 = 2131;
+    StringAndFloatToStringFunction string_float_func_2 = 2132;
+    StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    StringValueIf if_2 = 3000;
+  }
+}
+
+message IntAndBoolToBoolFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    int64 constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToIntFunction bool_func_1 = 10;
+    IntToIntFunction int_func_1 = 11;
+    FloatToIntFunction float_func_1 = 12;
+    StringToIntFunction string_func_1 = 13;
+
+    BoolAndBoolToIntFunction bool_bool_func_1 = 100;
+    BoolAndIntToIntFunction bool_int_func_1 = 101;
+    BoolAndFloatToIntFunction bool_float_func_1 = 102;
+    BoolAndStringToIntFunction bool_string_func_1 = 103;
+
+    IntAndBoolToIntFunction int_bool_func_1 = 110;
+    IntAndIntToIntFunction int_int_func_1 = 111;
+    IntAndFloatToIntFunction int_float_func_1 = 112;
+    IntAndStringToIntFunction int_string_func_1 = 113;
+
+    FloatAndBoolToIntFunction float_bool_func_1 = 120;
+    FloatAndIntToIntFunction float_int_func_1 = 121;
+    FloatAndFloatToIntFunction float_float_func_1 = 122;
+    FloatAndStringToIntFunction float_string_func_1 = 123;
+
+    StringAndBoolToIntFunction string_bool_func_1 = 130;
+    StringAndIntToIntFunction string_int_func_1 = 131;
+    StringAndFloatToIntFunction string_float_func_1 = 132;
+    StringAndStringToIntFunction string_string_func_1 = 133;
+
+    IntValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToBoolFunction bool_func_2 = 2010;
+    IntToBoolFunction int_func_2 = 2011;
+    FloatToBoolFunction float_func_2 = 2012;
+    StringToBoolFunction string_func_2 = 2013;
+
+    BoolAndBoolToBoolFunction bool_bool_func_2 = 2100;
+    BoolAndIntToBoolFunction bool_int_func_2 = 2101;
+    BoolAndFloatToBoolFunction bool_float_func_2 = 2102;
+    BoolAndStringToBoolFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToBoolFunction int_bool_func_2 = 2110;
+    IntAndIntToBoolFunction int_int_func_2 = 2111;
+    IntAndFloatToBoolFunction int_float_func_2 = 2112;
+    IntAndStringToBoolFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToBoolFunction float_bool_func_2 = 2120;
+    FloatAndIntToBoolFunction float_int_func_2 = 2121;
+    FloatAndFloatToBoolFunction float_float_func_2 = 2122;
+    FloatAndStringToBoolFunction float_string_func_2 = 2123;
+
+    StringAndBoolToBoolFunction string_bool_func_2 = 2130;
+    StringAndIntToBoolFunction string_int_func_2 = 2131;
+    StringAndFloatToBoolFunction string_float_func_2 = 2132;
+    StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolValueIf if_2 = 3000;
+  }
+}
+
+message IntAndBoolToIntFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    int64 constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToIntFunction bool_func_1 = 10;
+    IntToIntFunction int_func_1 = 11;
+    FloatToIntFunction float_func_1 = 12;
+    StringToIntFunction string_func_1 = 13;
+
+    BoolAndBoolToIntFunction bool_bool_func_1 = 100;
+    BoolAndIntToIntFunction bool_int_func_1 = 101;
+    BoolAndFloatToIntFunction bool_float_func_1 = 102;
+    BoolAndStringToIntFunction bool_string_func_1 = 103;
+
+    IntAndBoolToIntFunction int_bool_func_1 = 110;
+    IntAndIntToIntFunction int_int_func_1 = 111;
+    IntAndFloatToIntFunction int_float_func_1 = 112;
+    IntAndStringToIntFunction int_string_func_1 = 113;
+
+    FloatAndBoolToIntFunction float_bool_func_1 = 120;
+    FloatAndIntToIntFunction float_int_func_1 = 121;
+    FloatAndFloatToIntFunction float_float_func_1 = 122;
+    FloatAndStringToIntFunction float_string_func_1 = 123;
+
+    StringAndBoolToIntFunction string_bool_func_1 = 130;
+    StringAndIntToIntFunction string_int_func_1 = 131;
+    StringAndFloatToIntFunction string_float_func_1 = 132;
+    StringAndStringToIntFunction string_string_func_1 = 133;
+
+    IntValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToBoolFunction bool_func_2 = 2010;
+    IntToBoolFunction int_func_2 = 2011;
+    FloatToBoolFunction float_func_2 = 2012;
+    StringToBoolFunction string_func_2 = 2013;
+
+    BoolAndBoolToBoolFunction bool_bool_func_2 = 2100;
+    BoolAndIntToBoolFunction bool_int_func_2 = 2101;
+    BoolAndFloatToBoolFunction bool_float_func_2 = 2102;
+    BoolAndStringToBoolFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToBoolFunction int_bool_func_2 = 2110;
+    IntAndIntToBoolFunction int_int_func_2 = 2111;
+    IntAndFloatToBoolFunction int_float_func_2 = 2112;
+    IntAndStringToBoolFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToBoolFunction float_bool_func_2 = 2120;
+    FloatAndIntToBoolFunction float_int_func_2 = 2121;
+    FloatAndFloatToBoolFunction float_float_func_2 = 2122;
+    FloatAndStringToBoolFunction float_string_func_2 = 2123;
+
+    StringAndBoolToBoolFunction string_bool_func_2 = 2130;
+    StringAndIntToBoolFunction string_int_func_2 = 2131;
+    StringAndFloatToBoolFunction string_float_func_2 = 2132;
+    StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolValueIf if_2 = 3000;
+  }
+}
+
+message IntAndBoolToFloatFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    int64 constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToIntFunction bool_func_1 = 10;
+    IntToIntFunction int_func_1 = 11;
+    FloatToIntFunction float_func_1 = 12;
+    StringToIntFunction string_func_1 = 13;
+
+    BoolAndBoolToIntFunction bool_bool_func_1 = 100;
+    BoolAndIntToIntFunction bool_int_func_1 = 101;
+    BoolAndFloatToIntFunction bool_float_func_1 = 102;
+    BoolAndStringToIntFunction bool_string_func_1 = 103;
+
+    IntAndBoolToIntFunction int_bool_func_1 = 110;
+    IntAndIntToIntFunction int_int_func_1 = 111;
+    IntAndFloatToIntFunction int_float_func_1 = 112;
+    IntAndStringToIntFunction int_string_func_1 = 113;
+
+    FloatAndBoolToIntFunction float_bool_func_1 = 120;
+    FloatAndIntToIntFunction float_int_func_1 = 121;
+    FloatAndFloatToIntFunction float_float_func_1 = 122;
+    FloatAndStringToIntFunction float_string_func_1 = 123;
+
+    StringAndBoolToIntFunction string_bool_func_1 = 130;
+    StringAndIntToIntFunction string_int_func_1 = 131;
+    StringAndFloatToIntFunction string_float_func_1 = 132;
+    StringAndStringToIntFunction string_string_func_1 = 133;
+
+    IntValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToBoolFunction bool_func_2 = 2010;
+    IntToBoolFunction int_func_2 = 2011;
+    FloatToBoolFunction float_func_2 = 2012;
+    StringToBoolFunction string_func_2 = 2013;
+
+    BoolAndBoolToBoolFunction bool_bool_func_2 = 2100;
+    BoolAndIntToBoolFunction bool_int_func_2 = 2101;
+    BoolAndFloatToBoolFunction bool_float_func_2 = 2102;
+    BoolAndStringToBoolFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToBoolFunction int_bool_func_2 = 2110;
+    IntAndIntToBoolFunction int_int_func_2 = 2111;
+    IntAndFloatToBoolFunction int_float_func_2 = 2112;
+    IntAndStringToBoolFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToBoolFunction float_bool_func_2 = 2120;
+    FloatAndIntToBoolFunction float_int_func_2 = 2121;
+    FloatAndFloatToBoolFunction float_float_func_2 = 2122;
+    FloatAndStringToBoolFunction float_string_func_2 = 2123;
+
+    StringAndBoolToBoolFunction string_bool_func_2 = 2130;
+    StringAndIntToBoolFunction string_int_func_2 = 2131;
+    StringAndFloatToBoolFunction string_float_func_2 = 2132;
+    StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolValueIf if_2 = 3000;
+  }
+}
+
+message IntAndBoolToStringFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    int64 constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToIntFunction bool_func_1 = 10;
+    IntToIntFunction int_func_1 = 11;
+    FloatToIntFunction float_func_1 = 12;
+    StringToIntFunction string_func_1 = 13;
+
+    BoolAndBoolToIntFunction bool_bool_func_1 = 100;
+    BoolAndIntToIntFunction bool_int_func_1 = 101;
+    BoolAndFloatToIntFunction bool_float_func_1 = 102;
+    BoolAndStringToIntFunction bool_string_func_1 = 103;
+
+    IntAndBoolToIntFunction int_bool_func_1 = 110;
+    IntAndIntToIntFunction int_int_func_1 = 111;
+    IntAndFloatToIntFunction int_float_func_1 = 112;
+    IntAndStringToIntFunction int_string_func_1 = 113;
+
+    FloatAndBoolToIntFunction float_bool_func_1 = 120;
+    FloatAndIntToIntFunction float_int_func_1 = 121;
+    FloatAndFloatToIntFunction float_float_func_1 = 122;
+    FloatAndStringToIntFunction float_string_func_1 = 123;
+
+    StringAndBoolToIntFunction string_bool_func_1 = 130;
+    StringAndIntToIntFunction string_int_func_1 = 131;
+    StringAndFloatToIntFunction string_float_func_1 = 132;
+    StringAndStringToIntFunction string_string_func_1 = 133;
+
+    IntValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToBoolFunction bool_func_2 = 2010;
+    IntToBoolFunction int_func_2 = 2011;
+    FloatToBoolFunction float_func_2 = 2012;
+    StringToBoolFunction string_func_2 = 2013;
+
+    BoolAndBoolToBoolFunction bool_bool_func_2 = 2100;
+    BoolAndIntToBoolFunction bool_int_func_2 = 2101;
+    BoolAndFloatToBoolFunction bool_float_func_2 = 2102;
+    BoolAndStringToBoolFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToBoolFunction int_bool_func_2 = 2110;
+    IntAndIntToBoolFunction int_int_func_2 = 2111;
+    IntAndFloatToBoolFunction int_float_func_2 = 2112;
+    IntAndStringToBoolFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToBoolFunction float_bool_func_2 = 2120;
+    FloatAndIntToBoolFunction float_int_func_2 = 2121;
+    FloatAndFloatToBoolFunction float_float_func_2 = 2122;
+    FloatAndStringToBoolFunction float_string_func_2 = 2123;
+
+    StringAndBoolToBoolFunction string_bool_func_2 = 2130;
+    StringAndIntToBoolFunction string_int_func_2 = 2131;
+    StringAndFloatToBoolFunction string_float_func_2 = 2132;
+    StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolValueIf if_2 = 3000;
+  }
+}
+
+message IntAndIntToBoolFunction {
+  enum ID {
+    UNDEFINED = 0;
+    EQ = 1;
+    NEQ = 2;
+    GT = 3;
+    LT = 4;
+    GTE = 5;
+    LTE = 6;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    int64 constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToIntFunction bool_func_1 = 10;
+    IntToIntFunction int_func_1 = 11;
+    FloatToIntFunction float_func_1 = 12;
+    StringToIntFunction string_func_1 = 13;
+
+    BoolAndBoolToIntFunction bool_bool_func_1 = 100;
+    BoolAndIntToIntFunction bool_int_func_1 = 101;
+    BoolAndFloatToIntFunction bool_float_func_1 = 102;
+    BoolAndStringToIntFunction bool_string_func_1 = 103;
+
+    IntAndBoolToIntFunction int_bool_func_1 = 110;
+    IntAndIntToIntFunction int_int_func_1 = 111;
+    IntAndFloatToIntFunction int_float_func_1 = 112;
+    IntAndStringToIntFunction int_string_func_1 = 113;
+
+    FloatAndBoolToIntFunction float_bool_func_1 = 120;
+    FloatAndIntToIntFunction float_int_func_1 = 121;
+    FloatAndFloatToIntFunction float_float_func_1 = 122;
+    FloatAndStringToIntFunction float_string_func_1 = 123;
+
+    StringAndBoolToIntFunction string_bool_func_1 = 130;
+    StringAndIntToIntFunction string_int_func_1 = 131;
+    StringAndFloatToIntFunction string_float_func_1 = 132;
+    StringAndStringToIntFunction string_string_func_1 = 133;
+
+    IntValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToIntFunction bool_func_2 = 2010;
+    IntToIntFunction int_func_2 = 2011;
+    FloatToIntFunction float_func_2 = 2012;
+    StringToIntFunction string_func_2 = 2013;
+
+    BoolAndBoolToIntFunction bool_bool_func_2 = 2100;
+    BoolAndIntToIntFunction bool_int_func_2 = 2101;
+    BoolAndFloatToIntFunction bool_float_func_2 = 2102;
+    BoolAndStringToIntFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToIntFunction int_bool_func_2 = 2110;
+    IntAndIntToIntFunction int_int_func_2 = 2111;
+    IntAndFloatToIntFunction int_float_func_2 = 2112;
+    IntAndStringToIntFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToIntFunction float_bool_func_2 = 2120;
+    FloatAndIntToIntFunction float_int_func_2 = 2121;
+    FloatAndFloatToIntFunction float_float_func_2 = 2122;
+    FloatAndStringToIntFunction float_string_func_2 = 2123;
+
+    StringAndBoolToIntFunction string_bool_func_2 = 2130;
+    StringAndIntToIntFunction string_int_func_2 = 2131;
+    StringAndFloatToIntFunction string_float_func_2 = 2132;
+    StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    IntValueIf if_2 = 3000;
+  }
+}
+
+message IntAndIntToIntFunction {
+  enum ID {
+    UNDEFINED = 0;
+    ADD = 1;
+    SUB = 2;
+    MULT = 3;
+    DIV = 4;
+    MOD = 5;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    int64 constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToIntFunction bool_func_1 = 10;
+    IntToIntFunction int_func_1 = 11;
+    FloatToIntFunction float_func_1 = 12;
+    StringToIntFunction string_func_1 = 13;
+
+    BoolAndBoolToIntFunction bool_bool_func_1 = 100;
+    BoolAndIntToIntFunction bool_int_func_1 = 101;
+    BoolAndFloatToIntFunction bool_float_func_1 = 102;
+    BoolAndStringToIntFunction bool_string_func_1 = 103;
+
+    IntAndBoolToIntFunction int_bool_func_1 = 110;
+    IntAndIntToIntFunction int_int_func_1 = 111;
+    IntAndFloatToIntFunction int_float_func_1 = 112;
+    IntAndStringToIntFunction int_string_func_1 = 113;
+
+    FloatAndBoolToIntFunction float_bool_func_1 = 120;
+    FloatAndIntToIntFunction float_int_func_1 = 121;
+    FloatAndFloatToIntFunction float_float_func_1 = 122;
+    FloatAndStringToIntFunction float_string_func_1 = 123;
+
+    StringAndBoolToIntFunction string_bool_func_1 = 130;
+    StringAndIntToIntFunction string_int_func_1 = 131;
+    StringAndFloatToIntFunction string_float_func_1 = 132;
+    StringAndStringToIntFunction string_string_func_1 = 133;
+
+    IntValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToIntFunction bool_func_2 = 2010;
+    IntToIntFunction int_func_2 = 2011;
+    FloatToIntFunction float_func_2 = 2012;
+    StringToIntFunction string_func_2 = 2013;
+
+    BoolAndBoolToIntFunction bool_bool_func_2 = 2100;
+    BoolAndIntToIntFunction bool_int_func_2 = 2101;
+    BoolAndFloatToIntFunction bool_float_func_2 = 2102;
+    BoolAndStringToIntFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToIntFunction int_bool_func_2 = 2110;
+    IntAndIntToIntFunction int_int_func_2 = 2111;
+    IntAndFloatToIntFunction int_float_func_2 = 2112;
+    IntAndStringToIntFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToIntFunction float_bool_func_2 = 2120;
+    FloatAndIntToIntFunction float_int_func_2 = 2121;
+    FloatAndFloatToIntFunction float_float_func_2 = 2122;
+    FloatAndStringToIntFunction float_string_func_2 = 2123;
+
+    StringAndBoolToIntFunction string_bool_func_2 = 2130;
+    StringAndIntToIntFunction string_int_func_2 = 2131;
+    StringAndFloatToIntFunction string_float_func_2 = 2132;
+    StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    IntValueIf if_2 = 3000;
+  }
+}
+
+message IntAndIntToFloatFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    int64 constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToIntFunction bool_func_1 = 10;
+    IntToIntFunction int_func_1 = 11;
+    FloatToIntFunction float_func_1 = 12;
+    StringToIntFunction string_func_1 = 13;
+
+    BoolAndBoolToIntFunction bool_bool_func_1 = 100;
+    BoolAndIntToIntFunction bool_int_func_1 = 101;
+    BoolAndFloatToIntFunction bool_float_func_1 = 102;
+    BoolAndStringToIntFunction bool_string_func_1 = 103;
+
+    IntAndBoolToIntFunction int_bool_func_1 = 110;
+    IntAndIntToIntFunction int_int_func_1 = 111;
+    IntAndFloatToIntFunction int_float_func_1 = 112;
+    IntAndStringToIntFunction int_string_func_1 = 113;
+
+    FloatAndBoolToIntFunction float_bool_func_1 = 120;
+    FloatAndIntToIntFunction float_int_func_1 = 121;
+    FloatAndFloatToIntFunction float_float_func_1 = 122;
+    FloatAndStringToIntFunction float_string_func_1 = 123;
+
+    StringAndBoolToIntFunction string_bool_func_1 = 130;
+    StringAndIntToIntFunction string_int_func_1 = 131;
+    StringAndFloatToIntFunction string_float_func_1 = 132;
+    StringAndStringToIntFunction string_string_func_1 = 133;
+
+    IntValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToIntFunction bool_func_2 = 2010;
+    IntToIntFunction int_func_2 = 2011;
+    FloatToIntFunction float_func_2 = 2012;
+    StringToIntFunction string_func_2 = 2013;
+
+    BoolAndBoolToIntFunction bool_bool_func_2 = 2100;
+    BoolAndIntToIntFunction bool_int_func_2 = 2101;
+    BoolAndFloatToIntFunction bool_float_func_2 = 2102;
+    BoolAndStringToIntFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToIntFunction int_bool_func_2 = 2110;
+    IntAndIntToIntFunction int_int_func_2 = 2111;
+    IntAndFloatToIntFunction int_float_func_2 = 2112;
+    IntAndStringToIntFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToIntFunction float_bool_func_2 = 2120;
+    FloatAndIntToIntFunction float_int_func_2 = 2121;
+    FloatAndFloatToIntFunction float_float_func_2 = 2122;
+    FloatAndStringToIntFunction float_string_func_2 = 2123;
+
+    StringAndBoolToIntFunction string_bool_func_2 = 2130;
+    StringAndIntToIntFunction string_int_func_2 = 2131;
+    StringAndFloatToIntFunction string_float_func_2 = 2132;
+    StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    IntValueIf if_2 = 3000;
+  }
+}
+
+message IntAndIntToStringFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    int64 constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToIntFunction bool_func_1 = 10;
+    IntToIntFunction int_func_1 = 11;
+    FloatToIntFunction float_func_1 = 12;
+    StringToIntFunction string_func_1 = 13;
+
+    BoolAndBoolToIntFunction bool_bool_func_1 = 100;
+    BoolAndIntToIntFunction bool_int_func_1 = 101;
+    BoolAndFloatToIntFunction bool_float_func_1 = 102;
+    BoolAndStringToIntFunction bool_string_func_1 = 103;
+
+    IntAndBoolToIntFunction int_bool_func_1 = 110;
+    IntAndIntToIntFunction int_int_func_1 = 111;
+    IntAndFloatToIntFunction int_float_func_1 = 112;
+    IntAndStringToIntFunction int_string_func_1 = 113;
+
+    FloatAndBoolToIntFunction float_bool_func_1 = 120;
+    FloatAndIntToIntFunction float_int_func_1 = 121;
+    FloatAndFloatToIntFunction float_float_func_1 = 122;
+    FloatAndStringToIntFunction float_string_func_1 = 123;
+
+    StringAndBoolToIntFunction string_bool_func_1 = 130;
+    StringAndIntToIntFunction string_int_func_1 = 131;
+    StringAndFloatToIntFunction string_float_func_1 = 132;
+    StringAndStringToIntFunction string_string_func_1 = 133;
+
+    IntValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToIntFunction bool_func_2 = 2010;
+    IntToIntFunction int_func_2 = 2011;
+    FloatToIntFunction float_func_2 = 2012;
+    StringToIntFunction string_func_2 = 2013;
+
+    BoolAndBoolToIntFunction bool_bool_func_2 = 2100;
+    BoolAndIntToIntFunction bool_int_func_2 = 2101;
+    BoolAndFloatToIntFunction bool_float_func_2 = 2102;
+    BoolAndStringToIntFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToIntFunction int_bool_func_2 = 2110;
+    IntAndIntToIntFunction int_int_func_2 = 2111;
+    IntAndFloatToIntFunction int_float_func_2 = 2112;
+    IntAndStringToIntFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToIntFunction float_bool_func_2 = 2120;
+    FloatAndIntToIntFunction float_int_func_2 = 2121;
+    FloatAndFloatToIntFunction float_float_func_2 = 2122;
+    FloatAndStringToIntFunction float_string_func_2 = 2123;
+
+    StringAndBoolToIntFunction string_bool_func_2 = 2130;
+    StringAndIntToIntFunction string_int_func_2 = 2131;
+    StringAndFloatToIntFunction string_float_func_2 = 2132;
+    StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    IntValueIf if_2 = 3000;
+  }
+}
+
+message IntAndFloatToBoolFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    int64 constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToIntFunction bool_func_1 = 10;
+    IntToIntFunction int_func_1 = 11;
+    FloatToIntFunction float_func_1 = 12;
+    StringToIntFunction string_func_1 = 13;
+
+    BoolAndBoolToIntFunction bool_bool_func_1 = 100;
+    BoolAndIntToIntFunction bool_int_func_1 = 101;
+    BoolAndFloatToIntFunction bool_float_func_1 = 102;
+    BoolAndStringToIntFunction bool_string_func_1 = 103;
+
+    IntAndBoolToIntFunction int_bool_func_1 = 110;
+    IntAndIntToIntFunction int_int_func_1 = 111;
+    IntAndFloatToIntFunction int_float_func_1 = 112;
+    IntAndStringToIntFunction int_string_func_1 = 113;
+
+    FloatAndBoolToIntFunction float_bool_func_1 = 120;
+    FloatAndIntToIntFunction float_int_func_1 = 121;
+    FloatAndFloatToIntFunction float_float_func_1 = 122;
+    FloatAndStringToIntFunction float_string_func_1 = 123;
+
+    StringAndBoolToIntFunction string_bool_func_1 = 130;
+    StringAndIntToIntFunction string_int_func_1 = 131;
+    StringAndFloatToIntFunction string_float_func_1 = 132;
+    StringAndStringToIntFunction string_string_func_1 = 133;
+
+    IntValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToFloatFunction bool_func_2 = 2010;
+    IntToFloatFunction int_func_2 = 2011;
+    FloatToFloatFunction float_func_2 = 2012;
+    StringToFloatFunction string_func_2 = 2013;
+
+    BoolAndBoolToFloatFunction bool_bool_func_2 = 2100;
+    BoolAndIntToFloatFunction bool_int_func_2 = 2101;
+    BoolAndFloatToFloatFunction bool_float_func_2 = 2102;
+    BoolAndStringToFloatFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToFloatFunction int_bool_func_2 = 2110;
+    IntAndIntToFloatFunction int_int_func_2 = 2111;
+    IntAndFloatToFloatFunction int_float_func_2 = 2112;
+    IntAndStringToFloatFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToFloatFunction float_bool_func_2 = 2120;
+    FloatAndIntToFloatFunction float_int_func_2 = 2121;
+    FloatAndFloatToFloatFunction float_float_func_2 = 2122;
+    FloatAndStringToFloatFunction float_string_func_2 = 2123;
+
+    StringAndBoolToFloatFunction string_bool_func_2 = 2130;
+    StringAndIntToFloatFunction string_int_func_2 = 2131;
+    StringAndFloatToFloatFunction string_float_func_2 = 2132;
+    StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    FloatValueIf if_2 = 3000;
+  }
+}
+
+message IntAndFloatToIntFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    int64 constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToIntFunction bool_func_1 = 10;
+    IntToIntFunction int_func_1 = 11;
+    FloatToIntFunction float_func_1 = 12;
+    StringToIntFunction string_func_1 = 13;
+
+    BoolAndBoolToIntFunction bool_bool_func_1 = 100;
+    BoolAndIntToIntFunction bool_int_func_1 = 101;
+    BoolAndFloatToIntFunction bool_float_func_1 = 102;
+    BoolAndStringToIntFunction bool_string_func_1 = 103;
+
+    IntAndBoolToIntFunction int_bool_func_1 = 110;
+    IntAndIntToIntFunction int_int_func_1 = 111;
+    IntAndFloatToIntFunction int_float_func_1 = 112;
+    IntAndStringToIntFunction int_string_func_1 = 113;
+
+    FloatAndBoolToIntFunction float_bool_func_1 = 120;
+    FloatAndIntToIntFunction float_int_func_1 = 121;
+    FloatAndFloatToIntFunction float_float_func_1 = 122;
+    FloatAndStringToIntFunction float_string_func_1 = 123;
+
+    StringAndBoolToIntFunction string_bool_func_1 = 130;
+    StringAndIntToIntFunction string_int_func_1 = 131;
+    StringAndFloatToIntFunction string_float_func_1 = 132;
+    StringAndStringToIntFunction string_string_func_1 = 133;
+
+    IntValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToFloatFunction bool_func_2 = 2010;
+    IntToFloatFunction int_func_2 = 2011;
+    FloatToFloatFunction float_func_2 = 2012;
+    StringToFloatFunction string_func_2 = 2013;
+
+    BoolAndBoolToFloatFunction bool_bool_func_2 = 2100;
+    BoolAndIntToFloatFunction bool_int_func_2 = 2101;
+    BoolAndFloatToFloatFunction bool_float_func_2 = 2102;
+    BoolAndStringToFloatFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToFloatFunction int_bool_func_2 = 2110;
+    IntAndIntToFloatFunction int_int_func_2 = 2111;
+    IntAndFloatToFloatFunction int_float_func_2 = 2112;
+    IntAndStringToFloatFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToFloatFunction float_bool_func_2 = 2120;
+    FloatAndIntToFloatFunction float_int_func_2 = 2121;
+    FloatAndFloatToFloatFunction float_float_func_2 = 2122;
+    FloatAndStringToFloatFunction float_string_func_2 = 2123;
+
+    StringAndBoolToFloatFunction string_bool_func_2 = 2130;
+    StringAndIntToFloatFunction string_int_func_2 = 2131;
+    StringAndFloatToFloatFunction string_float_func_2 = 2132;
+    StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    FloatValueIf if_2 = 3000;
+  }
+}
+
+message IntAndFloatToFloatFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    int64 constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToIntFunction bool_func_1 = 10;
+    IntToIntFunction int_func_1 = 11;
+    FloatToIntFunction float_func_1 = 12;
+    StringToIntFunction string_func_1 = 13;
+
+    BoolAndBoolToIntFunction bool_bool_func_1 = 100;
+    BoolAndIntToIntFunction bool_int_func_1 = 101;
+    BoolAndFloatToIntFunction bool_float_func_1 = 102;
+    BoolAndStringToIntFunction bool_string_func_1 = 103;
+
+    IntAndBoolToIntFunction int_bool_func_1 = 110;
+    IntAndIntToIntFunction int_int_func_1 = 111;
+    IntAndFloatToIntFunction int_float_func_1 = 112;
+    IntAndStringToIntFunction int_string_func_1 = 113;
+
+    FloatAndBoolToIntFunction float_bool_func_1 = 120;
+    FloatAndIntToIntFunction float_int_func_1 = 121;
+    FloatAndFloatToIntFunction float_float_func_1 = 122;
+    FloatAndStringToIntFunction float_string_func_1 = 123;
+
+    StringAndBoolToIntFunction string_bool_func_1 = 130;
+    StringAndIntToIntFunction string_int_func_1 = 131;
+    StringAndFloatToIntFunction string_float_func_1 = 132;
+    StringAndStringToIntFunction string_string_func_1 = 133;
+
+    IntValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToFloatFunction bool_func_2 = 2010;
+    IntToFloatFunction int_func_2 = 2011;
+    FloatToFloatFunction float_func_2 = 2012;
+    StringToFloatFunction string_func_2 = 2013;
+
+    BoolAndBoolToFloatFunction bool_bool_func_2 = 2100;
+    BoolAndIntToFloatFunction bool_int_func_2 = 2101;
+    BoolAndFloatToFloatFunction bool_float_func_2 = 2102;
+    BoolAndStringToFloatFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToFloatFunction int_bool_func_2 = 2110;
+    IntAndIntToFloatFunction int_int_func_2 = 2111;
+    IntAndFloatToFloatFunction int_float_func_2 = 2112;
+    IntAndStringToFloatFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToFloatFunction float_bool_func_2 = 2120;
+    FloatAndIntToFloatFunction float_int_func_2 = 2121;
+    FloatAndFloatToFloatFunction float_float_func_2 = 2122;
+    FloatAndStringToFloatFunction float_string_func_2 = 2123;
+
+    StringAndBoolToFloatFunction string_bool_func_2 = 2130;
+    StringAndIntToFloatFunction string_int_func_2 = 2131;
+    StringAndFloatToFloatFunction string_float_func_2 = 2132;
+    StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    FloatValueIf if_2 = 3000;
+  }
+}
+
+message IntAndFloatToStringFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    int64 constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToIntFunction bool_func_1 = 10;
+    IntToIntFunction int_func_1 = 11;
+    FloatToIntFunction float_func_1 = 12;
+    StringToIntFunction string_func_1 = 13;
+
+    BoolAndBoolToIntFunction bool_bool_func_1 = 100;
+    BoolAndIntToIntFunction bool_int_func_1 = 101;
+    BoolAndFloatToIntFunction bool_float_func_1 = 102;
+    BoolAndStringToIntFunction bool_string_func_1 = 103;
+
+    IntAndBoolToIntFunction int_bool_func_1 = 110;
+    IntAndIntToIntFunction int_int_func_1 = 111;
+    IntAndFloatToIntFunction int_float_func_1 = 112;
+    IntAndStringToIntFunction int_string_func_1 = 113;
+
+    FloatAndBoolToIntFunction float_bool_func_1 = 120;
+    FloatAndIntToIntFunction float_int_func_1 = 121;
+    FloatAndFloatToIntFunction float_float_func_1 = 122;
+    FloatAndStringToIntFunction float_string_func_1 = 123;
+
+    StringAndBoolToIntFunction string_bool_func_1 = 130;
+    StringAndIntToIntFunction string_int_func_1 = 131;
+    StringAndFloatToIntFunction string_float_func_1 = 132;
+    StringAndStringToIntFunction string_string_func_1 = 133;
+
+    IntValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToFloatFunction bool_func_2 = 2010;
+    IntToFloatFunction int_func_2 = 2011;
+    FloatToFloatFunction float_func_2 = 2012;
+    StringToFloatFunction string_func_2 = 2013;
+
+    BoolAndBoolToFloatFunction bool_bool_func_2 = 2100;
+    BoolAndIntToFloatFunction bool_int_func_2 = 2101;
+    BoolAndFloatToFloatFunction bool_float_func_2 = 2102;
+    BoolAndStringToFloatFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToFloatFunction int_bool_func_2 = 2110;
+    IntAndIntToFloatFunction int_int_func_2 = 2111;
+    IntAndFloatToFloatFunction int_float_func_2 = 2112;
+    IntAndStringToFloatFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToFloatFunction float_bool_func_2 = 2120;
+    FloatAndIntToFloatFunction float_int_func_2 = 2121;
+    FloatAndFloatToFloatFunction float_float_func_2 = 2122;
+    FloatAndStringToFloatFunction float_string_func_2 = 2123;
+
+    StringAndBoolToFloatFunction string_bool_func_2 = 2130;
+    StringAndIntToFloatFunction string_int_func_2 = 2131;
+    StringAndFloatToFloatFunction string_float_func_2 = 2132;
+    StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    FloatValueIf if_2 = 3000;
+  }
+}
+
+message IntAndStringToBoolFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    int64 constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToIntFunction bool_func_1 = 10;
+    IntToIntFunction int_func_1 = 11;
+    FloatToIntFunction float_func_1 = 12;
+    StringToIntFunction string_func_1 = 13;
+
+    BoolAndBoolToIntFunction bool_bool_func_1 = 100;
+    BoolAndIntToIntFunction bool_int_func_1 = 101;
+    BoolAndFloatToIntFunction bool_float_func_1 = 102;
+    BoolAndStringToIntFunction bool_string_func_1 = 103;
+
+    IntAndBoolToIntFunction int_bool_func_1 = 110;
+    IntAndIntToIntFunction int_int_func_1 = 111;
+    IntAndFloatToIntFunction int_float_func_1 = 112;
+    IntAndStringToIntFunction int_string_func_1 = 113;
+
+    FloatAndBoolToIntFunction float_bool_func_1 = 120;
+    FloatAndIntToIntFunction float_int_func_1 = 121;
+    FloatAndFloatToIntFunction float_float_func_1 = 122;
+    FloatAndStringToIntFunction float_string_func_1 = 123;
+
+    StringAndBoolToIntFunction string_bool_func_1 = 130;
+    StringAndIntToIntFunction string_int_func_1 = 131;
+    StringAndFloatToIntFunction string_float_func_1 = 132;
+    StringAndStringToIntFunction string_string_func_1 = 133;
+
+    IntValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToStringFunction bool_func_2 = 2010;
+    IntToStringFunction int_func_2 = 2011;
+    FloatToStringFunction float_func_2 = 2012;
+    StringToStringFunction string_func_2 = 2013;
+
+    BoolAndBoolToStringFunction bool_bool_func_2 = 2100;
+    BoolAndIntToStringFunction bool_int_func_2 = 2101;
+    BoolAndFloatToStringFunction bool_float_func_2 = 2102;
+    BoolAndStringToStringFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToStringFunction int_bool_func_2 = 2110;
+    IntAndIntToStringFunction int_int_func_2 = 2111;
+    IntAndFloatToStringFunction int_float_func_2 = 2112;
+    IntAndStringToStringFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToStringFunction float_bool_func_2 = 2120;
+    FloatAndIntToStringFunction float_int_func_2 = 2121;
+    FloatAndFloatToStringFunction float_float_func_2 = 2122;
+    FloatAndStringToStringFunction float_string_func_2 = 2123;
+
+    StringAndBoolToStringFunction string_bool_func_2 = 2130;
+    StringAndIntToStringFunction string_int_func_2 = 2131;
+    StringAndFloatToStringFunction string_float_func_2 = 2132;
+    StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    StringValueIf if_2 = 3000;
+  }
+}
+
+message IntAndStringToIntFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    int64 constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToIntFunction bool_func_1 = 10;
+    IntToIntFunction int_func_1 = 11;
+    FloatToIntFunction float_func_1 = 12;
+    StringToIntFunction string_func_1 = 13;
+
+    BoolAndBoolToIntFunction bool_bool_func_1 = 100;
+    BoolAndIntToIntFunction bool_int_func_1 = 101;
+    BoolAndFloatToIntFunction bool_float_func_1 = 102;
+    BoolAndStringToIntFunction bool_string_func_1 = 103;
+
+    IntAndBoolToIntFunction int_bool_func_1 = 110;
+    IntAndIntToIntFunction int_int_func_1 = 111;
+    IntAndFloatToIntFunction int_float_func_1 = 112;
+    IntAndStringToIntFunction int_string_func_1 = 113;
+
+    FloatAndBoolToIntFunction float_bool_func_1 = 120;
+    FloatAndIntToIntFunction float_int_func_1 = 121;
+    FloatAndFloatToIntFunction float_float_func_1 = 122;
+    FloatAndStringToIntFunction float_string_func_1 = 123;
+
+    StringAndBoolToIntFunction string_bool_func_1 = 130;
+    StringAndIntToIntFunction string_int_func_1 = 131;
+    StringAndFloatToIntFunction string_float_func_1 = 132;
+    StringAndStringToIntFunction string_string_func_1 = 133;
+
+    IntValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToStringFunction bool_func_2 = 2010;
+    IntToStringFunction int_func_2 = 2011;
+    FloatToStringFunction float_func_2 = 2012;
+    StringToStringFunction string_func_2 = 2013;
+
+    BoolAndBoolToStringFunction bool_bool_func_2 = 2100;
+    BoolAndIntToStringFunction bool_int_func_2 = 2101;
+    BoolAndFloatToStringFunction bool_float_func_2 = 2102;
+    BoolAndStringToStringFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToStringFunction int_bool_func_2 = 2110;
+    IntAndIntToStringFunction int_int_func_2 = 2111;
+    IntAndFloatToStringFunction int_float_func_2 = 2112;
+    IntAndStringToStringFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToStringFunction float_bool_func_2 = 2120;
+    FloatAndIntToStringFunction float_int_func_2 = 2121;
+    FloatAndFloatToStringFunction float_float_func_2 = 2122;
+    FloatAndStringToStringFunction float_string_func_2 = 2123;
+
+    StringAndBoolToStringFunction string_bool_func_2 = 2130;
+    StringAndIntToStringFunction string_int_func_2 = 2131;
+    StringAndFloatToStringFunction string_float_func_2 = 2132;
+    StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    StringValueIf if_2 = 3000;
+  }
+}
+
+message IntAndStringToFloatFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    int64 constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToIntFunction bool_func_1 = 10;
+    IntToIntFunction int_func_1 = 11;
+    FloatToIntFunction float_func_1 = 12;
+    StringToIntFunction string_func_1 = 13;
+
+    BoolAndBoolToIntFunction bool_bool_func_1 = 100;
+    BoolAndIntToIntFunction bool_int_func_1 = 101;
+    BoolAndFloatToIntFunction bool_float_func_1 = 102;
+    BoolAndStringToIntFunction bool_string_func_1 = 103;
+
+    IntAndBoolToIntFunction int_bool_func_1 = 110;
+    IntAndIntToIntFunction int_int_func_1 = 111;
+    IntAndFloatToIntFunction int_float_func_1 = 112;
+    IntAndStringToIntFunction int_string_func_1 = 113;
+
+    FloatAndBoolToIntFunction float_bool_func_1 = 120;
+    FloatAndIntToIntFunction float_int_func_1 = 121;
+    FloatAndFloatToIntFunction float_float_func_1 = 122;
+    FloatAndStringToIntFunction float_string_func_1 = 123;
+
+    StringAndBoolToIntFunction string_bool_func_1 = 130;
+    StringAndIntToIntFunction string_int_func_1 = 131;
+    StringAndFloatToIntFunction string_float_func_1 = 132;
+    StringAndStringToIntFunction string_string_func_1 = 133;
+
+    IntValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToStringFunction bool_func_2 = 2010;
+    IntToStringFunction int_func_2 = 2011;
+    FloatToStringFunction float_func_2 = 2012;
+    StringToStringFunction string_func_2 = 2013;
+
+    BoolAndBoolToStringFunction bool_bool_func_2 = 2100;
+    BoolAndIntToStringFunction bool_int_func_2 = 2101;
+    BoolAndFloatToStringFunction bool_float_func_2 = 2102;
+    BoolAndStringToStringFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToStringFunction int_bool_func_2 = 2110;
+    IntAndIntToStringFunction int_int_func_2 = 2111;
+    IntAndFloatToStringFunction int_float_func_2 = 2112;
+    IntAndStringToStringFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToStringFunction float_bool_func_2 = 2120;
+    FloatAndIntToStringFunction float_int_func_2 = 2121;
+    FloatAndFloatToStringFunction float_float_func_2 = 2122;
+    FloatAndStringToStringFunction float_string_func_2 = 2123;
+
+    StringAndBoolToStringFunction string_bool_func_2 = 2130;
+    StringAndIntToStringFunction string_int_func_2 = 2131;
+    StringAndFloatToStringFunction string_float_func_2 = 2132;
+    StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    StringValueIf if_2 = 3000;
+  }
+}
+
+message IntAndStringToStringFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    int64 constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToIntFunction bool_func_1 = 10;
+    IntToIntFunction int_func_1 = 11;
+    FloatToIntFunction float_func_1 = 12;
+    StringToIntFunction string_func_1 = 13;
+
+    BoolAndBoolToIntFunction bool_bool_func_1 = 100;
+    BoolAndIntToIntFunction bool_int_func_1 = 101;
+    BoolAndFloatToIntFunction bool_float_func_1 = 102;
+    BoolAndStringToIntFunction bool_string_func_1 = 103;
+
+    IntAndBoolToIntFunction int_bool_func_1 = 110;
+    IntAndIntToIntFunction int_int_func_1 = 111;
+    IntAndFloatToIntFunction int_float_func_1 = 112;
+    IntAndStringToIntFunction int_string_func_1 = 113;
+
+    FloatAndBoolToIntFunction float_bool_func_1 = 120;
+    FloatAndIntToIntFunction float_int_func_1 = 121;
+    FloatAndFloatToIntFunction float_float_func_1 = 122;
+    FloatAndStringToIntFunction float_string_func_1 = 123;
+
+    StringAndBoolToIntFunction string_bool_func_1 = 130;
+    StringAndIntToIntFunction string_int_func_1 = 131;
+    StringAndFloatToIntFunction string_float_func_1 = 132;
+    StringAndStringToIntFunction string_string_func_1 = 133;
+
+    IntValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToStringFunction bool_func_2 = 2010;
+    IntToStringFunction int_func_2 = 2011;
+    FloatToStringFunction float_func_2 = 2012;
+    StringToStringFunction string_func_2 = 2013;
+
+    BoolAndBoolToStringFunction bool_bool_func_2 = 2100;
+    BoolAndIntToStringFunction bool_int_func_2 = 2101;
+    BoolAndFloatToStringFunction bool_float_func_2 = 2102;
+    BoolAndStringToStringFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToStringFunction int_bool_func_2 = 2110;
+    IntAndIntToStringFunction int_int_func_2 = 2111;
+    IntAndFloatToStringFunction int_float_func_2 = 2112;
+    IntAndStringToStringFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToStringFunction float_bool_func_2 = 2120;
+    FloatAndIntToStringFunction float_int_func_2 = 2121;
+    FloatAndFloatToStringFunction float_float_func_2 = 2122;
+    FloatAndStringToStringFunction float_string_func_2 = 2123;
+
+    StringAndBoolToStringFunction string_bool_func_2 = 2130;
+    StringAndIntToStringFunction string_int_func_2 = 2131;
+    StringAndFloatToStringFunction string_float_func_2 = 2132;
+    StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    StringValueIf if_2 = 3000;
+  }
+}
+
+message FloatAndBoolToBoolFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    float constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToFloatFunction bool_func_1 = 10;
+    IntToFloatFunction int_func_1 = 11;
+    FloatToFloatFunction float_func_1 = 12;
+    StringToFloatFunction string_func_1 = 13;
+
+    BoolAndBoolToFloatFunction bool_bool_func_1 = 100;
+    BoolAndIntToFloatFunction bool_int_func_1 = 101;
+    BoolAndFloatToFloatFunction bool_float_func_1 = 102;
+    BoolAndStringToFloatFunction bool_string_func_1 = 103;
+
+    IntAndBoolToFloatFunction int_bool_func_1 = 110;
+    IntAndIntToFloatFunction int_int_func_1 = 111;
+    IntAndFloatToFloatFunction int_float_func_1 = 112;
+    IntAndStringToFloatFunction int_string_func_1 = 113;
+
+    FloatAndBoolToFloatFunction float_bool_func_1 = 120;
+    FloatAndIntToFloatFunction float_int_func_1 = 121;
+    FloatAndFloatToFloatFunction float_float_func_1 = 122;
+    FloatAndStringToFloatFunction float_string_func_1 = 123;
+
+    StringAndBoolToFloatFunction string_bool_func_1 = 130;
+    StringAndIntToFloatFunction string_int_func_1 = 131;
+    StringAndFloatToFloatFunction string_float_func_1 = 132;
+    StringAndStringToFloatFunction string_string_func_1 = 133;
+
+    FloatValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToBoolFunction bool_func_2 = 2010;
+    IntToBoolFunction int_func_2 = 2011;
+    FloatToBoolFunction float_func_2 = 2012;
+    StringToBoolFunction string_func_2 = 2013;
+
+    BoolAndBoolToBoolFunction bool_bool_func_2 = 2100;
+    BoolAndIntToBoolFunction bool_int_func_2 = 2101;
+    BoolAndFloatToBoolFunction bool_float_func_2 = 2102;
+    BoolAndStringToBoolFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToBoolFunction int_bool_func_2 = 2110;
+    IntAndIntToBoolFunction int_int_func_2 = 2111;
+    IntAndFloatToBoolFunction int_float_func_2 = 2112;
+    IntAndStringToBoolFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToBoolFunction float_bool_func_2 = 2120;
+    FloatAndIntToBoolFunction float_int_func_2 = 2121;
+    FloatAndFloatToBoolFunction float_float_func_2 = 2122;
+    FloatAndStringToBoolFunction float_string_func_2 = 2123;
+
+    StringAndBoolToBoolFunction string_bool_func_2 = 2130;
+    StringAndIntToBoolFunction string_int_func_2 = 2131;
+    StringAndFloatToBoolFunction string_float_func_2 = 2132;
+    StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolValueIf if_2 = 3000;
+  }
+}
+
+message FloatAndBoolToIntFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    float constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToFloatFunction bool_func_1 = 10;
+    IntToFloatFunction int_func_1 = 11;
+    FloatToFloatFunction float_func_1 = 12;
+    StringToFloatFunction string_func_1 = 13;
+
+    BoolAndBoolToFloatFunction bool_bool_func_1 = 100;
+    BoolAndIntToFloatFunction bool_int_func_1 = 101;
+    BoolAndFloatToFloatFunction bool_float_func_1 = 102;
+    BoolAndStringToFloatFunction bool_string_func_1 = 103;
+
+    IntAndBoolToFloatFunction int_bool_func_1 = 110;
+    IntAndIntToFloatFunction int_int_func_1 = 111;
+    IntAndFloatToFloatFunction int_float_func_1 = 112;
+    IntAndStringToFloatFunction int_string_func_1 = 113;
+
+    FloatAndBoolToFloatFunction float_bool_func_1 = 120;
+    FloatAndIntToFloatFunction float_int_func_1 = 121;
+    FloatAndFloatToFloatFunction float_float_func_1 = 122;
+    FloatAndStringToFloatFunction float_string_func_1 = 123;
+
+    StringAndBoolToFloatFunction string_bool_func_1 = 130;
+    StringAndIntToFloatFunction string_int_func_1 = 131;
+    StringAndFloatToFloatFunction string_float_func_1 = 132;
+    StringAndStringToFloatFunction string_string_func_1 = 133;
+
+    FloatValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToBoolFunction bool_func_2 = 2010;
+    IntToBoolFunction int_func_2 = 2011;
+    FloatToBoolFunction float_func_2 = 2012;
+    StringToBoolFunction string_func_2 = 2013;
+
+    BoolAndBoolToBoolFunction bool_bool_func_2 = 2100;
+    BoolAndIntToBoolFunction bool_int_func_2 = 2101;
+    BoolAndFloatToBoolFunction bool_float_func_2 = 2102;
+    BoolAndStringToBoolFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToBoolFunction int_bool_func_2 = 2110;
+    IntAndIntToBoolFunction int_int_func_2 = 2111;
+    IntAndFloatToBoolFunction int_float_func_2 = 2112;
+    IntAndStringToBoolFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToBoolFunction float_bool_func_2 = 2120;
+    FloatAndIntToBoolFunction float_int_func_2 = 2121;
+    FloatAndFloatToBoolFunction float_float_func_2 = 2122;
+    FloatAndStringToBoolFunction float_string_func_2 = 2123;
+
+    StringAndBoolToBoolFunction string_bool_func_2 = 2130;
+    StringAndIntToBoolFunction string_int_func_2 = 2131;
+    StringAndFloatToBoolFunction string_float_func_2 = 2132;
+    StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolValueIf if_2 = 3000;
+  }
+}
+
+message FloatAndBoolToFloatFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    float constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToFloatFunction bool_func_1 = 10;
+    IntToFloatFunction int_func_1 = 11;
+    FloatToFloatFunction float_func_1 = 12;
+    StringToFloatFunction string_func_1 = 13;
+
+    BoolAndBoolToFloatFunction bool_bool_func_1 = 100;
+    BoolAndIntToFloatFunction bool_int_func_1 = 101;
+    BoolAndFloatToFloatFunction bool_float_func_1 = 102;
+    BoolAndStringToFloatFunction bool_string_func_1 = 103;
+
+    IntAndBoolToFloatFunction int_bool_func_1 = 110;
+    IntAndIntToFloatFunction int_int_func_1 = 111;
+    IntAndFloatToFloatFunction int_float_func_1 = 112;
+    IntAndStringToFloatFunction int_string_func_1 = 113;
+
+    FloatAndBoolToFloatFunction float_bool_func_1 = 120;
+    FloatAndIntToFloatFunction float_int_func_1 = 121;
+    FloatAndFloatToFloatFunction float_float_func_1 = 122;
+    FloatAndStringToFloatFunction float_string_func_1 = 123;
+
+    StringAndBoolToFloatFunction string_bool_func_1 = 130;
+    StringAndIntToFloatFunction string_int_func_1 = 131;
+    StringAndFloatToFloatFunction string_float_func_1 = 132;
+    StringAndStringToFloatFunction string_string_func_1 = 133;
+
+    FloatValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToBoolFunction bool_func_2 = 2010;
+    IntToBoolFunction int_func_2 = 2011;
+    FloatToBoolFunction float_func_2 = 2012;
+    StringToBoolFunction string_func_2 = 2013;
+
+    BoolAndBoolToBoolFunction bool_bool_func_2 = 2100;
+    BoolAndIntToBoolFunction bool_int_func_2 = 2101;
+    BoolAndFloatToBoolFunction bool_float_func_2 = 2102;
+    BoolAndStringToBoolFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToBoolFunction int_bool_func_2 = 2110;
+    IntAndIntToBoolFunction int_int_func_2 = 2111;
+    IntAndFloatToBoolFunction int_float_func_2 = 2112;
+    IntAndStringToBoolFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToBoolFunction float_bool_func_2 = 2120;
+    FloatAndIntToBoolFunction float_int_func_2 = 2121;
+    FloatAndFloatToBoolFunction float_float_func_2 = 2122;
+    FloatAndStringToBoolFunction float_string_func_2 = 2123;
+
+    StringAndBoolToBoolFunction string_bool_func_2 = 2130;
+    StringAndIntToBoolFunction string_int_func_2 = 2131;
+    StringAndFloatToBoolFunction string_float_func_2 = 2132;
+    StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolValueIf if_2 = 3000;
+  }
+}
+
+message FloatAndBoolToStringFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    float constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToFloatFunction bool_func_1 = 10;
+    IntToFloatFunction int_func_1 = 11;
+    FloatToFloatFunction float_func_1 = 12;
+    StringToFloatFunction string_func_1 = 13;
+
+    BoolAndBoolToFloatFunction bool_bool_func_1 = 100;
+    BoolAndIntToFloatFunction bool_int_func_1 = 101;
+    BoolAndFloatToFloatFunction bool_float_func_1 = 102;
+    BoolAndStringToFloatFunction bool_string_func_1 = 103;
+
+    IntAndBoolToFloatFunction int_bool_func_1 = 110;
+    IntAndIntToFloatFunction int_int_func_1 = 111;
+    IntAndFloatToFloatFunction int_float_func_1 = 112;
+    IntAndStringToFloatFunction int_string_func_1 = 113;
+
+    FloatAndBoolToFloatFunction float_bool_func_1 = 120;
+    FloatAndIntToFloatFunction float_int_func_1 = 121;
+    FloatAndFloatToFloatFunction float_float_func_1 = 122;
+    FloatAndStringToFloatFunction float_string_func_1 = 123;
+
+    StringAndBoolToFloatFunction string_bool_func_1 = 130;
+    StringAndIntToFloatFunction string_int_func_1 = 131;
+    StringAndFloatToFloatFunction string_float_func_1 = 132;
+    StringAndStringToFloatFunction string_string_func_1 = 133;
+
+    FloatValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToBoolFunction bool_func_2 = 2010;
+    IntToBoolFunction int_func_2 = 2011;
+    FloatToBoolFunction float_func_2 = 2012;
+    StringToBoolFunction string_func_2 = 2013;
+
+    BoolAndBoolToBoolFunction bool_bool_func_2 = 2100;
+    BoolAndIntToBoolFunction bool_int_func_2 = 2101;
+    BoolAndFloatToBoolFunction bool_float_func_2 = 2102;
+    BoolAndStringToBoolFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToBoolFunction int_bool_func_2 = 2110;
+    IntAndIntToBoolFunction int_int_func_2 = 2111;
+    IntAndFloatToBoolFunction int_float_func_2 = 2112;
+    IntAndStringToBoolFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToBoolFunction float_bool_func_2 = 2120;
+    FloatAndIntToBoolFunction float_int_func_2 = 2121;
+    FloatAndFloatToBoolFunction float_float_func_2 = 2122;
+    FloatAndStringToBoolFunction float_string_func_2 = 2123;
+
+    StringAndBoolToBoolFunction string_bool_func_2 = 2130;
+    StringAndIntToBoolFunction string_int_func_2 = 2131;
+    StringAndFloatToBoolFunction string_float_func_2 = 2132;
+    StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolValueIf if_2 = 3000;
+  }
+}
+
+message FloatAndIntToBoolFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    float constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToFloatFunction bool_func_1 = 10;
+    IntToFloatFunction int_func_1 = 11;
+    FloatToFloatFunction float_func_1 = 12;
+    StringToFloatFunction string_func_1 = 13;
+
+    BoolAndBoolToFloatFunction bool_bool_func_1 = 100;
+    BoolAndIntToFloatFunction bool_int_func_1 = 101;
+    BoolAndFloatToFloatFunction bool_float_func_1 = 102;
+    BoolAndStringToFloatFunction bool_string_func_1 = 103;
+
+    IntAndBoolToFloatFunction int_bool_func_1 = 110;
+    IntAndIntToFloatFunction int_int_func_1 = 111;
+    IntAndFloatToFloatFunction int_float_func_1 = 112;
+    IntAndStringToFloatFunction int_string_func_1 = 113;
+
+    FloatAndBoolToFloatFunction float_bool_func_1 = 120;
+    FloatAndIntToFloatFunction float_int_func_1 = 121;
+    FloatAndFloatToFloatFunction float_float_func_1 = 122;
+    FloatAndStringToFloatFunction float_string_func_1 = 123;
+
+    StringAndBoolToFloatFunction string_bool_func_1 = 130;
+    StringAndIntToFloatFunction string_int_func_1 = 131;
+    StringAndFloatToFloatFunction string_float_func_1 = 132;
+    StringAndStringToFloatFunction string_string_func_1 = 133;
+
+    FloatValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToIntFunction bool_func_2 = 2010;
+    IntToIntFunction int_func_2 = 2011;
+    FloatToIntFunction float_func_2 = 2012;
+    StringToIntFunction string_func_2 = 2013;
+
+    BoolAndBoolToIntFunction bool_bool_func_2 = 2100;
+    BoolAndIntToIntFunction bool_int_func_2 = 2101;
+    BoolAndFloatToIntFunction bool_float_func_2 = 2102;
+    BoolAndStringToIntFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToIntFunction int_bool_func_2 = 2110;
+    IntAndIntToIntFunction int_int_func_2 = 2111;
+    IntAndFloatToIntFunction int_float_func_2 = 2112;
+    IntAndStringToIntFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToIntFunction float_bool_func_2 = 2120;
+    FloatAndIntToIntFunction float_int_func_2 = 2121;
+    FloatAndFloatToIntFunction float_float_func_2 = 2122;
+    FloatAndStringToIntFunction float_string_func_2 = 2123;
+
+    StringAndBoolToIntFunction string_bool_func_2 = 2130;
+    StringAndIntToIntFunction string_int_func_2 = 2131;
+    StringAndFloatToIntFunction string_float_func_2 = 2132;
+    StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    IntValueIf if_2 = 3000;
+  }
+}
+
+message FloatAndIntToIntFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    float constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToFloatFunction bool_func_1 = 10;
+    IntToFloatFunction int_func_1 = 11;
+    FloatToFloatFunction float_func_1 = 12;
+    StringToFloatFunction string_func_1 = 13;
+
+    BoolAndBoolToFloatFunction bool_bool_func_1 = 100;
+    BoolAndIntToFloatFunction bool_int_func_1 = 101;
+    BoolAndFloatToFloatFunction bool_float_func_1 = 102;
+    BoolAndStringToFloatFunction bool_string_func_1 = 103;
+
+    IntAndBoolToFloatFunction int_bool_func_1 = 110;
+    IntAndIntToFloatFunction int_int_func_1 = 111;
+    IntAndFloatToFloatFunction int_float_func_1 = 112;
+    IntAndStringToFloatFunction int_string_func_1 = 113;
+
+    FloatAndBoolToFloatFunction float_bool_func_1 = 120;
+    FloatAndIntToFloatFunction float_int_func_1 = 121;
+    FloatAndFloatToFloatFunction float_float_func_1 = 122;
+    FloatAndStringToFloatFunction float_string_func_1 = 123;
+
+    StringAndBoolToFloatFunction string_bool_func_1 = 130;
+    StringAndIntToFloatFunction string_int_func_1 = 131;
+    StringAndFloatToFloatFunction string_float_func_1 = 132;
+    StringAndStringToFloatFunction string_string_func_1 = 133;
+
+    FloatValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToIntFunction bool_func_2 = 2010;
+    IntToIntFunction int_func_2 = 2011;
+    FloatToIntFunction float_func_2 = 2012;
+    StringToIntFunction string_func_2 = 2013;
+
+    BoolAndBoolToIntFunction bool_bool_func_2 = 2100;
+    BoolAndIntToIntFunction bool_int_func_2 = 2101;
+    BoolAndFloatToIntFunction bool_float_func_2 = 2102;
+    BoolAndStringToIntFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToIntFunction int_bool_func_2 = 2110;
+    IntAndIntToIntFunction int_int_func_2 = 2111;
+    IntAndFloatToIntFunction int_float_func_2 = 2112;
+    IntAndStringToIntFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToIntFunction float_bool_func_2 = 2120;
+    FloatAndIntToIntFunction float_int_func_2 = 2121;
+    FloatAndFloatToIntFunction float_float_func_2 = 2122;
+    FloatAndStringToIntFunction float_string_func_2 = 2123;
+
+    StringAndBoolToIntFunction string_bool_func_2 = 2130;
+    StringAndIntToIntFunction string_int_func_2 = 2131;
+    StringAndFloatToIntFunction string_float_func_2 = 2132;
+    StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    IntValueIf if_2 = 3000;
+  }
+}
+
+message FloatAndIntToFloatFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    float constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToFloatFunction bool_func_1 = 10;
+    IntToFloatFunction int_func_1 = 11;
+    FloatToFloatFunction float_func_1 = 12;
+    StringToFloatFunction string_func_1 = 13;
+
+    BoolAndBoolToFloatFunction bool_bool_func_1 = 100;
+    BoolAndIntToFloatFunction bool_int_func_1 = 101;
+    BoolAndFloatToFloatFunction bool_float_func_1 = 102;
+    BoolAndStringToFloatFunction bool_string_func_1 = 103;
+
+    IntAndBoolToFloatFunction int_bool_func_1 = 110;
+    IntAndIntToFloatFunction int_int_func_1 = 111;
+    IntAndFloatToFloatFunction int_float_func_1 = 112;
+    IntAndStringToFloatFunction int_string_func_1 = 113;
+
+    FloatAndBoolToFloatFunction float_bool_func_1 = 120;
+    FloatAndIntToFloatFunction float_int_func_1 = 121;
+    FloatAndFloatToFloatFunction float_float_func_1 = 122;
+    FloatAndStringToFloatFunction float_string_func_1 = 123;
+
+    StringAndBoolToFloatFunction string_bool_func_1 = 130;
+    StringAndIntToFloatFunction string_int_func_1 = 131;
+    StringAndFloatToFloatFunction string_float_func_1 = 132;
+    StringAndStringToFloatFunction string_string_func_1 = 133;
+
+    FloatValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToIntFunction bool_func_2 = 2010;
+    IntToIntFunction int_func_2 = 2011;
+    FloatToIntFunction float_func_2 = 2012;
+    StringToIntFunction string_func_2 = 2013;
+
+    BoolAndBoolToIntFunction bool_bool_func_2 = 2100;
+    BoolAndIntToIntFunction bool_int_func_2 = 2101;
+    BoolAndFloatToIntFunction bool_float_func_2 = 2102;
+    BoolAndStringToIntFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToIntFunction int_bool_func_2 = 2110;
+    IntAndIntToIntFunction int_int_func_2 = 2111;
+    IntAndFloatToIntFunction int_float_func_2 = 2112;
+    IntAndStringToIntFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToIntFunction float_bool_func_2 = 2120;
+    FloatAndIntToIntFunction float_int_func_2 = 2121;
+    FloatAndFloatToIntFunction float_float_func_2 = 2122;
+    FloatAndStringToIntFunction float_string_func_2 = 2123;
+
+    StringAndBoolToIntFunction string_bool_func_2 = 2130;
+    StringAndIntToIntFunction string_int_func_2 = 2131;
+    StringAndFloatToIntFunction string_float_func_2 = 2132;
+    StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    IntValueIf if_2 = 3000;
+  }
+}
+
+message FloatAndIntToStringFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    float constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToFloatFunction bool_func_1 = 10;
+    IntToFloatFunction int_func_1 = 11;
+    FloatToFloatFunction float_func_1 = 12;
+    StringToFloatFunction string_func_1 = 13;
+
+    BoolAndBoolToFloatFunction bool_bool_func_1 = 100;
+    BoolAndIntToFloatFunction bool_int_func_1 = 101;
+    BoolAndFloatToFloatFunction bool_float_func_1 = 102;
+    BoolAndStringToFloatFunction bool_string_func_1 = 103;
+
+    IntAndBoolToFloatFunction int_bool_func_1 = 110;
+    IntAndIntToFloatFunction int_int_func_1 = 111;
+    IntAndFloatToFloatFunction int_float_func_1 = 112;
+    IntAndStringToFloatFunction int_string_func_1 = 113;
+
+    FloatAndBoolToFloatFunction float_bool_func_1 = 120;
+    FloatAndIntToFloatFunction float_int_func_1 = 121;
+    FloatAndFloatToFloatFunction float_float_func_1 = 122;
+    FloatAndStringToFloatFunction float_string_func_1 = 123;
+
+    StringAndBoolToFloatFunction string_bool_func_1 = 130;
+    StringAndIntToFloatFunction string_int_func_1 = 131;
+    StringAndFloatToFloatFunction string_float_func_1 = 132;
+    StringAndStringToFloatFunction string_string_func_1 = 133;
+
+    FloatValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToIntFunction bool_func_2 = 2010;
+    IntToIntFunction int_func_2 = 2011;
+    FloatToIntFunction float_func_2 = 2012;
+    StringToIntFunction string_func_2 = 2013;
+
+    BoolAndBoolToIntFunction bool_bool_func_2 = 2100;
+    BoolAndIntToIntFunction bool_int_func_2 = 2101;
+    BoolAndFloatToIntFunction bool_float_func_2 = 2102;
+    BoolAndStringToIntFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToIntFunction int_bool_func_2 = 2110;
+    IntAndIntToIntFunction int_int_func_2 = 2111;
+    IntAndFloatToIntFunction int_float_func_2 = 2112;
+    IntAndStringToIntFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToIntFunction float_bool_func_2 = 2120;
+    FloatAndIntToIntFunction float_int_func_2 = 2121;
+    FloatAndFloatToIntFunction float_float_func_2 = 2122;
+    FloatAndStringToIntFunction float_string_func_2 = 2123;
+
+    StringAndBoolToIntFunction string_bool_func_2 = 2130;
+    StringAndIntToIntFunction string_int_func_2 = 2131;
+    StringAndFloatToIntFunction string_float_func_2 = 2132;
+    StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    IntValueIf if_2 = 3000;
+  }
+}
+
+message FloatAndFloatToBoolFunction {
+  enum ID {
+    UNDEFINED = 0;
+    EQ = 1;
+    NEQ = 2;
+    GT = 3;
+    LT = 4;
+    GTE = 5;
+    LTE = 6;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    float constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToFloatFunction bool_func_1 = 10;
+    IntToFloatFunction int_func_1 = 11;
+    FloatToFloatFunction float_func_1 = 12;
+    StringToFloatFunction string_func_1 = 13;
+
+    BoolAndBoolToFloatFunction bool_bool_func_1 = 100;
+    BoolAndIntToFloatFunction bool_int_func_1 = 101;
+    BoolAndFloatToFloatFunction bool_float_func_1 = 102;
+    BoolAndStringToFloatFunction bool_string_func_1 = 103;
+
+    IntAndBoolToFloatFunction int_bool_func_1 = 110;
+    IntAndIntToFloatFunction int_int_func_1 = 111;
+    IntAndFloatToFloatFunction int_float_func_1 = 112;
+    IntAndStringToFloatFunction int_string_func_1 = 113;
+
+    FloatAndBoolToFloatFunction float_bool_func_1 = 120;
+    FloatAndIntToFloatFunction float_int_func_1 = 121;
+    FloatAndFloatToFloatFunction float_float_func_1 = 122;
+    FloatAndStringToFloatFunction float_string_func_1 = 123;
+
+    StringAndBoolToFloatFunction string_bool_func_1 = 130;
+    StringAndIntToFloatFunction string_int_func_1 = 131;
+    StringAndFloatToFloatFunction string_float_func_1 = 132;
+    StringAndStringToFloatFunction string_string_func_1 = 133;
+
+    FloatValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToFloatFunction bool_func_2 = 2010;
+    IntToFloatFunction int_func_2 = 2011;
+    FloatToFloatFunction float_func_2 = 2012;
+    StringToFloatFunction string_func_2 = 2013;
+
+    BoolAndBoolToFloatFunction bool_bool_func_2 = 2100;
+    BoolAndIntToFloatFunction bool_int_func_2 = 2101;
+    BoolAndFloatToFloatFunction bool_float_func_2 = 2102;
+    BoolAndStringToFloatFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToFloatFunction int_bool_func_2 = 2110;
+    IntAndIntToFloatFunction int_int_func_2 = 2111;
+    IntAndFloatToFloatFunction int_float_func_2 = 2112;
+    IntAndStringToFloatFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToFloatFunction float_bool_func_2 = 2120;
+    FloatAndIntToFloatFunction float_int_func_2 = 2121;
+    FloatAndFloatToFloatFunction float_float_func_2 = 2122;
+    FloatAndStringToFloatFunction float_string_func_2 = 2123;
+
+    StringAndBoolToFloatFunction string_bool_func_2 = 2130;
+    StringAndIntToFloatFunction string_int_func_2 = 2131;
+    StringAndFloatToFloatFunction string_float_func_2 = 2132;
+    StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    FloatValueIf if_2 = 3000;
+  }
+}
+
+message FloatAndFloatToIntFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    float constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToFloatFunction bool_func_1 = 10;
+    IntToFloatFunction int_func_1 = 11;
+    FloatToFloatFunction float_func_1 = 12;
+    StringToFloatFunction string_func_1 = 13;
+
+    BoolAndBoolToFloatFunction bool_bool_func_1 = 100;
+    BoolAndIntToFloatFunction bool_int_func_1 = 101;
+    BoolAndFloatToFloatFunction bool_float_func_1 = 102;
+    BoolAndStringToFloatFunction bool_string_func_1 = 103;
+
+    IntAndBoolToFloatFunction int_bool_func_1 = 110;
+    IntAndIntToFloatFunction int_int_func_1 = 111;
+    IntAndFloatToFloatFunction int_float_func_1 = 112;
+    IntAndStringToFloatFunction int_string_func_1 = 113;
+
+    FloatAndBoolToFloatFunction float_bool_func_1 = 120;
+    FloatAndIntToFloatFunction float_int_func_1 = 121;
+    FloatAndFloatToFloatFunction float_float_func_1 = 122;
+    FloatAndStringToFloatFunction float_string_func_1 = 123;
+
+    StringAndBoolToFloatFunction string_bool_func_1 = 130;
+    StringAndIntToFloatFunction string_int_func_1 = 131;
+    StringAndFloatToFloatFunction string_float_func_1 = 132;
+    StringAndStringToFloatFunction string_string_func_1 = 133;
+
+    FloatValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToFloatFunction bool_func_2 = 2010;
+    IntToFloatFunction int_func_2 = 2011;
+    FloatToFloatFunction float_func_2 = 2012;
+    StringToFloatFunction string_func_2 = 2013;
+
+    BoolAndBoolToFloatFunction bool_bool_func_2 = 2100;
+    BoolAndIntToFloatFunction bool_int_func_2 = 2101;
+    BoolAndFloatToFloatFunction bool_float_func_2 = 2102;
+    BoolAndStringToFloatFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToFloatFunction int_bool_func_2 = 2110;
+    IntAndIntToFloatFunction int_int_func_2 = 2111;
+    IntAndFloatToFloatFunction int_float_func_2 = 2112;
+    IntAndStringToFloatFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToFloatFunction float_bool_func_2 = 2120;
+    FloatAndIntToFloatFunction float_int_func_2 = 2121;
+    FloatAndFloatToFloatFunction float_float_func_2 = 2122;
+    FloatAndStringToFloatFunction float_string_func_2 = 2123;
+
+    StringAndBoolToFloatFunction string_bool_func_2 = 2130;
+    StringAndIntToFloatFunction string_int_func_2 = 2131;
+    StringAndFloatToFloatFunction string_float_func_2 = 2132;
+    StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    FloatValueIf if_2 = 3000;
+  }
+}
+
+message FloatAndFloatToFloatFunction {
+  enum ID {
+    UNDEFINED = 0;
+    ADD = 1;
+    SUB = 2;
+    MULT = 3;
+    DIV = 4;
+    MOD = 5;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    float constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToFloatFunction bool_func_1 = 10;
+    IntToFloatFunction int_func_1 = 11;
+    FloatToFloatFunction float_func_1 = 12;
+    StringToFloatFunction string_func_1 = 13;
+
+    BoolAndBoolToFloatFunction bool_bool_func_1 = 100;
+    BoolAndIntToFloatFunction bool_int_func_1 = 101;
+    BoolAndFloatToFloatFunction bool_float_func_1 = 102;
+    BoolAndStringToFloatFunction bool_string_func_1 = 103;
+
+    IntAndBoolToFloatFunction int_bool_func_1 = 110;
+    IntAndIntToFloatFunction int_int_func_1 = 111;
+    IntAndFloatToFloatFunction int_float_func_1 = 112;
+    IntAndStringToFloatFunction int_string_func_1 = 113;
+
+    FloatAndBoolToFloatFunction float_bool_func_1 = 120;
+    FloatAndIntToFloatFunction float_int_func_1 = 121;
+    FloatAndFloatToFloatFunction float_float_func_1 = 122;
+    FloatAndStringToFloatFunction float_string_func_1 = 123;
+
+    StringAndBoolToFloatFunction string_bool_func_1 = 130;
+    StringAndIntToFloatFunction string_int_func_1 = 131;
+    StringAndFloatToFloatFunction string_float_func_1 = 132;
+    StringAndStringToFloatFunction string_string_func_1 = 133;
+
+    FloatValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToFloatFunction bool_func_2 = 2010;
+    IntToFloatFunction int_func_2 = 2011;
+    FloatToFloatFunction float_func_2 = 2012;
+    StringToFloatFunction string_func_2 = 2013;
+
+    BoolAndBoolToFloatFunction bool_bool_func_2 = 2100;
+    BoolAndIntToFloatFunction bool_int_func_2 = 2101;
+    BoolAndFloatToFloatFunction bool_float_func_2 = 2102;
+    BoolAndStringToFloatFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToFloatFunction int_bool_func_2 = 2110;
+    IntAndIntToFloatFunction int_int_func_2 = 2111;
+    IntAndFloatToFloatFunction int_float_func_2 = 2112;
+    IntAndStringToFloatFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToFloatFunction float_bool_func_2 = 2120;
+    FloatAndIntToFloatFunction float_int_func_2 = 2121;
+    FloatAndFloatToFloatFunction float_float_func_2 = 2122;
+    FloatAndStringToFloatFunction float_string_func_2 = 2123;
+
+    StringAndBoolToFloatFunction string_bool_func_2 = 2130;
+    StringAndIntToFloatFunction string_int_func_2 = 2131;
+    StringAndFloatToFloatFunction string_float_func_2 = 2132;
+    StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    FloatValueIf if_2 = 3000;
+  }
+}
+
+message FloatAndFloatToStringFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    float constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToFloatFunction bool_func_1 = 10;
+    IntToFloatFunction int_func_1 = 11;
+    FloatToFloatFunction float_func_1 = 12;
+    StringToFloatFunction string_func_1 = 13;
+
+    BoolAndBoolToFloatFunction bool_bool_func_1 = 100;
+    BoolAndIntToFloatFunction bool_int_func_1 = 101;
+    BoolAndFloatToFloatFunction bool_float_func_1 = 102;
+    BoolAndStringToFloatFunction bool_string_func_1 = 103;
+
+    IntAndBoolToFloatFunction int_bool_func_1 = 110;
+    IntAndIntToFloatFunction int_int_func_1 = 111;
+    IntAndFloatToFloatFunction int_float_func_1 = 112;
+    IntAndStringToFloatFunction int_string_func_1 = 113;
+
+    FloatAndBoolToFloatFunction float_bool_func_1 = 120;
+    FloatAndIntToFloatFunction float_int_func_1 = 121;
+    FloatAndFloatToFloatFunction float_float_func_1 = 122;
+    FloatAndStringToFloatFunction float_string_func_1 = 123;
+
+    StringAndBoolToFloatFunction string_bool_func_1 = 130;
+    StringAndIntToFloatFunction string_int_func_1 = 131;
+    StringAndFloatToFloatFunction string_float_func_1 = 132;
+    StringAndStringToFloatFunction string_string_func_1 = 133;
+
+    FloatValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToFloatFunction bool_func_2 = 2010;
+    IntToFloatFunction int_func_2 = 2011;
+    FloatToFloatFunction float_func_2 = 2012;
+    StringToFloatFunction string_func_2 = 2013;
+
+    BoolAndBoolToFloatFunction bool_bool_func_2 = 2100;
+    BoolAndIntToFloatFunction bool_int_func_2 = 2101;
+    BoolAndFloatToFloatFunction bool_float_func_2 = 2102;
+    BoolAndStringToFloatFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToFloatFunction int_bool_func_2 = 2110;
+    IntAndIntToFloatFunction int_int_func_2 = 2111;
+    IntAndFloatToFloatFunction int_float_func_2 = 2112;
+    IntAndStringToFloatFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToFloatFunction float_bool_func_2 = 2120;
+    FloatAndIntToFloatFunction float_int_func_2 = 2121;
+    FloatAndFloatToFloatFunction float_float_func_2 = 2122;
+    FloatAndStringToFloatFunction float_string_func_2 = 2123;
+
+    StringAndBoolToFloatFunction string_bool_func_2 = 2130;
+    StringAndIntToFloatFunction string_int_func_2 = 2131;
+    StringAndFloatToFloatFunction string_float_func_2 = 2132;
+    StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    FloatValueIf if_2 = 3000;
+  }
+}
+
+message FloatAndStringToBoolFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    float constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToFloatFunction bool_func_1 = 10;
+    IntToFloatFunction int_func_1 = 11;
+    FloatToFloatFunction float_func_1 = 12;
+    StringToFloatFunction string_func_1 = 13;
+
+    BoolAndBoolToFloatFunction bool_bool_func_1 = 100;
+    BoolAndIntToFloatFunction bool_int_func_1 = 101;
+    BoolAndFloatToFloatFunction bool_float_func_1 = 102;
+    BoolAndStringToFloatFunction bool_string_func_1 = 103;
+
+    IntAndBoolToFloatFunction int_bool_func_1 = 110;
+    IntAndIntToFloatFunction int_int_func_1 = 111;
+    IntAndFloatToFloatFunction int_float_func_1 = 112;
+    IntAndStringToFloatFunction int_string_func_1 = 113;
+
+    FloatAndBoolToFloatFunction float_bool_func_1 = 120;
+    FloatAndIntToFloatFunction float_int_func_1 = 121;
+    FloatAndFloatToFloatFunction float_float_func_1 = 122;
+    FloatAndStringToFloatFunction float_string_func_1 = 123;
+
+    StringAndBoolToFloatFunction string_bool_func_1 = 130;
+    StringAndIntToFloatFunction string_int_func_1 = 131;
+    StringAndFloatToFloatFunction string_float_func_1 = 132;
+    StringAndStringToFloatFunction string_string_func_1 = 133;
+
+    FloatValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToStringFunction bool_func_2 = 2010;
+    IntToStringFunction int_func_2 = 2011;
+    FloatToStringFunction float_func_2 = 2012;
+    StringToStringFunction string_func_2 = 2013;
+
+    BoolAndBoolToStringFunction bool_bool_func_2 = 2100;
+    BoolAndIntToStringFunction bool_int_func_2 = 2101;
+    BoolAndFloatToStringFunction bool_float_func_2 = 2102;
+    BoolAndStringToStringFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToStringFunction int_bool_func_2 = 2110;
+    IntAndIntToStringFunction int_int_func_2 = 2111;
+    IntAndFloatToStringFunction int_float_func_2 = 2112;
+    IntAndStringToStringFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToStringFunction float_bool_func_2 = 2120;
+    FloatAndIntToStringFunction float_int_func_2 = 2121;
+    FloatAndFloatToStringFunction float_float_func_2 = 2122;
+    FloatAndStringToStringFunction float_string_func_2 = 2123;
+
+    StringAndBoolToStringFunction string_bool_func_2 = 2130;
+    StringAndIntToStringFunction string_int_func_2 = 2131;
+    StringAndFloatToStringFunction string_float_func_2 = 2132;
+    StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    StringValueIf if_2 = 3000;
+  }
+}
+
+message FloatAndStringToIntFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    float constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToFloatFunction bool_func_1 = 10;
+    IntToFloatFunction int_func_1 = 11;
+    FloatToFloatFunction float_func_1 = 12;
+    StringToFloatFunction string_func_1 = 13;
+
+    BoolAndBoolToFloatFunction bool_bool_func_1 = 100;
+    BoolAndIntToFloatFunction bool_int_func_1 = 101;
+    BoolAndFloatToFloatFunction bool_float_func_1 = 102;
+    BoolAndStringToFloatFunction bool_string_func_1 = 103;
+
+    IntAndBoolToFloatFunction int_bool_func_1 = 110;
+    IntAndIntToFloatFunction int_int_func_1 = 111;
+    IntAndFloatToFloatFunction int_float_func_1 = 112;
+    IntAndStringToFloatFunction int_string_func_1 = 113;
+
+    FloatAndBoolToFloatFunction float_bool_func_1 = 120;
+    FloatAndIntToFloatFunction float_int_func_1 = 121;
+    FloatAndFloatToFloatFunction float_float_func_1 = 122;
+    FloatAndStringToFloatFunction float_string_func_1 = 123;
+
+    StringAndBoolToFloatFunction string_bool_func_1 = 130;
+    StringAndIntToFloatFunction string_int_func_1 = 131;
+    StringAndFloatToFloatFunction string_float_func_1 = 132;
+    StringAndStringToFloatFunction string_string_func_1 = 133;
+
+    FloatValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToStringFunction bool_func_2 = 2010;
+    IntToStringFunction int_func_2 = 2011;
+    FloatToStringFunction float_func_2 = 2012;
+    StringToStringFunction string_func_2 = 2013;
+
+    BoolAndBoolToStringFunction bool_bool_func_2 = 2100;
+    BoolAndIntToStringFunction bool_int_func_2 = 2101;
+    BoolAndFloatToStringFunction bool_float_func_2 = 2102;
+    BoolAndStringToStringFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToStringFunction int_bool_func_2 = 2110;
+    IntAndIntToStringFunction int_int_func_2 = 2111;
+    IntAndFloatToStringFunction int_float_func_2 = 2112;
+    IntAndStringToStringFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToStringFunction float_bool_func_2 = 2120;
+    FloatAndIntToStringFunction float_int_func_2 = 2121;
+    FloatAndFloatToStringFunction float_float_func_2 = 2122;
+    FloatAndStringToStringFunction float_string_func_2 = 2123;
+
+    StringAndBoolToStringFunction string_bool_func_2 = 2130;
+    StringAndIntToStringFunction string_int_func_2 = 2131;
+    StringAndFloatToStringFunction string_float_func_2 = 2132;
+    StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    StringValueIf if_2 = 3000;
+  }
+}
+
+message FloatAndStringToFloatFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    float constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToFloatFunction bool_func_1 = 10;
+    IntToFloatFunction int_func_1 = 11;
+    FloatToFloatFunction float_func_1 = 12;
+    StringToFloatFunction string_func_1 = 13;
+
+    BoolAndBoolToFloatFunction bool_bool_func_1 = 100;
+    BoolAndIntToFloatFunction bool_int_func_1 = 101;
+    BoolAndFloatToFloatFunction bool_float_func_1 = 102;
+    BoolAndStringToFloatFunction bool_string_func_1 = 103;
+
+    IntAndBoolToFloatFunction int_bool_func_1 = 110;
+    IntAndIntToFloatFunction int_int_func_1 = 111;
+    IntAndFloatToFloatFunction int_float_func_1 = 112;
+    IntAndStringToFloatFunction int_string_func_1 = 113;
+
+    FloatAndBoolToFloatFunction float_bool_func_1 = 120;
+    FloatAndIntToFloatFunction float_int_func_1 = 121;
+    FloatAndFloatToFloatFunction float_float_func_1 = 122;
+    FloatAndStringToFloatFunction float_string_func_1 = 123;
+
+    StringAndBoolToFloatFunction string_bool_func_1 = 130;
+    StringAndIntToFloatFunction string_int_func_1 = 131;
+    StringAndFloatToFloatFunction string_float_func_1 = 132;
+    StringAndStringToFloatFunction string_string_func_1 = 133;
+
+    FloatValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToStringFunction bool_func_2 = 2010;
+    IntToStringFunction int_func_2 = 2011;
+    FloatToStringFunction float_func_2 = 2012;
+    StringToStringFunction string_func_2 = 2013;
+
+    BoolAndBoolToStringFunction bool_bool_func_2 = 2100;
+    BoolAndIntToStringFunction bool_int_func_2 = 2101;
+    BoolAndFloatToStringFunction bool_float_func_2 = 2102;
+    BoolAndStringToStringFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToStringFunction int_bool_func_2 = 2110;
+    IntAndIntToStringFunction int_int_func_2 = 2111;
+    IntAndFloatToStringFunction int_float_func_2 = 2112;
+    IntAndStringToStringFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToStringFunction float_bool_func_2 = 2120;
+    FloatAndIntToStringFunction float_int_func_2 = 2121;
+    FloatAndFloatToStringFunction float_float_func_2 = 2122;
+    FloatAndStringToStringFunction float_string_func_2 = 2123;
+
+    StringAndBoolToStringFunction string_bool_func_2 = 2130;
+    StringAndIntToStringFunction string_int_func_2 = 2131;
+    StringAndFloatToStringFunction string_float_func_2 = 2132;
+    StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    StringValueIf if_2 = 3000;
+  }
+}
+
+message FloatAndStringToStringFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    float constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToFloatFunction bool_func_1 = 10;
+    IntToFloatFunction int_func_1 = 11;
+    FloatToFloatFunction float_func_1 = 12;
+    StringToFloatFunction string_func_1 = 13;
+
+    BoolAndBoolToFloatFunction bool_bool_func_1 = 100;
+    BoolAndIntToFloatFunction bool_int_func_1 = 101;
+    BoolAndFloatToFloatFunction bool_float_func_1 = 102;
+    BoolAndStringToFloatFunction bool_string_func_1 = 103;
+
+    IntAndBoolToFloatFunction int_bool_func_1 = 110;
+    IntAndIntToFloatFunction int_int_func_1 = 111;
+    IntAndFloatToFloatFunction int_float_func_1 = 112;
+    IntAndStringToFloatFunction int_string_func_1 = 113;
+
+    FloatAndBoolToFloatFunction float_bool_func_1 = 120;
+    FloatAndIntToFloatFunction float_int_func_1 = 121;
+    FloatAndFloatToFloatFunction float_float_func_1 = 122;
+    FloatAndStringToFloatFunction float_string_func_1 = 123;
+
+    StringAndBoolToFloatFunction string_bool_func_1 = 130;
+    StringAndIntToFloatFunction string_int_func_1 = 131;
+    StringAndFloatToFloatFunction string_float_func_1 = 132;
+    StringAndStringToFloatFunction string_string_func_1 = 133;
+
+    FloatValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToStringFunction bool_func_2 = 2010;
+    IntToStringFunction int_func_2 = 2011;
+    FloatToStringFunction float_func_2 = 2012;
+    StringToStringFunction string_func_2 = 2013;
+
+    BoolAndBoolToStringFunction bool_bool_func_2 = 2100;
+    BoolAndIntToStringFunction bool_int_func_2 = 2101;
+    BoolAndFloatToStringFunction bool_float_func_2 = 2102;
+    BoolAndStringToStringFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToStringFunction int_bool_func_2 = 2110;
+    IntAndIntToStringFunction int_int_func_2 = 2111;
+    IntAndFloatToStringFunction int_float_func_2 = 2112;
+    IntAndStringToStringFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToStringFunction float_bool_func_2 = 2120;
+    FloatAndIntToStringFunction float_int_func_2 = 2121;
+    FloatAndFloatToStringFunction float_float_func_2 = 2122;
+    FloatAndStringToStringFunction float_string_func_2 = 2123;
+
+    StringAndBoolToStringFunction string_bool_func_2 = 2130;
+    StringAndIntToStringFunction string_int_func_2 = 2131;
+    StringAndFloatToStringFunction string_float_func_2 = 2132;
+    StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    StringValueIf if_2 = 3000;
+  }
+}
+
+message StringAndBoolToBoolFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    string constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToStringFunction bool_func_1 = 10;
+    IntToStringFunction int_func_1 = 11;
+    FloatToStringFunction float_func_1 = 12;
+    StringToStringFunction string_func_1 = 13;
+
+    BoolAndBoolToStringFunction bool_bool_func_1 = 100;
+    BoolAndIntToStringFunction bool_int_func_1 = 101;
+    BoolAndFloatToStringFunction bool_float_func_1 = 102;
+    BoolAndStringToStringFunction bool_string_func_1 = 103;
+
+    IntAndBoolToStringFunction int_bool_func_1 = 110;
+    IntAndIntToStringFunction int_int_func_1 = 111;
+    IntAndFloatToStringFunction int_float_func_1 = 112;
+    IntAndStringToStringFunction int_string_func_1 = 113;
+
+    FloatAndBoolToStringFunction float_bool_func_1 = 120;
+    FloatAndIntToStringFunction float_int_func_1 = 121;
+    FloatAndFloatToStringFunction float_float_func_1 = 122;
+    FloatAndStringToStringFunction float_string_func_1 = 123;
+
+    StringAndBoolToStringFunction string_bool_func_1 = 130;
+    StringAndIntToStringFunction string_int_func_1 = 131;
+    StringAndFloatToStringFunction string_float_func_1 = 132;
+    StringAndStringToStringFunction string_string_func_1 = 133;
+
+    StringValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToBoolFunction bool_func_2 = 2010;
+    IntToBoolFunction int_func_2 = 2011;
+    FloatToBoolFunction float_func_2 = 2012;
+    StringToBoolFunction string_func_2 = 2013;
+
+    BoolAndBoolToBoolFunction bool_bool_func_2 = 2100;
+    BoolAndIntToBoolFunction bool_int_func_2 = 2101;
+    BoolAndFloatToBoolFunction bool_float_func_2 = 2102;
+    BoolAndStringToBoolFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToBoolFunction int_bool_func_2 = 2110;
+    IntAndIntToBoolFunction int_int_func_2 = 2111;
+    IntAndFloatToBoolFunction int_float_func_2 = 2112;
+    IntAndStringToBoolFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToBoolFunction float_bool_func_2 = 2120;
+    FloatAndIntToBoolFunction float_int_func_2 = 2121;
+    FloatAndFloatToBoolFunction float_float_func_2 = 2122;
+    FloatAndStringToBoolFunction float_string_func_2 = 2123;
+
+    StringAndBoolToBoolFunction string_bool_func_2 = 2130;
+    StringAndIntToBoolFunction string_int_func_2 = 2131;
+    StringAndFloatToBoolFunction string_float_func_2 = 2132;
+    StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolValueIf if_2 = 3000;
+  }
+}
+
+message StringAndBoolToIntFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    string constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToStringFunction bool_func_1 = 10;
+    IntToStringFunction int_func_1 = 11;
+    FloatToStringFunction float_func_1 = 12;
+    StringToStringFunction string_func_1 = 13;
+
+    BoolAndBoolToStringFunction bool_bool_func_1 = 100;
+    BoolAndIntToStringFunction bool_int_func_1 = 101;
+    BoolAndFloatToStringFunction bool_float_func_1 = 102;
+    BoolAndStringToStringFunction bool_string_func_1 = 103;
+
+    IntAndBoolToStringFunction int_bool_func_1 = 110;
+    IntAndIntToStringFunction int_int_func_1 = 111;
+    IntAndFloatToStringFunction int_float_func_1 = 112;
+    IntAndStringToStringFunction int_string_func_1 = 113;
+
+    FloatAndBoolToStringFunction float_bool_func_1 = 120;
+    FloatAndIntToStringFunction float_int_func_1 = 121;
+    FloatAndFloatToStringFunction float_float_func_1 = 122;
+    FloatAndStringToStringFunction float_string_func_1 = 123;
+
+    StringAndBoolToStringFunction string_bool_func_1 = 130;
+    StringAndIntToStringFunction string_int_func_1 = 131;
+    StringAndFloatToStringFunction string_float_func_1 = 132;
+    StringAndStringToStringFunction string_string_func_1 = 133;
+
+    StringValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToBoolFunction bool_func_2 = 2010;
+    IntToBoolFunction int_func_2 = 2011;
+    FloatToBoolFunction float_func_2 = 2012;
+    StringToBoolFunction string_func_2 = 2013;
+
+    BoolAndBoolToBoolFunction bool_bool_func_2 = 2100;
+    BoolAndIntToBoolFunction bool_int_func_2 = 2101;
+    BoolAndFloatToBoolFunction bool_float_func_2 = 2102;
+    BoolAndStringToBoolFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToBoolFunction int_bool_func_2 = 2110;
+    IntAndIntToBoolFunction int_int_func_2 = 2111;
+    IntAndFloatToBoolFunction int_float_func_2 = 2112;
+    IntAndStringToBoolFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToBoolFunction float_bool_func_2 = 2120;
+    FloatAndIntToBoolFunction float_int_func_2 = 2121;
+    FloatAndFloatToBoolFunction float_float_func_2 = 2122;
+    FloatAndStringToBoolFunction float_string_func_2 = 2123;
+
+    StringAndBoolToBoolFunction string_bool_func_2 = 2130;
+    StringAndIntToBoolFunction string_int_func_2 = 2131;
+    StringAndFloatToBoolFunction string_float_func_2 = 2132;
+    StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolValueIf if_2 = 3000;
+  }
+}
+
+message StringAndBoolToFloatFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    string constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToStringFunction bool_func_1 = 10;
+    IntToStringFunction int_func_1 = 11;
+    FloatToStringFunction float_func_1 = 12;
+    StringToStringFunction string_func_1 = 13;
+
+    BoolAndBoolToStringFunction bool_bool_func_1 = 100;
+    BoolAndIntToStringFunction bool_int_func_1 = 101;
+    BoolAndFloatToStringFunction bool_float_func_1 = 102;
+    BoolAndStringToStringFunction bool_string_func_1 = 103;
+
+    IntAndBoolToStringFunction int_bool_func_1 = 110;
+    IntAndIntToStringFunction int_int_func_1 = 111;
+    IntAndFloatToStringFunction int_float_func_1 = 112;
+    IntAndStringToStringFunction int_string_func_1 = 113;
+
+    FloatAndBoolToStringFunction float_bool_func_1 = 120;
+    FloatAndIntToStringFunction float_int_func_1 = 121;
+    FloatAndFloatToStringFunction float_float_func_1 = 122;
+    FloatAndStringToStringFunction float_string_func_1 = 123;
+
+    StringAndBoolToStringFunction string_bool_func_1 = 130;
+    StringAndIntToStringFunction string_int_func_1 = 131;
+    StringAndFloatToStringFunction string_float_func_1 = 132;
+    StringAndStringToStringFunction string_string_func_1 = 133;
+
+    StringValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToBoolFunction bool_func_2 = 2010;
+    IntToBoolFunction int_func_2 = 2011;
+    FloatToBoolFunction float_func_2 = 2012;
+    StringToBoolFunction string_func_2 = 2013;
+
+    BoolAndBoolToBoolFunction bool_bool_func_2 = 2100;
+    BoolAndIntToBoolFunction bool_int_func_2 = 2101;
+    BoolAndFloatToBoolFunction bool_float_func_2 = 2102;
+    BoolAndStringToBoolFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToBoolFunction int_bool_func_2 = 2110;
+    IntAndIntToBoolFunction int_int_func_2 = 2111;
+    IntAndFloatToBoolFunction int_float_func_2 = 2112;
+    IntAndStringToBoolFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToBoolFunction float_bool_func_2 = 2120;
+    FloatAndIntToBoolFunction float_int_func_2 = 2121;
+    FloatAndFloatToBoolFunction float_float_func_2 = 2122;
+    FloatAndStringToBoolFunction float_string_func_2 = 2123;
+
+    StringAndBoolToBoolFunction string_bool_func_2 = 2130;
+    StringAndIntToBoolFunction string_int_func_2 = 2131;
+    StringAndFloatToBoolFunction string_float_func_2 = 2132;
+    StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolValueIf if_2 = 3000;
+  }
+}
+
+message StringAndBoolToStringFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    string constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToStringFunction bool_func_1 = 10;
+    IntToStringFunction int_func_1 = 11;
+    FloatToStringFunction float_func_1 = 12;
+    StringToStringFunction string_func_1 = 13;
+
+    BoolAndBoolToStringFunction bool_bool_func_1 = 100;
+    BoolAndIntToStringFunction bool_int_func_1 = 101;
+    BoolAndFloatToStringFunction bool_float_func_1 = 102;
+    BoolAndStringToStringFunction bool_string_func_1 = 103;
+
+    IntAndBoolToStringFunction int_bool_func_1 = 110;
+    IntAndIntToStringFunction int_int_func_1 = 111;
+    IntAndFloatToStringFunction int_float_func_1 = 112;
+    IntAndStringToStringFunction int_string_func_1 = 113;
+
+    FloatAndBoolToStringFunction float_bool_func_1 = 120;
+    FloatAndIntToStringFunction float_int_func_1 = 121;
+    FloatAndFloatToStringFunction float_float_func_1 = 122;
+    FloatAndStringToStringFunction float_string_func_1 = 123;
+
+    StringAndBoolToStringFunction string_bool_func_1 = 130;
+    StringAndIntToStringFunction string_int_func_1 = 131;
+    StringAndFloatToStringFunction string_float_func_1 = 132;
+    StringAndStringToStringFunction string_string_func_1 = 133;
+
+    StringValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToBoolFunction bool_func_2 = 2010;
+    IntToBoolFunction int_func_2 = 2011;
+    FloatToBoolFunction float_func_2 = 2012;
+    StringToBoolFunction string_func_2 = 2013;
+
+    BoolAndBoolToBoolFunction bool_bool_func_2 = 2100;
+    BoolAndIntToBoolFunction bool_int_func_2 = 2101;
+    BoolAndFloatToBoolFunction bool_float_func_2 = 2102;
+    BoolAndStringToBoolFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToBoolFunction int_bool_func_2 = 2110;
+    IntAndIntToBoolFunction int_int_func_2 = 2111;
+    IntAndFloatToBoolFunction int_float_func_2 = 2112;
+    IntAndStringToBoolFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToBoolFunction float_bool_func_2 = 2120;
+    FloatAndIntToBoolFunction float_int_func_2 = 2121;
+    FloatAndFloatToBoolFunction float_float_func_2 = 2122;
+    FloatAndStringToBoolFunction float_string_func_2 = 2123;
+
+    StringAndBoolToBoolFunction string_bool_func_2 = 2130;
+    StringAndIntToBoolFunction string_int_func_2 = 2131;
+    StringAndFloatToBoolFunction string_float_func_2 = 2132;
+    StringAndStringToBoolFunction string_string_func_2 = 2133;
+
+    BoolValueIf if_2 = 3000;
+  }
+}
+
+message StringAndIntToBoolFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    string constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToStringFunction bool_func_1 = 10;
+    IntToStringFunction int_func_1 = 11;
+    FloatToStringFunction float_func_1 = 12;
+    StringToStringFunction string_func_1 = 13;
+
+    BoolAndBoolToStringFunction bool_bool_func_1 = 100;
+    BoolAndIntToStringFunction bool_int_func_1 = 101;
+    BoolAndFloatToStringFunction bool_float_func_1 = 102;
+    BoolAndStringToStringFunction bool_string_func_1 = 103;
+
+    IntAndBoolToStringFunction int_bool_func_1 = 110;
+    IntAndIntToStringFunction int_int_func_1 = 111;
+    IntAndFloatToStringFunction int_float_func_1 = 112;
+    IntAndStringToStringFunction int_string_func_1 = 113;
+
+    FloatAndBoolToStringFunction float_bool_func_1 = 120;
+    FloatAndIntToStringFunction float_int_func_1 = 121;
+    FloatAndFloatToStringFunction float_float_func_1 = 122;
+    FloatAndStringToStringFunction float_string_func_1 = 123;
+
+    StringAndBoolToStringFunction string_bool_func_1 = 130;
+    StringAndIntToStringFunction string_int_func_1 = 131;
+    StringAndFloatToStringFunction string_float_func_1 = 132;
+    StringAndStringToStringFunction string_string_func_1 = 133;
+
+    StringValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToIntFunction bool_func_2 = 2010;
+    IntToIntFunction int_func_2 = 2011;
+    FloatToIntFunction float_func_2 = 2012;
+    StringToIntFunction string_func_2 = 2013;
+
+    BoolAndBoolToIntFunction bool_bool_func_2 = 2100;
+    BoolAndIntToIntFunction bool_int_func_2 = 2101;
+    BoolAndFloatToIntFunction bool_float_func_2 = 2102;
+    BoolAndStringToIntFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToIntFunction int_bool_func_2 = 2110;
+    IntAndIntToIntFunction int_int_func_2 = 2111;
+    IntAndFloatToIntFunction int_float_func_2 = 2112;
+    IntAndStringToIntFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToIntFunction float_bool_func_2 = 2120;
+    FloatAndIntToIntFunction float_int_func_2 = 2121;
+    FloatAndFloatToIntFunction float_float_func_2 = 2122;
+    FloatAndStringToIntFunction float_string_func_2 = 2123;
+
+    StringAndBoolToIntFunction string_bool_func_2 = 2130;
+    StringAndIntToIntFunction string_int_func_2 = 2131;
+    StringAndFloatToIntFunction string_float_func_2 = 2132;
+    StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    IntValueIf if_2 = 3000;
+  }
+}
+
+message StringAndIntToIntFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    string constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToStringFunction bool_func_1 = 10;
+    IntToStringFunction int_func_1 = 11;
+    FloatToStringFunction float_func_1 = 12;
+    StringToStringFunction string_func_1 = 13;
+
+    BoolAndBoolToStringFunction bool_bool_func_1 = 100;
+    BoolAndIntToStringFunction bool_int_func_1 = 101;
+    BoolAndFloatToStringFunction bool_float_func_1 = 102;
+    BoolAndStringToStringFunction bool_string_func_1 = 103;
+
+    IntAndBoolToStringFunction int_bool_func_1 = 110;
+    IntAndIntToStringFunction int_int_func_1 = 111;
+    IntAndFloatToStringFunction int_float_func_1 = 112;
+    IntAndStringToStringFunction int_string_func_1 = 113;
+
+    FloatAndBoolToStringFunction float_bool_func_1 = 120;
+    FloatAndIntToStringFunction float_int_func_1 = 121;
+    FloatAndFloatToStringFunction float_float_func_1 = 122;
+    FloatAndStringToStringFunction float_string_func_1 = 123;
+
+    StringAndBoolToStringFunction string_bool_func_1 = 130;
+    StringAndIntToStringFunction string_int_func_1 = 131;
+    StringAndFloatToStringFunction string_float_func_1 = 132;
+    StringAndStringToStringFunction string_string_func_1 = 133;
+
+    StringValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToIntFunction bool_func_2 = 2010;
+    IntToIntFunction int_func_2 = 2011;
+    FloatToIntFunction float_func_2 = 2012;
+    StringToIntFunction string_func_2 = 2013;
+
+    BoolAndBoolToIntFunction bool_bool_func_2 = 2100;
+    BoolAndIntToIntFunction bool_int_func_2 = 2101;
+    BoolAndFloatToIntFunction bool_float_func_2 = 2102;
+    BoolAndStringToIntFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToIntFunction int_bool_func_2 = 2110;
+    IntAndIntToIntFunction int_int_func_2 = 2111;
+    IntAndFloatToIntFunction int_float_func_2 = 2112;
+    IntAndStringToIntFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToIntFunction float_bool_func_2 = 2120;
+    FloatAndIntToIntFunction float_int_func_2 = 2121;
+    FloatAndFloatToIntFunction float_float_func_2 = 2122;
+    FloatAndStringToIntFunction float_string_func_2 = 2123;
+
+    StringAndBoolToIntFunction string_bool_func_2 = 2130;
+    StringAndIntToIntFunction string_int_func_2 = 2131;
+    StringAndFloatToIntFunction string_float_func_2 = 2132;
+    StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    IntValueIf if_2 = 3000;
+  }
+}
+
+message StringAndIntToFloatFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    string constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToStringFunction bool_func_1 = 10;
+    IntToStringFunction int_func_1 = 11;
+    FloatToStringFunction float_func_1 = 12;
+    StringToStringFunction string_func_1 = 13;
+
+    BoolAndBoolToStringFunction bool_bool_func_1 = 100;
+    BoolAndIntToStringFunction bool_int_func_1 = 101;
+    BoolAndFloatToStringFunction bool_float_func_1 = 102;
+    BoolAndStringToStringFunction bool_string_func_1 = 103;
+
+    IntAndBoolToStringFunction int_bool_func_1 = 110;
+    IntAndIntToStringFunction int_int_func_1 = 111;
+    IntAndFloatToStringFunction int_float_func_1 = 112;
+    IntAndStringToStringFunction int_string_func_1 = 113;
+
+    FloatAndBoolToStringFunction float_bool_func_1 = 120;
+    FloatAndIntToStringFunction float_int_func_1 = 121;
+    FloatAndFloatToStringFunction float_float_func_1 = 122;
+    FloatAndStringToStringFunction float_string_func_1 = 123;
+
+    StringAndBoolToStringFunction string_bool_func_1 = 130;
+    StringAndIntToStringFunction string_int_func_1 = 131;
+    StringAndFloatToStringFunction string_float_func_1 = 132;
+    StringAndStringToStringFunction string_string_func_1 = 133;
+
+    StringValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToIntFunction bool_func_2 = 2010;
+    IntToIntFunction int_func_2 = 2011;
+    FloatToIntFunction float_func_2 = 2012;
+    StringToIntFunction string_func_2 = 2013;
+
+    BoolAndBoolToIntFunction bool_bool_func_2 = 2100;
+    BoolAndIntToIntFunction bool_int_func_2 = 2101;
+    BoolAndFloatToIntFunction bool_float_func_2 = 2102;
+    BoolAndStringToIntFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToIntFunction int_bool_func_2 = 2110;
+    IntAndIntToIntFunction int_int_func_2 = 2111;
+    IntAndFloatToIntFunction int_float_func_2 = 2112;
+    IntAndStringToIntFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToIntFunction float_bool_func_2 = 2120;
+    FloatAndIntToIntFunction float_int_func_2 = 2121;
+    FloatAndFloatToIntFunction float_float_func_2 = 2122;
+    FloatAndStringToIntFunction float_string_func_2 = 2123;
+
+    StringAndBoolToIntFunction string_bool_func_2 = 2130;
+    StringAndIntToIntFunction string_int_func_2 = 2131;
+    StringAndFloatToIntFunction string_float_func_2 = 2132;
+    StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    IntValueIf if_2 = 3000;
+  }
+}
+
+message StringAndIntToStringFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    string constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToStringFunction bool_func_1 = 10;
+    IntToStringFunction int_func_1 = 11;
+    FloatToStringFunction float_func_1 = 12;
+    StringToStringFunction string_func_1 = 13;
+
+    BoolAndBoolToStringFunction bool_bool_func_1 = 100;
+    BoolAndIntToStringFunction bool_int_func_1 = 101;
+    BoolAndFloatToStringFunction bool_float_func_1 = 102;
+    BoolAndStringToStringFunction bool_string_func_1 = 103;
+
+    IntAndBoolToStringFunction int_bool_func_1 = 110;
+    IntAndIntToStringFunction int_int_func_1 = 111;
+    IntAndFloatToStringFunction int_float_func_1 = 112;
+    IntAndStringToStringFunction int_string_func_1 = 113;
+
+    FloatAndBoolToStringFunction float_bool_func_1 = 120;
+    FloatAndIntToStringFunction float_int_func_1 = 121;
+    FloatAndFloatToStringFunction float_float_func_1 = 122;
+    FloatAndStringToStringFunction float_string_func_1 = 123;
+
+    StringAndBoolToStringFunction string_bool_func_1 = 130;
+    StringAndIntToStringFunction string_int_func_1 = 131;
+    StringAndFloatToStringFunction string_float_func_1 = 132;
+    StringAndStringToStringFunction string_string_func_1 = 133;
+
+    StringValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToIntFunction bool_func_2 = 2010;
+    IntToIntFunction int_func_2 = 2011;
+    FloatToIntFunction float_func_2 = 2012;
+    StringToIntFunction string_func_2 = 2013;
+
+    BoolAndBoolToIntFunction bool_bool_func_2 = 2100;
+    BoolAndIntToIntFunction bool_int_func_2 = 2101;
+    BoolAndFloatToIntFunction bool_float_func_2 = 2102;
+    BoolAndStringToIntFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToIntFunction int_bool_func_2 = 2110;
+    IntAndIntToIntFunction int_int_func_2 = 2111;
+    IntAndFloatToIntFunction int_float_func_2 = 2112;
+    IntAndStringToIntFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToIntFunction float_bool_func_2 = 2120;
+    FloatAndIntToIntFunction float_int_func_2 = 2121;
+    FloatAndFloatToIntFunction float_float_func_2 = 2122;
+    FloatAndStringToIntFunction float_string_func_2 = 2123;
+
+    StringAndBoolToIntFunction string_bool_func_2 = 2130;
+    StringAndIntToIntFunction string_int_func_2 = 2131;
+    StringAndFloatToIntFunction string_float_func_2 = 2132;
+    StringAndStringToIntFunction string_string_func_2 = 2133;
+
+    IntValueIf if_2 = 3000;
+  }
+}
+
+message StringAndFloatToBoolFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    string constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToStringFunction bool_func_1 = 10;
+    IntToStringFunction int_func_1 = 11;
+    FloatToStringFunction float_func_1 = 12;
+    StringToStringFunction string_func_1 = 13;
+
+    BoolAndBoolToStringFunction bool_bool_func_1 = 100;
+    BoolAndIntToStringFunction bool_int_func_1 = 101;
+    BoolAndFloatToStringFunction bool_float_func_1 = 102;
+    BoolAndStringToStringFunction bool_string_func_1 = 103;
+
+    IntAndBoolToStringFunction int_bool_func_1 = 110;
+    IntAndIntToStringFunction int_int_func_1 = 111;
+    IntAndFloatToStringFunction int_float_func_1 = 112;
+    IntAndStringToStringFunction int_string_func_1 = 113;
+
+    FloatAndBoolToStringFunction float_bool_func_1 = 120;
+    FloatAndIntToStringFunction float_int_func_1 = 121;
+    FloatAndFloatToStringFunction float_float_func_1 = 122;
+    FloatAndStringToStringFunction float_string_func_1 = 123;
+
+    StringAndBoolToStringFunction string_bool_func_1 = 130;
+    StringAndIntToStringFunction string_int_func_1 = 131;
+    StringAndFloatToStringFunction string_float_func_1 = 132;
+    StringAndStringToStringFunction string_string_func_1 = 133;
+
+    StringValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToFloatFunction bool_func_2 = 2010;
+    IntToFloatFunction int_func_2 = 2011;
+    FloatToFloatFunction float_func_2 = 2012;
+    StringToFloatFunction string_func_2 = 2013;
+
+    BoolAndBoolToFloatFunction bool_bool_func_2 = 2100;
+    BoolAndIntToFloatFunction bool_int_func_2 = 2101;
+    BoolAndFloatToFloatFunction bool_float_func_2 = 2102;
+    BoolAndStringToFloatFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToFloatFunction int_bool_func_2 = 2110;
+    IntAndIntToFloatFunction int_int_func_2 = 2111;
+    IntAndFloatToFloatFunction int_float_func_2 = 2112;
+    IntAndStringToFloatFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToFloatFunction float_bool_func_2 = 2120;
+    FloatAndIntToFloatFunction float_int_func_2 = 2121;
+    FloatAndFloatToFloatFunction float_float_func_2 = 2122;
+    FloatAndStringToFloatFunction float_string_func_2 = 2123;
+
+    StringAndBoolToFloatFunction string_bool_func_2 = 2130;
+    StringAndIntToFloatFunction string_int_func_2 = 2131;
+    StringAndFloatToFloatFunction string_float_func_2 = 2132;
+    StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    FloatValueIf if_2 = 3000;
+  }
+}
+
+message StringAndFloatToIntFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    string constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToStringFunction bool_func_1 = 10;
+    IntToStringFunction int_func_1 = 11;
+    FloatToStringFunction float_func_1 = 12;
+    StringToStringFunction string_func_1 = 13;
+
+    BoolAndBoolToStringFunction bool_bool_func_1 = 100;
+    BoolAndIntToStringFunction bool_int_func_1 = 101;
+    BoolAndFloatToStringFunction bool_float_func_1 = 102;
+    BoolAndStringToStringFunction bool_string_func_1 = 103;
+
+    IntAndBoolToStringFunction int_bool_func_1 = 110;
+    IntAndIntToStringFunction int_int_func_1 = 111;
+    IntAndFloatToStringFunction int_float_func_1 = 112;
+    IntAndStringToStringFunction int_string_func_1 = 113;
+
+    FloatAndBoolToStringFunction float_bool_func_1 = 120;
+    FloatAndIntToStringFunction float_int_func_1 = 121;
+    FloatAndFloatToStringFunction float_float_func_1 = 122;
+    FloatAndStringToStringFunction float_string_func_1 = 123;
+
+    StringAndBoolToStringFunction string_bool_func_1 = 130;
+    StringAndIntToStringFunction string_int_func_1 = 131;
+    StringAndFloatToStringFunction string_float_func_1 = 132;
+    StringAndStringToStringFunction string_string_func_1 = 133;
+
+    StringValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToFloatFunction bool_func_2 = 2010;
+    IntToFloatFunction int_func_2 = 2011;
+    FloatToFloatFunction float_func_2 = 2012;
+    StringToFloatFunction string_func_2 = 2013;
+
+    BoolAndBoolToFloatFunction bool_bool_func_2 = 2100;
+    BoolAndIntToFloatFunction bool_int_func_2 = 2101;
+    BoolAndFloatToFloatFunction bool_float_func_2 = 2102;
+    BoolAndStringToFloatFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToFloatFunction int_bool_func_2 = 2110;
+    IntAndIntToFloatFunction int_int_func_2 = 2111;
+    IntAndFloatToFloatFunction int_float_func_2 = 2112;
+    IntAndStringToFloatFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToFloatFunction float_bool_func_2 = 2120;
+    FloatAndIntToFloatFunction float_int_func_2 = 2121;
+    FloatAndFloatToFloatFunction float_float_func_2 = 2122;
+    FloatAndStringToFloatFunction float_string_func_2 = 2123;
+
+    StringAndBoolToFloatFunction string_bool_func_2 = 2130;
+    StringAndIntToFloatFunction string_int_func_2 = 2131;
+    StringAndFloatToFloatFunction string_float_func_2 = 2132;
+    StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    FloatValueIf if_2 = 3000;
+  }
+}
+
+message StringAndFloatToFloatFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    string constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToStringFunction bool_func_1 = 10;
+    IntToStringFunction int_func_1 = 11;
+    FloatToStringFunction float_func_1 = 12;
+    StringToStringFunction string_func_1 = 13;
+
+    BoolAndBoolToStringFunction bool_bool_func_1 = 100;
+    BoolAndIntToStringFunction bool_int_func_1 = 101;
+    BoolAndFloatToStringFunction bool_float_func_1 = 102;
+    BoolAndStringToStringFunction bool_string_func_1 = 103;
+
+    IntAndBoolToStringFunction int_bool_func_1 = 110;
+    IntAndIntToStringFunction int_int_func_1 = 111;
+    IntAndFloatToStringFunction int_float_func_1 = 112;
+    IntAndStringToStringFunction int_string_func_1 = 113;
+
+    FloatAndBoolToStringFunction float_bool_func_1 = 120;
+    FloatAndIntToStringFunction float_int_func_1 = 121;
+    FloatAndFloatToStringFunction float_float_func_1 = 122;
+    FloatAndStringToStringFunction float_string_func_1 = 123;
+
+    StringAndBoolToStringFunction string_bool_func_1 = 130;
+    StringAndIntToStringFunction string_int_func_1 = 131;
+    StringAndFloatToStringFunction string_float_func_1 = 132;
+    StringAndStringToStringFunction string_string_func_1 = 133;
+
+    StringValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToFloatFunction bool_func_2 = 2010;
+    IntToFloatFunction int_func_2 = 2011;
+    FloatToFloatFunction float_func_2 = 2012;
+    StringToFloatFunction string_func_2 = 2013;
+
+    BoolAndBoolToFloatFunction bool_bool_func_2 = 2100;
+    BoolAndIntToFloatFunction bool_int_func_2 = 2101;
+    BoolAndFloatToFloatFunction bool_float_func_2 = 2102;
+    BoolAndStringToFloatFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToFloatFunction int_bool_func_2 = 2110;
+    IntAndIntToFloatFunction int_int_func_2 = 2111;
+    IntAndFloatToFloatFunction int_float_func_2 = 2112;
+    IntAndStringToFloatFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToFloatFunction float_bool_func_2 = 2120;
+    FloatAndIntToFloatFunction float_int_func_2 = 2121;
+    FloatAndFloatToFloatFunction float_float_func_2 = 2122;
+    FloatAndStringToFloatFunction float_string_func_2 = 2123;
+
+    StringAndBoolToFloatFunction string_bool_func_2 = 2130;
+    StringAndIntToFloatFunction string_int_func_2 = 2131;
+    StringAndFloatToFloatFunction string_float_func_2 = 2132;
+    StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    FloatValueIf if_2 = 3000;
+  }
+}
+
+message StringAndFloatToStringFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    string constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToStringFunction bool_func_1 = 10;
+    IntToStringFunction int_func_1 = 11;
+    FloatToStringFunction float_func_1 = 12;
+    StringToStringFunction string_func_1 = 13;
+
+    BoolAndBoolToStringFunction bool_bool_func_1 = 100;
+    BoolAndIntToStringFunction bool_int_func_1 = 101;
+    BoolAndFloatToStringFunction bool_float_func_1 = 102;
+    BoolAndStringToStringFunction bool_string_func_1 = 103;
+
+    IntAndBoolToStringFunction int_bool_func_1 = 110;
+    IntAndIntToStringFunction int_int_func_1 = 111;
+    IntAndFloatToStringFunction int_float_func_1 = 112;
+    IntAndStringToStringFunction int_string_func_1 = 113;
+
+    FloatAndBoolToStringFunction float_bool_func_1 = 120;
+    FloatAndIntToStringFunction float_int_func_1 = 121;
+    FloatAndFloatToStringFunction float_float_func_1 = 122;
+    FloatAndStringToStringFunction float_string_func_1 = 123;
+
+    StringAndBoolToStringFunction string_bool_func_1 = 130;
+    StringAndIntToStringFunction string_int_func_1 = 131;
+    StringAndFloatToStringFunction string_float_func_1 = 132;
+    StringAndStringToStringFunction string_string_func_1 = 133;
+
+    StringValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToFloatFunction bool_func_2 = 2010;
+    IntToFloatFunction int_func_2 = 2011;
+    FloatToFloatFunction float_func_2 = 2012;
+    StringToFloatFunction string_func_2 = 2013;
+
+    BoolAndBoolToFloatFunction bool_bool_func_2 = 2100;
+    BoolAndIntToFloatFunction bool_int_func_2 = 2101;
+    BoolAndFloatToFloatFunction bool_float_func_2 = 2102;
+    BoolAndStringToFloatFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToFloatFunction int_bool_func_2 = 2110;
+    IntAndIntToFloatFunction int_int_func_2 = 2111;
+    IntAndFloatToFloatFunction int_float_func_2 = 2112;
+    IntAndStringToFloatFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToFloatFunction float_bool_func_2 = 2120;
+    FloatAndIntToFloatFunction float_int_func_2 = 2121;
+    FloatAndFloatToFloatFunction float_float_func_2 = 2122;
+    FloatAndStringToFloatFunction float_string_func_2 = 2123;
+
+    StringAndBoolToFloatFunction string_bool_func_2 = 2130;
+    StringAndIntToFloatFunction string_int_func_2 = 2131;
+    StringAndFloatToFloatFunction string_float_func_2 = 2132;
+    StringAndStringToFloatFunction string_string_func_2 = 2133;
+
+    FloatValueIf if_2 = 3000;
+  }
+}
+
+message StringAndStringToBoolFunction {
+  enum ID {
+    UNDEFINED = 0;
+    EQ = 1;
+    NEQ = 2;
+    GT = 3;
+    LT = 4;
+    GTE = 5;
+    LTE = 6;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    string constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToStringFunction bool_func_1 = 10;
+    IntToStringFunction int_func_1 = 11;
+    FloatToStringFunction float_func_1 = 12;
+    StringToStringFunction string_func_1 = 13;
+
+    BoolAndBoolToStringFunction bool_bool_func_1 = 100;
+    BoolAndIntToStringFunction bool_int_func_1 = 101;
+    BoolAndFloatToStringFunction bool_float_func_1 = 102;
+    BoolAndStringToStringFunction bool_string_func_1 = 103;
+
+    IntAndBoolToStringFunction int_bool_func_1 = 110;
+    IntAndIntToStringFunction int_int_func_1 = 111;
+    IntAndFloatToStringFunction int_float_func_1 = 112;
+    IntAndStringToStringFunction int_string_func_1 = 113;
+
+    FloatAndBoolToStringFunction float_bool_func_1 = 120;
+    FloatAndIntToStringFunction float_int_func_1 = 121;
+    FloatAndFloatToStringFunction float_float_func_1 = 122;
+    FloatAndStringToStringFunction float_string_func_1 = 123;
+
+    StringAndBoolToStringFunction string_bool_func_1 = 130;
+    StringAndIntToStringFunction string_int_func_1 = 131;
+    StringAndFloatToStringFunction string_float_func_1 = 132;
+    StringAndStringToStringFunction string_string_func_1 = 133;
+
+    StringValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToStringFunction bool_func_2 = 2010;
+    IntToStringFunction int_func_2 = 2011;
+    FloatToStringFunction float_func_2 = 2012;
+    StringToStringFunction string_func_2 = 2013;
+
+    BoolAndBoolToStringFunction bool_bool_func_2 = 2100;
+    BoolAndIntToStringFunction bool_int_func_2 = 2101;
+    BoolAndFloatToStringFunction bool_float_func_2 = 2102;
+    BoolAndStringToStringFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToStringFunction int_bool_func_2 = 2110;
+    IntAndIntToStringFunction int_int_func_2 = 2111;
+    IntAndFloatToStringFunction int_float_func_2 = 2112;
+    IntAndStringToStringFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToStringFunction float_bool_func_2 = 2120;
+    FloatAndIntToStringFunction float_int_func_2 = 2121;
+    FloatAndFloatToStringFunction float_float_func_2 = 2122;
+    FloatAndStringToStringFunction float_string_func_2 = 2123;
+
+    StringAndBoolToStringFunction string_bool_func_2 = 2130;
+    StringAndIntToStringFunction string_int_func_2 = 2131;
+    StringAndFloatToStringFunction string_float_func_2 = 2132;
+    StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    StringValueIf if_2 = 3000;
+  }
+}
+
+message StringAndStringToIntFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    string constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToStringFunction bool_func_1 = 10;
+    IntToStringFunction int_func_1 = 11;
+    FloatToStringFunction float_func_1 = 12;
+    StringToStringFunction string_func_1 = 13;
+
+    BoolAndBoolToStringFunction bool_bool_func_1 = 100;
+    BoolAndIntToStringFunction bool_int_func_1 = 101;
+    BoolAndFloatToStringFunction bool_float_func_1 = 102;
+    BoolAndStringToStringFunction bool_string_func_1 = 103;
+
+    IntAndBoolToStringFunction int_bool_func_1 = 110;
+    IntAndIntToStringFunction int_int_func_1 = 111;
+    IntAndFloatToStringFunction int_float_func_1 = 112;
+    IntAndStringToStringFunction int_string_func_1 = 113;
+
+    FloatAndBoolToStringFunction float_bool_func_1 = 120;
+    FloatAndIntToStringFunction float_int_func_1 = 121;
+    FloatAndFloatToStringFunction float_float_func_1 = 122;
+    FloatAndStringToStringFunction float_string_func_1 = 123;
+
+    StringAndBoolToStringFunction string_bool_func_1 = 130;
+    StringAndIntToStringFunction string_int_func_1 = 131;
+    StringAndFloatToStringFunction string_float_func_1 = 132;
+    StringAndStringToStringFunction string_string_func_1 = 133;
+
+    StringValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToStringFunction bool_func_2 = 2010;
+    IntToStringFunction int_func_2 = 2011;
+    FloatToStringFunction float_func_2 = 2012;
+    StringToStringFunction string_func_2 = 2013;
+
+    BoolAndBoolToStringFunction bool_bool_func_2 = 2100;
+    BoolAndIntToStringFunction bool_int_func_2 = 2101;
+    BoolAndFloatToStringFunction bool_float_func_2 = 2102;
+    BoolAndStringToStringFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToStringFunction int_bool_func_2 = 2110;
+    IntAndIntToStringFunction int_int_func_2 = 2111;
+    IntAndFloatToStringFunction int_float_func_2 = 2112;
+    IntAndStringToStringFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToStringFunction float_bool_func_2 = 2120;
+    FloatAndIntToStringFunction float_int_func_2 = 2121;
+    FloatAndFloatToStringFunction float_float_func_2 = 2122;
+    FloatAndStringToStringFunction float_string_func_2 = 2123;
+
+    StringAndBoolToStringFunction string_bool_func_2 = 2130;
+    StringAndIntToStringFunction string_int_func_2 = 2131;
+    StringAndFloatToStringFunction string_float_func_2 = 2132;
+    StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    StringValueIf if_2 = 3000;
+  }
+}
+
+message StringAndStringToFloatFunction {
+  enum ID {
+    UNDEFINED = 0;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    string constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToStringFunction bool_func_1 = 10;
+    IntToStringFunction int_func_1 = 11;
+    FloatToStringFunction float_func_1 = 12;
+    StringToStringFunction string_func_1 = 13;
+
+    BoolAndBoolToStringFunction bool_bool_func_1 = 100;
+    BoolAndIntToStringFunction bool_int_func_1 = 101;
+    BoolAndFloatToStringFunction bool_float_func_1 = 102;
+    BoolAndStringToStringFunction bool_string_func_1 = 103;
+
+    IntAndBoolToStringFunction int_bool_func_1 = 110;
+    IntAndIntToStringFunction int_int_func_1 = 111;
+    IntAndFloatToStringFunction int_float_func_1 = 112;
+    IntAndStringToStringFunction int_string_func_1 = 113;
+
+    FloatAndBoolToStringFunction float_bool_func_1 = 120;
+    FloatAndIntToStringFunction float_int_func_1 = 121;
+    FloatAndFloatToStringFunction float_float_func_1 = 122;
+    FloatAndStringToStringFunction float_string_func_1 = 123;
+
+    StringAndBoolToStringFunction string_bool_func_1 = 130;
+    StringAndIntToStringFunction string_int_func_1 = 131;
+    StringAndFloatToStringFunction string_float_func_1 = 132;
+    StringAndStringToStringFunction string_string_func_1 = 133;
+
+    StringValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToStringFunction bool_func_2 = 2010;
+    IntToStringFunction int_func_2 = 2011;
+    FloatToStringFunction float_func_2 = 2012;
+    StringToStringFunction string_func_2 = 2013;
+
+    BoolAndBoolToStringFunction bool_bool_func_2 = 2100;
+    BoolAndIntToStringFunction bool_int_func_2 = 2101;
+    BoolAndFloatToStringFunction bool_float_func_2 = 2102;
+    BoolAndStringToStringFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToStringFunction int_bool_func_2 = 2110;
+    IntAndIntToStringFunction int_int_func_2 = 2111;
+    IntAndFloatToStringFunction int_float_func_2 = 2112;
+    IntAndStringToStringFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToStringFunction float_bool_func_2 = 2120;
+    FloatAndIntToStringFunction float_int_func_2 = 2121;
+    FloatAndFloatToStringFunction float_float_func_2 = 2122;
+    FloatAndStringToStringFunction float_string_func_2 = 2123;
+
+    StringAndBoolToStringFunction string_bool_func_2 = 2130;
+    StringAndIntToStringFunction string_int_func_2 = 2131;
+    StringAndFloatToStringFunction string_float_func_2 = 2132;
+    StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    StringValueIf if_2 = 3000;
+  }
+}
+
+message StringAndStringToStringFunction {
+  enum ID {
+    UNDEFINED = 0;
+    CONCAT = 1;
+  }
+
+  ID name = 1;
+
+  oneof argument_1 {
+    string constant_1 = 2;
+
+    Reference input_1 = 3;
+    Reference state_1 = 4;
+
+    BoolToStringFunction bool_func_1 = 10;
+    IntToStringFunction int_func_1 = 11;
+    FloatToStringFunction float_func_1 = 12;
+    StringToStringFunction string_func_1 = 13;
+
+    BoolAndBoolToStringFunction bool_bool_func_1 = 100;
+    BoolAndIntToStringFunction bool_int_func_1 = 101;
+    BoolAndFloatToStringFunction bool_float_func_1 = 102;
+    BoolAndStringToStringFunction bool_string_func_1 = 103;
+
+    IntAndBoolToStringFunction int_bool_func_1 = 110;
+    IntAndIntToStringFunction int_int_func_1 = 111;
+    IntAndFloatToStringFunction int_float_func_1 = 112;
+    IntAndStringToStringFunction int_string_func_1 = 113;
+
+    FloatAndBoolToStringFunction float_bool_func_1 = 120;
+    FloatAndIntToStringFunction float_int_func_1 = 121;
+    FloatAndFloatToStringFunction float_float_func_1 = 122;
+    FloatAndStringToStringFunction float_string_func_1 = 123;
+
+    StringAndBoolToStringFunction string_bool_func_1 = 130;
+    StringAndIntToStringFunction string_int_func_1 = 131;
+    StringAndFloatToStringFunction string_float_func_1 = 132;
+    StringAndStringToStringFunction string_string_func_1 = 133;
+
+    StringValueIf if_1 = 1000;
+  }
+
+  oneof argument_2 {
+    Reference input_2 = 2001;
+    Reference state_2 = 2002;
+
+    BoolToStringFunction bool_func_2 = 2010;
+    IntToStringFunction int_func_2 = 2011;
+    FloatToStringFunction float_func_2 = 2012;
+    StringToStringFunction string_func_2 = 2013;
+
+    BoolAndBoolToStringFunction bool_bool_func_2 = 2100;
+    BoolAndIntToStringFunction bool_int_func_2 = 2101;
+    BoolAndFloatToStringFunction bool_float_func_2 = 2102;
+    BoolAndStringToStringFunction bool_string_func_2 = 2103;
+
+    IntAndBoolToStringFunction int_bool_func_2 = 2110;
+    IntAndIntToStringFunction int_int_func_2 = 2111;
+    IntAndFloatToStringFunction int_float_func_2 = 2112;
+    IntAndStringToStringFunction int_string_func_2 = 2113;
+
+    FloatAndBoolToStringFunction float_bool_func_2 = 2120;
+    FloatAndIntToStringFunction float_int_func_2 = 2121;
+    FloatAndFloatToStringFunction float_float_func_2 = 2122;
+    FloatAndStringToStringFunction float_string_func_2 = 2123;
+
+    StringAndBoolToStringFunction string_bool_func_2 = 2130;
+    StringAndIntToStringFunction string_int_func_2 = 2131;
+    StringAndFloatToStringFunction string_float_func_2 = 2132;
+    StringAndStringToStringFunction string_string_func_2 = 2133;
+
+    StringValueIf if_2 = 3000;
+  }
+}
+
+// If-Else Control Structures
+
+message BoolValueIf {
+  BoolValue predicate = 1;
+  BoolValue then = 2;
+  BoolValue else = 3;
+}
+
+message IntValueIf {
+  BoolValue predicate = 1;
+  IntValue then = 2;
+  IntValue else = 3;
+}
+
+message FloatValueIf {
+  BoolValue predicate = 1;
+  FloatValue then = 2;
+  FloatValue else = 3;
+}
+
+message StringValueIf {
+  BoolValue predicate = 1;
+  StringValue then = 2;
+  StringValue else = 3;
+}

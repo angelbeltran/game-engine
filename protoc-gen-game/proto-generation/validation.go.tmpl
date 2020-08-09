@@ -1,0 +1,318 @@
+package game_engine_pb_validation
+
+import (
+	"fmt"
+
+	"github.com/jhump/protoreflect/desc"
+	dpb "github.com/golang/protobuf/protoc-gen-go/descriptor"
+
+	pb "github.com/angelbeltran/game-engine/protoc-gen-game/game_engine_pb"
+)
+
+{{- $types := .Types }}
+
+func ValidateValue(val *pb.Value, state, input *desc.MessageDescriptor) (Type, error) {
+	if val.Value == nil {
+		return "", fmt.Errorf("empty value")
+	}
+
+	switch v := val.Value.(type) {
+{{- range $i, $type := $types }}
+{{- $type = capitalize $type }}
+	case *pb.Value_{{ $type }}{{ if eq $type "String" }}_{{ end }}:
+		return Type{{ $type }}, Validate{{ $type }}ValueReferences(v.{{ $type }}{{ if eq $type "String" }}_{{ end }}, state, input)
+{{- end }}
+	default:
+		return "", fmt.Errorf("unrecognized value type: %T", v)
+	}
+}
+
+type Type string
+
+const (
+	TypeNone Type = ""
+{{- range $_, $type := .Types }}
+	Type{{ capitalize $type }} Type = "{{ $type }}"
+{{- end }}
+)
+
+// Generic tools for verifying Reference values.
+
+func ValidateReference(ref *pb.Reference, md *desc.MessageDescriptor, t Type) error {
+	return VerifyPathType(ref.Path, md, t)
+}
+
+func VerifyPathType(path []string, md *desc.MessageDescriptor, t Type) error {
+	return VerifyPath(path, md, func(fd *desc.FieldDescriptor) error {
+		u, err := FieldDescriptorTypeToSupportedType(fd.GetType())
+		if err != nil {
+			return fmt.Errorf("invalid field %s: %w", fd.GetFullyQualifiedName(), err)
+		}
+
+		if t != u {
+			return fmt.Errorf("unexpected type at field %s: expected %s but found %s", fd.GetFullyQualifiedName(), t, u)
+		}
+
+		return nil
+	})
+}
+
+func VerifyPath(path []string, md *desc.MessageDescriptor, validators ...func (*desc.FieldDescriptor) error) error {
+	if md == nil {
+		return fmt.Errorf("nil message descriptor")
+	}
+	if len(path) == 0 {
+		return fmt.Errorf("no path specified")
+	}
+
+	fd := md.FindFieldByName(path[0])
+	if fd == nil {
+		return fmt.Errorf("no field named %s", path[0])
+	}
+	if len(path) == 1 {
+		if md = fd.GetMessageType(); md != nil {
+			return fmt.Errorf("field named %s is a message type", path[0])
+		}
+
+		for _, f := range validators {
+			if err := f(fd); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	}
+
+	if md = fd.GetMessageType(); md == nil {
+		return fmt.Errorf("field %s is not a message type", path[0])
+	}
+	if err := VerifyPath(path[1:], md, validators...); err != nil {
+		return fmt.Errorf("error verifying field beyond field %s: %w", path[0], err)
+	}
+
+	return nil
+}
+
+func FieldDescriptorTypeToSupportedType(t dpb.FieldDescriptorProto_Type) (Type, error) {
+	switch t {
+{{- range $pbType, $type := .ProtobufTypesToTypes }}
+	case {{ $pbType }}:
+		return Type{{ capitalize $type }}, nil
+{{- end }}
+	}
+	return TypeNone, fmt.Errorf("unsupported field type: %s", t)
+}
+
+// Protobuf Type-Specific Validation Tools.
+
+// Value Validation
+
+{{- range $_, $type := $types }}
+{{- $type = capitalize $type }}
+{{- $valueType := (printf "%sValue" $type) }}
+
+func Validate{{ $valueType }}References(val *pb.{{ $valueType }}, state, input *desc.MessageDescriptor) error {
+	if val == nil {
+		return fmt.Errorf("{{ $valueType }} value missing")
+	}
+
+	switch v := val.Value.(type) {
+	case *pb.{{ $valueType }}_Constant:
+		return nil
+	case *pb.{{ $valueType }}_Input:
+		return ValidateReference(v.Input, input, Type{{ $type }})
+	case *pb.{{ $valueType }}_State:
+		return ValidateReference(v.State, state, Type{{ $type }})
+{{- range $_, $domain := $types }}
+{{- $domain = capitalize $domain }}
+{{- $suffix := printf "%sFunc" $domain }}
+	case *pb.{{ $valueType }}_{{ $suffix }}:
+		return Validate{{ $domain }}To{{ $type }}FunctionReferences(v.{{ $suffix }}, state, input)
+{{- end }}
+{{- range $_, $domain1 := $types }}
+{{- $domain1 = capitalize $domain1 }}
+{{- range $_, $domain2 := $types }}
+{{- $domain2 = capitalize $domain2 }}
+{{- $suffix := printf "%s%sFunc" $domain1 $domain2 }}
+	case *pb.{{ $valueType }}_{{ $suffix }}:
+		return Validate{{ $domain1 }}And{{ $domain2 }}To{{ $type }}FunctionReferences(v.{{ $suffix }}, state, input)
+{{- end }}
+{{- end }}
+	case *pb.{{ $valueType }}_If:
+		return Validate{{ $valueType }}If(v.If, state, input)
+	default:
+		return fmt.Errorf("unrecognized value type from {{ $valueType }}: %T", v)
+	}
+
+	return nil
+}
+{{- end }}
+
+// Unary Function Validation
+
+{{- range $_, $domain := $types }}
+{{- $domain = capitalize $domain }}
+{{- range $_, $codomain := $types }}
+{{- $codomain = capitalize $codomain }}
+{{- $funcType := (printf "%sTo%sFunction" $domain $codomain) }}
+
+func Validate{{ $funcType }}References(val *pb.{{ $funcType }}, state, input *desc.MessageDescriptor) error {
+	if val == nil {
+		return fmt.Errorf("{{ $funcType }} function missing")
+	}
+
+	switch v := val.Argument.(type) {
+	case *pb.{{ $funcType }}_Input:
+		return ValidateReference(v.Input, input, Type{{ $domain }})
+	case *pb.{{ $funcType }}_State:
+		return ValidateReference(v.State, state, Type{{ $domain }})
+{{- range $_, $otherDomain := $types }}
+{{- $otherDomain = capitalize $otherDomain }}
+{{- $suffix := printf "%sFunc" $otherDomain }}
+	case *pb.{{ $funcType }}_{{ $suffix }}:
+		return Validate{{ $otherDomain }}To{{ $domain }}FunctionReferences(v.{{ $suffix }}, state, input)
+{{- end }}
+{{- range $_, $otherDomain1 := $types }}
+{{- $otherDomain1 = capitalize $otherDomain1 }}
+{{- range $_, $otherDomain2 := $types }}
+{{- $otherDomain2 = capitalize $otherDomain2 }}
+{{- $suffix := printf "%s%sFunc" $otherDomain1 $otherDomain2 }}
+	case *pb.{{ $funcType }}_{{ $suffix }}:
+		return Validate{{ $otherDomain1 }}And{{ $otherDomain2 }}To{{ $domain }}FunctionReferences(v.{{ $suffix }}, state, input)
+{{- end }}
+{{- end }}
+	case *pb.{{ $funcType }}_If:
+		return Validate{{ $domain }}ValueIf(v.If, state, input)
+	default:
+		return fmt.Errorf("unrecognized argument type from {{ $funcType }}: %T", v)
+	}
+
+	return nil
+}
+{{- end }}
+{{- end }}
+
+// Binary Function Validation
+
+{{- range $_, $domain1 := $types }}
+{{- $domain1 = capitalize $domain1 }}
+{{- range $_, $domain2 := $types }}
+{{- $domain2 = capitalize $domain2 }}
+{{- range $_, $codomain := $types }}
+{{- $codomain = capitalize $codomain }}
+{{- $funcType := (printf "%sAnd%sTo%sFunction" $domain1 $domain2 $codomain) }}
+
+func Validate{{ $funcType }}References(val *pb.{{ $funcType }}, state, input *desc.MessageDescriptor) error {
+	if val == nil {
+		return fmt.Errorf("{{ $funcType }} function missing")
+	}
+
+	switch v := val.Argument_1.(type) {
+	case *pb.{{ $funcType }}_Constant_1:
+		return nil
+	case *pb.{{ $funcType }}_Input_1:
+		if err := ValidateReference(v.Input_1, input, Type{{ $domain1 }}); err != nil {
+			return err
+		}
+	case *pb.{{ $funcType }}_State_1:
+		if err := ValidateReference(v.State_1, state, Type{{ $domain1 }}); err != nil {
+			return err
+		}
+{{- range $_, $otherDomain := $types }}
+{{- $otherDomain = capitalize $otherDomain }}
+{{- $suffix := printf "%sFunc_1" $otherDomain }}
+	case *pb.{{ $funcType }}_{{ $suffix }}:
+		if err := Validate{{ $otherDomain }}To{{ $domain1 }}FunctionReferences(v.{{ $suffix }}, state, input); err != nil {
+			return err
+		}
+{{- end }}
+{{- range $_, $otherDomain1 := $types }}
+{{- $otherDomain1 = capitalize $otherDomain1 }}
+{{- range $_, $otherDomain2 := $types }}
+{{- $otherDomain2 = capitalize $otherDomain2 }}
+{{- $suffix := printf "%s%sFunc_1" $otherDomain1 $otherDomain2 }}
+	case *pb.{{ $funcType }}_{{ $suffix }}:
+		if err := Validate{{ $otherDomain1 }}And{{ $otherDomain2 }}To{{ $domain1 }}FunctionReferences(v.{{ $suffix }}, state, input); err != nil {
+			return err
+		}
+{{- end }}
+{{- end }}
+	case *pb.{{ $funcType }}_If_1:
+		if err := Validate{{ $domain1 }}ValueIf(v.If_1, state, input); err != nil {
+			return err
+		}
+	default:
+		return fmt.Errorf("unrecognized argument_1 type from {{ $funcType }}: %T", v)
+	}
+
+	switch v := val.Argument_2.(type) {
+	case *pb.{{ $funcType }}_Input_2:
+		if err := ValidateReference(v.Input_2, input, Type{{ $domain2 }}); err != nil {
+			return err
+		}
+	case *pb.{{ $funcType }}_State_2:
+		if err := ValidateReference(v.State_2, state, Type{{ $domain2 }}); err != nil {
+			return err
+		}
+{{- range $_, $otherDomain := $types }}
+{{- $otherDomain = capitalize $otherDomain }}
+{{- $suffix := printf "%sFunc_2" $otherDomain }}
+	case *pb.{{ $funcType }}_{{ $suffix }}:
+		if err := Validate{{ $otherDomain }}To{{ $domain2 }}FunctionReferences(v.{{ $suffix }}, state, input); err != nil {
+			return err
+		}
+{{- end }}
+{{- range $_, $otherDomain1 := $types }}
+{{- $otherDomain1 = capitalize $otherDomain1 }}
+{{- range $_, $otherDomain2 := $types }}
+{{- $otherDomain2 = capitalize $otherDomain2 }}
+{{- $suffix := printf "%s%sFunc_2" $otherDomain1 $otherDomain2 }}
+	case *pb.{{ $funcType }}_{{ $suffix }}:
+		if err := Validate{{ $otherDomain1 }}And{{ $otherDomain2 }}To{{ $domain2 }}FunctionReferences(v.{{ $suffix }}, state, input); err != nil {
+			return err
+		}
+{{- end }}
+{{- end }}
+	case *pb.{{ $funcType }}_If_2:
+		if err := Validate{{ $domain2 }}ValueIf(v.If_2, state, input); err != nil {
+			return err
+		}
+	default:
+		return fmt.Errorf("unrecognized argument_2 type from {{ $funcType }}: %T", v)
+	}
+
+	return nil
+}
+{{- end }}
+{{- end }}
+{{- end }}
+
+// If-Else Validation
+
+{{- range $_, $type := $types }}
+{{- $type = capitalize $type }}
+
+func Validate{{ $type }}ValueIf(v *pb.{{ $type }}ValueIf, state, input *desc.MessageDescriptor) error {
+	if v.Predicate == nil {
+		return fmt.Errorf("predicate missing from 'if' statement")
+	}
+	if v.Then == nil {
+		return fmt.Errorf("'then' missing from 'if' statement")
+	}
+	if v.Else == nil {
+		return fmt.Errorf("'else' missing from 'if' statement")
+	}
+
+	if err := ValidateBoolValueReferences(v.Predicate, state, input); err != nil {
+		return fmt.Errorf("invalid 'if' statement predicate: %w", err)
+	}
+	if err := Validate{{ $type }}ValueReferences(v.Then, state, input); err != nil {
+		return fmt.Errorf("invalid 'if' statement 'then' branch: %w", err)
+	}
+	if err := Validate{{ $type }}ValueReferences(v.Else, state, input); err != nil {
+		return fmt.Errorf("invalid 'if' statement 'else' branch: %w", err)
+	}
+
+	return nil
+}
+{{- end }}

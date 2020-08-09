@@ -7,12 +7,16 @@ import (
 	"strings"
 
 	"github.com/jhump/goprotoc/plugins"
-
-	"github.com/angelbeltran/game-engine/protoc-gen-game/types"
 )
 
-//go:generate protoc -I=. --go_out=$GOPATH/src game_engine.proto
+//go:generate go generate ./proto-generation
+//go:generate protoc -I=./proto-generation/output --go_out=$GOPATH/src game_engine.proto
+//go:generate cp ./proto-generation/output/game_engine.proto game_engine.proto
+//go:generate cp ./proto-generation/output/validation.go game_engine_pb_validation
+//go:generate cp ./proto-generation/output/template.go template.go
 //go:generate go mod vendor
+
+// TODO: get rid of 'types' package once no longer needed.
 
 func main() {
 	output := os.Stdout
@@ -51,8 +55,6 @@ func entrypoint(req *plugins.CodeGenRequest, resp *plugins.CodeGenResponse) erro
 		return err
 	}
 
-	state := types.FromMessage(sd)
-
 	// Find and parse the "response" message
 
 	rd, err := getResponseDescriptor(req.Files)
@@ -66,7 +68,7 @@ func entrypoint(req *plugins.CodeGenRequest, resp *plugins.CodeGenResponse) erro
 
 	// Find and validate the "action" options defined on rpc methods.
 
-	var methods []methodInfo
+	var methods []MethodInfo
 	responseMessageName := rd.GetFullyQualifiedName()
 
 	for _, method := range srv.GetMethods() {
@@ -82,34 +84,41 @@ func entrypoint(req *plugins.CodeGenRequest, resp *plugins.CodeGenResponse) erro
 			return err
 		}
 		if action == nil {
-			methods = append(methods, methodInfo{Method: method})
+			methods = append(methods, MethodInfo{Method: method})
 			continue
 		}
 
 		// Validate the action option.
 
-		input := types.FromMessage(method.GetInputType())
-
-		if err := validateAction(state, input, action); err != nil {
+		if err := validateAction(sd, method.GetInputType(), action); err != nil {
 			return err
 		}
 
-		methods = append(methods, methodInfo{
+		methods = append(methods, MethodInfo{
 			Method: method,
-			Input:  input,
 			Action: action,
 		})
 	}
 
 	w := resp.OutputFile("engine.game.pb.go")
 
-	if err := generateService(w, serviceParams{
-		Package:   pkgName,
-		Service:   srv,
-		Methods:   methods,
-		State:     sd,
-		Response:  rd,
-		StateType: state,
+	if err := GenerateService(w, TemplateParams{
+		Package: pkgName,
+		Imports: []string{
+			"context",
+			"fmt",
+			"net",
+			"sync",
+			"google.golang.org/grpc",
+			"github.com/angelbeltran/game-engine/protoc-gen-game/game_engine_pb",
+		},
+		Service:            srv,
+		Methods:            methods,
+		State:              sd,
+		Response:           rd,
+		StateVariable:      stateVariable,
+		InputVariable:      inputVariable,
+		ResponseErrorField: responseErrorFieldNameCamelCase,
 	}); err != nil {
 		return fmt.Errorf("failed to generate files: %w", err)
 	}
