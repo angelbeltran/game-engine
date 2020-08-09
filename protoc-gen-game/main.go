@@ -118,6 +118,7 @@ func entrypoint(req *plugins.CodeGenRequest, resp *plugins.CodeGenResponse) erro
 		Response:           rd,
 		StateVariable:      stateVariable,
 		InputVariable:      inputVariable,
+		ResponseStateField: responseStateFieldNameCamelCase,
 		ResponseErrorField: responseErrorFieldNameCamelCase,
 	}); err != nil {
 		return fmt.Errorf("failed to generate files: %w", err)

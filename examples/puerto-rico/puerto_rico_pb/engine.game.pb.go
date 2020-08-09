@@ -32,7 +32,11 @@ func (e *gameEngine) SetPlayers(ctx context.Context, in *Count) (*Response, erro
 	defer state.Unlock()
 
 	// Enforce the rules
-	allowed := true
+
+	allowed :=
+		go_func.BoolAndBoolToBool_AND(bool(go_func.BoolToBool_NOT(bool(state.Started))), bool(
+			go_func.IntAndIntToBool_LTE(int(3), int(in.Count))),
+		)
 	if !allowed {
 		return &Response{
 			Error: &game_engine_pb.Error{
@@ -42,35 +46,50 @@ func (e *gameEngine) SetPlayers(ctx context.Context, in *Count) (*Response, erro
 		}, nil
 	}
 
-	// TODO: Apply any effects
+	// Apply any effects
 
-	// TODO: Construct the response
+	state.Players.Player_1.Present =
+		go_func.IntAndIntToBool_LTE(int(3), int(in.Count))
 
-	return &Response{}, nil
+	state.Players.Player_2.Present =
+		go_func.IntAndIntToBool_LTE(int(3), int(in.Count))
+
+	state.Players.Player_3.Present =
+		go_func.IntAndIntToBool_LTE(int(3), int(in.Count))
+
+	state.Players.Player_4.Present =
+		go_func.IntAndIntToBool_LTE(int(4), int(in.Count))
+
+	state.Players.Player_5.Present =
+		go_func.IntAndIntToBool_LTE(int(5), int(in.Count))
+
+	// Construct the response
+	res := NewResponse()
+	res.State.Started = state.Started
+	res.State.Players.Player_1.Present = state.Players.Player_1.Present
+	res.State.Players.Player_2.Present = state.Players.Player_2.Present
+	res.State.Players.Player_3.Present = state.Players.Player_3.Present
+	res.State.Players.Player_4.Present = state.Players.Player_4.Present
+	res.State.Players.Player_5.Present = state.Players.Player_5.Present
+
+	return &res, nil
 }
 func (e *gameEngine) Start(ctx context.Context, in *EmptyMsg) (*Response, error) {
 	state.Lock()
 	defer state.Unlock()
 
 	// Enforce the rules
+
 	allowed :=
-		go_func.BoolAndBoolToBool_AND(go_func.BoolToBool_NOT(
-			state.Started,
-		),
-			go_func.BoolAndBoolToBool_AND(
-				state.Players.Player_1.Present,
-				go_func.BoolAndBoolToBool_AND(
-					state.Players.Player_2.Present,
-					go_func.BoolAndBoolToBool_AND(
-						state.Players.Player_3.Present,
-						go_func.BoolAndBoolToBool_OR(
-							state.Players.Player_4.Present, go_func.BoolToBool_NOT(
-								state.Players.Player_5.Present,
-							),
-						),
-					),
-				),
-			),
+		go_func.BoolAndBoolToBool_AND(bool(go_func.BoolToBool_NOT(bool(state.Started))), bool(
+			go_func.BoolAndBoolToBool_AND(bool(state.Players.Player_1.Present), bool(
+				go_func.BoolAndBoolToBool_AND(bool(state.Players.Player_2.Present), bool(
+					go_func.BoolAndBoolToBool_AND(bool(state.Players.Player_3.Present), bool(
+						go_func.BoolAndBoolToBool_OR(bool(state.Players.Player_4.Present), bool(go_func.BoolToBool_NOT(bool(state.Players.Player_5.Present))),
+						)),
+					)),
+				)),
+			)),
 		)
 	if !allowed {
 		return &Response{
@@ -81,11 +100,14 @@ func (e *gameEngine) Start(ctx context.Context, in *EmptyMsg) (*Response, error)
 		}, nil
 	}
 
-	// TODO: Apply any effects
+	// Apply any effects
 
-	// TODO: Construct the response
+	state.Started = true
 
-	return &Response{}, nil
+	// Construct the response
+	res := NewResponse()
+
+	return &res, nil
 }
 func (e *gameEngine) Accept(ctx context.Context, in *RoleChoice) (*Response, error) {
 
@@ -208,6 +230,8 @@ func (e *gameEngine) EndAction(ctx context.Context, in *PlayerChoice) (*Response
 	}, nil
 }
 
+var state = NewGameState()
+
 type GameState struct {
 	State
 	sync.Mutex
@@ -262,4 +286,53 @@ func NewGameState() GameState {
 	return s
 }
 
-var state = NewGameState()
+func NewResponse() Response {
+	var res Response
+
+	res.State = new(State)
+	res.State.Players = new(State_Players)
+	res.State.Players.Player_1 = new(Player)
+	res.State.Players.Player_1.Buildings = new(Player_Buildings)
+	res.State.Players.Player_1.Plantations = new(Player_Plantations)
+	res.State.Players.Player_1.Goods = new(Player_Goods)
+	res.State.Players.Player_2 = new(Player)
+	res.State.Players.Player_2.Buildings = new(Player_Buildings)
+	res.State.Players.Player_2.Plantations = new(Player_Plantations)
+	res.State.Players.Player_2.Goods = new(Player_Goods)
+	res.State.Players.Player_3 = new(Player)
+	res.State.Players.Player_3.Buildings = new(Player_Buildings)
+	res.State.Players.Player_3.Plantations = new(Player_Plantations)
+	res.State.Players.Player_3.Goods = new(Player_Goods)
+	res.State.Players.Player_4 = new(Player)
+	res.State.Players.Player_4.Buildings = new(Player_Buildings)
+	res.State.Players.Player_4.Plantations = new(Player_Plantations)
+	res.State.Players.Player_4.Goods = new(Player_Goods)
+	res.State.Players.Player_5 = new(Player)
+	res.State.Players.Player_5.Buildings = new(Player_Buildings)
+	res.State.Players.Player_5.Plantations = new(Player_Plantations)
+	res.State.Players.Player_5.Goods = new(Player_Goods)
+	res.State.Roles = new(State_Roles)
+	res.State.Roles.Prospector1 = new(Role)
+	res.State.Roles.Prospector2 = new(Role)
+	res.State.Roles.Builder = new(Role)
+	res.State.Roles.Captain = new(Role)
+	res.State.Roles.Craftsman = new(Role)
+	res.State.Roles.Mayor = new(Role)
+	res.State.Roles.Settler = new(Role)
+	res.State.Roles.Trader = new(Role)
+	res.State.Plantations = new(State_Plantations)
+	res.State.Plantations.Displayed = new(State_Plantations_Displayed)
+	res.State.Plantations.Facedown = new(State_Plantations_Counts)
+	res.State.Plantations.Discarded = new(State_Plantations_Counts)
+	res.State.Goods = new(State_Goods)
+	res.State.Buildings = new(State_Buildings)
+	res.State.CargoShips = new(State_CargoShips)
+	res.State.CargoShips.Ship_4 = new(CargoShip)
+	res.State.CargoShips.Ship_5 = new(CargoShip)
+	res.State.CargoShips.Ship_6 = new(CargoShip)
+	res.State.CargoShips.Ship_7 = new(CargoShip)
+	res.State.CargoShips.Ship_8 = new(CargoShip)
+	res.Error = new(game_engine_pb.Error)
+
+	return res
+}

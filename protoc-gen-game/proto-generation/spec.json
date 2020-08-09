@@ -28,6 +28,13 @@
 
         },
 
+        "typesToGoTypes": {
+                "bool": "bool",
+                "int": "int",
+                "float": "float64",
+                "string": "string"
+        },
+
         "typesToProtobufTypes": {
                 "bool": "bool",
                 "int": "int64",

@@ -148,6 +148,21 @@ service Actions {
   */
 
   rpc SetPlayers(Count) returns (Response) {
+    option (game_engine.action).rule = {
+      bool_bool_func: {
+        name: AND
+        bool_func_1: {
+          name: NOT
+          state: { path: [ 'started' ] }
+        }
+        int_int_func_2: {
+          name: LTE
+          constant_1: 3
+          input_2: { path: [ 'count' ] }
+        }
+      }
+    };
+
     option (game_engine.action).effect = {
       update: {
         state: { path: [ 'players', 'player_1', 'present' ] }
@@ -223,10 +238,6 @@ service Actions {
       }
     };
 
-    option (game_engine.action).rule = {
-      constant: true
-    };
-
     option (game_engine.action).response = {
       path: [ 'started' ]
     };
@@ -236,11 +247,15 @@ service Actions {
     option (game_engine.action).response = {
       path: [ 'players', 'player_2', 'present' ]
     };
-    /*
     option (game_engine.action).response = {
-      path: [ 'players', 'player_3', 'buildings' ]
+      path: [ 'players', 'player_3', 'present' ]
     };
-    */
+    option (game_engine.action).response = {
+      path: [ 'players', 'player_4', 'present' ]
+    };
+    option (game_engine.action).response = {
+      path: [ 'players', 'player_5', 'present' ]
+    };
 
     option (game_engine.action).error = {
       code: "826de622-ad54-4b65-3395-bb4d3828e67b"

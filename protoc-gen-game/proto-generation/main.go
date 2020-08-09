@@ -23,6 +23,7 @@ type (
 	specDefinition struct {
 		Types                []string
 		ProtobufTypesToTypes map[string]string
+		TypesToGoTypes       map[string]string
 		TypesToProtobufTypes map[string]string
 		Functions            functionDefinitions
 	}

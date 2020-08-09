@@ -23,11 +23,13 @@ func GenerateService(w io.Writer, opts TemplateParams) error {
 		"camelCase": (&plugins.GoNames{}).CamelCase,
 		"goTypeOfField": (&plugins.GoNames{}).GoTypeOfField,
 		"failNoFunctionName": failNoFunctionName,
+		"failUndefinedEffect": failUndefinedEffect,
 		"split": strings.Split,
 		"errBadTypeName": func(typeName string) (interface{}, error) {
 			return nil, fmt.Errorf("type name has more that one '.': %s", typeName)
 		},
-		"NewMessageInitializer": NewMessageInitializer,
+		"NewEffectParams": NewEffectParams,
+		"NewMessageInitializerParams": NewMessageInitializerParams,
 		"NewReferenceParams": NewReferenceParams,
 		"NewValueParams": NewValueParams,
 		"NewBoolValueParams": NewBoolValueParams,
@@ -156,6 +158,7 @@ type TemplateParams struct {
 	Response                        *desc.MessageDescriptor
 	StateVariable                   string
 	InputVariable                   string
+	ResponseStateField              string
 	ResponseErrorField              string
 }
 
@@ -192,6 +195,7 @@ type gameEngine struct {
 
 {{- $state := .State }}
 {{- $responseType := .Response.GetName }}
+{{- $responseStateField := .ResponseStateField }}
 {{- $responseErrorField := .ResponseErrorField }}
 {{- $stateVariable := .StateVariable }}
 {{- $inputVariable := .InputVariable }}
@@ -202,6 +206,7 @@ func (e *gameEngine) {{ $bundle.Method.GetName }}(ctx context.Context, in *{{ $b
 		defer state.Unlock()
 
 		// Enforce the rules
+
 		allowed := {{ template "BoolValue" NewBoolValueParams $action.Rule $inputVariable $stateVariable }}
 		if !allowed {
 			return &{{ $responseType }}{
@@ -212,11 +217,20 @@ func (e *gameEngine) {{ $bundle.Method.GetName }}(ctx context.Context, in *{{ $b
 			}, nil
 		}
 
-		// TODO: Apply any effects
+		// Apply any effects
 
-		// TODO: Construct the response
+		{{- range $effect := $action.Effect }}
+			{{ template "effect" NewEffectParams $effect $inputVariable $stateVariable }}
+		{{- end }}
 
-		return &{{ $responseType }}{}, nil
+		// Construct the response
+		res := NewResponse()
+
+		{{- range $ref := $action.Response }}
+			{{ template "Reference" NewReferenceParams (printf "res.%s" $responseStateField ) $ref }} = {{ template "Reference" NewReferenceParams $stateVariable $ref }}
+		{{- end }}
+
+		return &res, nil
 
 	{{- else }}
 
@@ -230,6 +244,8 @@ func (e *gameEngine) {{ $bundle.Method.GetName }}(ctx context.Context, in *{{ $b
 }
 {{- end }}
 
+var state = NewGameState()
+
 type GameState struct {
 	{{ .State.GetName }}
 	sync.Mutex
@@ -238,16 +254,34 @@ type GameState struct {
 func NewGameState() GameState {
 	var s GameState
 	
-	{{ template "initialize" NewMessageInitializer (printf "s.%s" .State.GetName) .State }}
+	{{ template "initialize" NewMessageInitializerParams (printf "s.%s" .State.GetName) .Package .State }}
 
 	return s
 }
 
-var state = NewGameState()
+func NewResponse() {{ $responseType }} {
+	var res {{ $responseType }}
+
+	{{ template "initialize" NewMessageInitializerParams "res" .Package .Response }}
+
+	return res
+}
+
+{{- define "effect" }}
+{{/* Expects EffectParams */}}
+{{- if .Effect.GetUpdate }}
+	{{- $up := .Effect.GetUpdate }}
+	{{ template "Reference" NewReferenceParams .StateVariable $up.State }} = 
+	{{- template "Value" NewValueParams $up.Value .InputVariable .StateVariable }}
+{{- else }}
+	{{ failUndefinedEffect }}
+{{- end }}
+{{- end }}
 
 {{- define "initialize" }}
-{{/* Expects MessageInitializer */}}
+{{/* Expects MessageInitializerParams */}}
 	{{- $ident := .Identifier }}
+	{{- $package := .Package }}
 
 	{{- range $field := .MessageDescriptor.GetFields }}
 		{{- if or $field.GetMessageType $field.IsMap }}
@@ -263,7 +297,13 @@ var state = NewGameState()
 			{{- if or (eq $n 0) (gt $n 2 )}}
 				{{- errBadTypeName $typeName }}
 			{{- else if eq $n 2 }}
-				{{- $typeName = index $parts 1 }}
+				{{- /*$typeName = index $parts 1 */}}
+
+				{{- if eq (index $parts 0) $package }}
+					{{- /* Target package. Trim package name. */}}
+					{{- $typeName = index $parts 1 }}
+				{{- else }}
+				{{- end }}
 			{{- end }}
 
 			{{- if $field.GetMessageType }}
@@ -273,7 +313,7 @@ var state = NewGameState()
 		{{- $lh }} = new({{ $typeName }})
 				{{- end }}
 
-				{{- template "initialize" NewMessageInitializer $lh $field.GetMessageType }}
+				{{- template "initialize" NewMessageInitializerParams $lh $package $field.GetMessageType }}
 
 			{{- else }}
 				{{- $lh := printf "%s.%s"  $ident (camelCase $field.GetName) }}
@@ -294,14 +334,14 @@ var state = NewGameState()
 
 {{- define "Reference" }}
 {{- /* Expects a ReferenceParams */}}
-{{ .Variable }}{{ range $_, $field := .Reference.Path }}.{{ camelCase $field }}{{ end }}
+{{- .Variable }}{{ range $_, $field := .Reference.Path }}.{{ camelCase $field }}{{ end }}
 {{- end }}
 
 {{- define "Value" }}
-{{- if .Value.BoolValue }}{{ template "BoolValue" NewBoolValueParams .Value.BoolValue .InputVariable .StateVariable }}
-{{- else if .Value.IntValue }}{{ template "IntValue" NewIntValueParams .Value.IntValue .InputVariable .StateVariable }}
-{{- else if .Value.FloatValue }}{{ template "FloatValue" NewFloatValueParams .Value.FloatValue .InputVariable .StateVariable }}
-{{- else if .Value.StringValue }}{{ template "StringValue" NewStringValueParams .Value.StringValue .InputVariable .StateVariable }}
+{{- if .Value.GetBool }}{{ template "BoolValue" NewBoolValueParams .Value.GetBool .InputVariable .StateVariable }}
+{{- else if .Value.GetInt }}{{ template "IntValue" NewIntValueParams .Value.GetInt .InputVariable .StateVariable }}
+{{- else if .Value.GetFloat }}{{ template "FloatValue" NewFloatValueParams .Value.GetFloat .InputVariable .StateVariable }}
+{{- else if .Value.GetString }}{{ template "StringValue" NewStringValueParams .Value.GetString .InputVariable .StateVariable }}
 {{- end }}
 {{- end }}
 
@@ -427,7 +467,7 @@ var state = NewGameState()
 
 {{- define "BoolToBoolFunction" -}}
 {{- /* Expects a BoolToBoolFunctionParams */}}
-{{- if not .Function.Name }}{{ failNoFunctionName "BoolToBoolFunction" }}{{ end }}go_func.BoolToBool_{{- camelCase .Function.Name.String }}(
+{{- if not .Function.Name }}{{ failNoFunctionName "BoolToBoolFunction" }}{{ end }}go_func.BoolToBool_{{- camelCase .Function.Name.String }}(bool(
 	{{- if .Function.GetInput }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput }}
 	{{- else if .Function.GetState }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState }}
 	{{- else if .Function.GetBoolFunc }}{{ template "BoolToBoolFunction" NewBoolToBoolFunctionParams .Function.GetBoolFunc .InputVariable .StateVariable }}
@@ -454,12 +494,12 @@ var state = NewGameState()
 	{{- else if .If }}{{ template "BoolValueIf" NewBoolValueParams .If .InputVariable .StateVariable }}
 
 	{{- end }},
-)
+))
 {{- end }}
 
 {{- define "BoolToIntFunction" -}}
 {{- /* Expects a BoolToIntFunctionParams */}}
-{{- if not .Function.Name }}{{ failNoFunctionName "BoolToIntFunction" }}{{ end }}go_func.BoolToInt_{{- camelCase .Function.Name.String }}(
+{{- if not .Function.Name }}{{ failNoFunctionName "BoolToIntFunction" }}{{ end }}go_func.BoolToInt_{{- camelCase .Function.Name.String }}(bool(
 	{{- if .Function.GetInput }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput }}
 	{{- else if .Function.GetState }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState }}
 	{{- else if .Function.GetBoolFunc }}{{ template "BoolToBoolFunction" NewBoolToBoolFunctionParams .Function.GetBoolFunc .InputVariable .StateVariable }}
@@ -486,12 +526,12 @@ var state = NewGameState()
 	{{- else if .If }}{{ template "BoolValueIf" NewBoolValueParams .If .InputVariable .StateVariable }}
 
 	{{- end }},
-)
+))
 {{- end }}
 
 {{- define "BoolToFloatFunction" -}}
 {{- /* Expects a BoolToFloatFunctionParams */}}
-{{- if not .Function.Name }}{{ failNoFunctionName "BoolToFloatFunction" }}{{ end }}go_func.BoolToFloat_{{- camelCase .Function.Name.String }}(
+{{- if not .Function.Name }}{{ failNoFunctionName "BoolToFloatFunction" }}{{ end }}go_func.BoolToFloat_{{- camelCase .Function.Name.String }}(bool(
 	{{- if .Function.GetInput }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput }}
 	{{- else if .Function.GetState }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState }}
 	{{- else if .Function.GetBoolFunc }}{{ template "BoolToBoolFunction" NewBoolToBoolFunctionParams .Function.GetBoolFunc .InputVariable .StateVariable }}
@@ -518,12 +558,12 @@ var state = NewGameState()
 	{{- else if .If }}{{ template "BoolValueIf" NewBoolValueParams .If .InputVariable .StateVariable }}
 
 	{{- end }},
-)
+))
 {{- end }}
 
 {{- define "BoolToStringFunction" -}}
 {{- /* Expects a BoolToStringFunctionParams */}}
-{{- if not .Function.Name }}{{ failNoFunctionName "BoolToStringFunction" }}{{ end }}go_func.BoolToString_{{- camelCase .Function.Name.String }}(
+{{- if not .Function.Name }}{{ failNoFunctionName "BoolToStringFunction" }}{{ end }}go_func.BoolToString_{{- camelCase .Function.Name.String }}(bool(
 	{{- if .Function.GetInput }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput }}
 	{{- else if .Function.GetState }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState }}
 	{{- else if .Function.GetBoolFunc }}{{ template "BoolToBoolFunction" NewBoolToBoolFunctionParams .Function.GetBoolFunc .InputVariable .StateVariable }}
@@ -550,12 +590,12 @@ var state = NewGameState()
 	{{- else if .If }}{{ template "BoolValueIf" NewBoolValueParams .If .InputVariable .StateVariable }}
 
 	{{- end }},
-)
+))
 {{- end }}
 
 {{- define "IntToBoolFunction" -}}
 {{- /* Expects a IntToBoolFunctionParams */}}
-{{- if not .Function.Name }}{{ failNoFunctionName "IntToBoolFunction" }}{{ end }}go_func.IntToBool_{{- camelCase .Function.Name.String }}(
+{{- if not .Function.Name }}{{ failNoFunctionName "IntToBoolFunction" }}{{ end }}go_func.IntToBool_{{- camelCase .Function.Name.String }}(int(
 	{{- if .Function.GetInput }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput }}
 	{{- else if .Function.GetState }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState }}
 	{{- else if .Function.GetBoolFunc }}{{ template "BoolToIntFunction" NewBoolToIntFunctionParams .Function.GetBoolFunc .InputVariable .StateVariable }}
@@ -582,12 +622,12 @@ var state = NewGameState()
 	{{- else if .If }}{{ template "IntValueIf" NewIntValueParams .If .InputVariable .StateVariable }}
 
 	{{- end }},
-)
+))
 {{- end }}
 
 {{- define "IntToIntFunction" -}}
 {{- /* Expects a IntToIntFunctionParams */}}
-{{- if not .Function.Name }}{{ failNoFunctionName "IntToIntFunction" }}{{ end }}go_func.IntToInt_{{- camelCase .Function.Name.String }}(
+{{- if not .Function.Name }}{{ failNoFunctionName "IntToIntFunction" }}{{ end }}go_func.IntToInt_{{- camelCase .Function.Name.String }}(int(
 	{{- if .Function.GetInput }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput }}
 	{{- else if .Function.GetState }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState }}
 	{{- else if .Function.GetBoolFunc }}{{ template "BoolToIntFunction" NewBoolToIntFunctionParams .Function.GetBoolFunc .InputVariable .StateVariable }}
@@ -614,12 +654,12 @@ var state = NewGameState()
 	{{- else if .If }}{{ template "IntValueIf" NewIntValueParams .If .InputVariable .StateVariable }}
 
 	{{- end }},
-)
+))
 {{- end }}
 
 {{- define "IntToFloatFunction" -}}
 {{- /* Expects a IntToFloatFunctionParams */}}
-{{- if not .Function.Name }}{{ failNoFunctionName "IntToFloatFunction" }}{{ end }}go_func.IntToFloat_{{- camelCase .Function.Name.String }}(
+{{- if not .Function.Name }}{{ failNoFunctionName "IntToFloatFunction" }}{{ end }}go_func.IntToFloat_{{- camelCase .Function.Name.String }}(int(
 	{{- if .Function.GetInput }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput }}
 	{{- else if .Function.GetState }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState }}
 	{{- else if .Function.GetBoolFunc }}{{ template "BoolToIntFunction" NewBoolToIntFunctionParams .Function.GetBoolFunc .InputVariable .StateVariable }}
@@ -646,12 +686,12 @@ var state = NewGameState()
 	{{- else if .If }}{{ template "IntValueIf" NewIntValueParams .If .InputVariable .StateVariable }}
 
 	{{- end }},
-)
+))
 {{- end }}
 
 {{- define "IntToStringFunction" -}}
 {{- /* Expects a IntToStringFunctionParams */}}
-{{- if not .Function.Name }}{{ failNoFunctionName "IntToStringFunction" }}{{ end }}go_func.IntToString_{{- camelCase .Function.Name.String }}(
+{{- if not .Function.Name }}{{ failNoFunctionName "IntToStringFunction" }}{{ end }}go_func.IntToString_{{- camelCase .Function.Name.String }}(int(
 	{{- if .Function.GetInput }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput }}
 	{{- else if .Function.GetState }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState }}
 	{{- else if .Function.GetBoolFunc }}{{ template "BoolToIntFunction" NewBoolToIntFunctionParams .Function.GetBoolFunc .InputVariable .StateVariable }}
@@ -678,12 +718,12 @@ var state = NewGameState()
 	{{- else if .If }}{{ template "IntValueIf" NewIntValueParams .If .InputVariable .StateVariable }}
 
 	{{- end }},
-)
+))
 {{- end }}
 
 {{- define "FloatToBoolFunction" -}}
 {{- /* Expects a FloatToBoolFunctionParams */}}
-{{- if not .Function.Name }}{{ failNoFunctionName "FloatToBoolFunction" }}{{ end }}go_func.FloatToBool_{{- camelCase .Function.Name.String }}(
+{{- if not .Function.Name }}{{ failNoFunctionName "FloatToBoolFunction" }}{{ end }}go_func.FloatToBool_{{- camelCase .Function.Name.String }}(float64(
 	{{- if .Function.GetInput }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput }}
 	{{- else if .Function.GetState }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState }}
 	{{- else if .Function.GetBoolFunc }}{{ template "BoolToFloatFunction" NewBoolToFloatFunctionParams .Function.GetBoolFunc .InputVariable .StateVariable }}
@@ -710,12 +750,12 @@ var state = NewGameState()
 	{{- else if .If }}{{ template "FloatValueIf" NewFloatValueParams .If .InputVariable .StateVariable }}
 
 	{{- end }},
-)
+))
 {{- end }}
 
 {{- define "FloatToIntFunction" -}}
 {{- /* Expects a FloatToIntFunctionParams */}}
-{{- if not .Function.Name }}{{ failNoFunctionName "FloatToIntFunction" }}{{ end }}go_func.FloatToInt_{{- camelCase .Function.Name.String }}(
+{{- if not .Function.Name }}{{ failNoFunctionName "FloatToIntFunction" }}{{ end }}go_func.FloatToInt_{{- camelCase .Function.Name.String }}(float64(
 	{{- if .Function.GetInput }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput }}
 	{{- else if .Function.GetState }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState }}
 	{{- else if .Function.GetBoolFunc }}{{ template "BoolToFloatFunction" NewBoolToFloatFunctionParams .Function.GetBoolFunc .InputVariable .StateVariable }}
@@ -742,12 +782,12 @@ var state = NewGameState()
 	{{- else if .If }}{{ template "FloatValueIf" NewFloatValueParams .If .InputVariable .StateVariable }}
 
 	{{- end }},
-)
+))
 {{- end }}
 
 {{- define "FloatToFloatFunction" -}}
 {{- /* Expects a FloatToFloatFunctionParams */}}
-{{- if not .Function.Name }}{{ failNoFunctionName "FloatToFloatFunction" }}{{ end }}go_func.FloatToFloat_{{- camelCase .Function.Name.String }}(
+{{- if not .Function.Name }}{{ failNoFunctionName "FloatToFloatFunction" }}{{ end }}go_func.FloatToFloat_{{- camelCase .Function.Name.String }}(float64(
 	{{- if .Function.GetInput }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput }}
 	{{- else if .Function.GetState }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState }}
 	{{- else if .Function.GetBoolFunc }}{{ template "BoolToFloatFunction" NewBoolToFloatFunctionParams .Function.GetBoolFunc .InputVariable .StateVariable }}
@@ -774,12 +814,12 @@ var state = NewGameState()
 	{{- else if .If }}{{ template "FloatValueIf" NewFloatValueParams .If .InputVariable .StateVariable }}
 
 	{{- end }},
-)
+))
 {{- end }}
 
 {{- define "FloatToStringFunction" -}}
 {{- /* Expects a FloatToStringFunctionParams */}}
-{{- if not .Function.Name }}{{ failNoFunctionName "FloatToStringFunction" }}{{ end }}go_func.FloatToString_{{- camelCase .Function.Name.String }}(
+{{- if not .Function.Name }}{{ failNoFunctionName "FloatToStringFunction" }}{{ end }}go_func.FloatToString_{{- camelCase .Function.Name.String }}(float64(
 	{{- if .Function.GetInput }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput }}
 	{{- else if .Function.GetState }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState }}
 	{{- else if .Function.GetBoolFunc }}{{ template "BoolToFloatFunction" NewBoolToFloatFunctionParams .Function.GetBoolFunc .InputVariable .StateVariable }}
@@ -806,12 +846,12 @@ var state = NewGameState()
 	{{- else if .If }}{{ template "FloatValueIf" NewFloatValueParams .If .InputVariable .StateVariable }}
 
 	{{- end }},
-)
+))
 {{- end }}
 
 {{- define "StringToBoolFunction" -}}
 {{- /* Expects a StringToBoolFunctionParams */}}
-{{- if not .Function.Name }}{{ failNoFunctionName "StringToBoolFunction" }}{{ end }}go_func.StringToBool_{{- camelCase .Function.Name.String }}(
+{{- if not .Function.Name }}{{ failNoFunctionName "StringToBoolFunction" }}{{ end }}go_func.StringToBool_{{- camelCase .Function.Name.String }}(string(
 	{{- if .Function.GetInput }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput }}
 	{{- else if .Function.GetState }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState }}
 	{{- else if .Function.GetBoolFunc }}{{ template "BoolToStringFunction" NewBoolToStringFunctionParams .Function.GetBoolFunc .InputVariable .StateVariable }}
@@ -838,12 +878,12 @@ var state = NewGameState()
 	{{- else if .If }}{{ template "StringValueIf" NewStringValueParams .If .InputVariable .StateVariable }}
 
 	{{- end }},
-)
+))
 {{- end }}
 
 {{- define "StringToIntFunction" -}}
 {{- /* Expects a StringToIntFunctionParams */}}
-{{- if not .Function.Name }}{{ failNoFunctionName "StringToIntFunction" }}{{ end }}go_func.StringToInt_{{- camelCase .Function.Name.String }}(
+{{- if not .Function.Name }}{{ failNoFunctionName "StringToIntFunction" }}{{ end }}go_func.StringToInt_{{- camelCase .Function.Name.String }}(string(
 	{{- if .Function.GetInput }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput }}
 	{{- else if .Function.GetState }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState }}
 	{{- else if .Function.GetBoolFunc }}{{ template "BoolToStringFunction" NewBoolToStringFunctionParams .Function.GetBoolFunc .InputVariable .StateVariable }}
@@ -870,12 +910,12 @@ var state = NewGameState()
 	{{- else if .If }}{{ template "StringValueIf" NewStringValueParams .If .InputVariable .StateVariable }}
 
 	{{- end }},
-)
+))
 {{- end }}
 
 {{- define "StringToFloatFunction" -}}
 {{- /* Expects a StringToFloatFunctionParams */}}
-{{- if not .Function.Name }}{{ failNoFunctionName "StringToFloatFunction" }}{{ end }}go_func.StringToFloat_{{- camelCase .Function.Name.String }}(
+{{- if not .Function.Name }}{{ failNoFunctionName "StringToFloatFunction" }}{{ end }}go_func.StringToFloat_{{- camelCase .Function.Name.String }}(string(
 	{{- if .Function.GetInput }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput }}
 	{{- else if .Function.GetState }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState }}
 	{{- else if .Function.GetBoolFunc }}{{ template "BoolToStringFunction" NewBoolToStringFunctionParams .Function.GetBoolFunc .InputVariable .StateVariable }}
@@ -902,12 +942,12 @@ var state = NewGameState()
 	{{- else if .If }}{{ template "StringValueIf" NewStringValueParams .If .InputVariable .StateVariable }}
 
 	{{- end }},
-)
+))
 {{- end }}
 
 {{- define "StringToStringFunction" -}}
 {{- /* Expects a StringToStringFunctionParams */}}
-{{- if not .Function.Name }}{{ failNoFunctionName "StringToStringFunction" }}{{ end }}go_func.StringToString_{{- camelCase .Function.Name.String }}(
+{{- if not .Function.Name }}{{ failNoFunctionName "StringToStringFunction" }}{{ end }}go_func.StringToString_{{- camelCase .Function.Name.String }}(string(
 	{{- if .Function.GetInput }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput }}
 	{{- else if .Function.GetState }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState }}
 	{{- else if .Function.GetBoolFunc }}{{ template "BoolToStringFunction" NewBoolToStringFunctionParams .Function.GetBoolFunc .InputVariable .StateVariable }}
@@ -934,7 +974,7 @@ var state = NewGameState()
 	{{- else if .If }}{{ template "StringValueIf" NewStringValueParams .If .InputVariable .StateVariable }}
 
 	{{- end }},
-)
+))
 {{- end }}
 
 
@@ -945,8 +985,9 @@ var state = NewGameState()
 {{- define "BoolAndBoolToBoolFunction" -}}
 {{- /* Expects a BoolAndBoolToBoolFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "BoolAndBoolToBoolFunction" }}{{ end }}
-go_func.BoolAndBoolToBool_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.BoolAndBoolToBool_{{- camelCase .Function.Name.String }}(bool(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToBoolFunction" NewBoolToBoolFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToBoolFunction" NewIntToBoolFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -971,7 +1012,7 @@ go_func.BoolAndBoolToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), bool(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -998,15 +1039,16 @@ go_func.BoolAndBoolToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "BoolAndBoolToIntFunction" -}}
 {{- /* Expects a BoolAndBoolToIntFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "BoolAndBoolToIntFunction" }}{{ end }}
-go_func.BoolAndBoolToInt_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.BoolAndBoolToInt_{{- camelCase .Function.Name.String }}(bool(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToBoolFunction" NewBoolToBoolFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToBoolFunction" NewIntToBoolFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -1031,7 +1073,7 @@ go_func.BoolAndBoolToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), bool(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -1058,15 +1100,16 @@ go_func.BoolAndBoolToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "BoolAndBoolToFloatFunction" -}}
 {{- /* Expects a BoolAndBoolToFloatFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "BoolAndBoolToFloatFunction" }}{{ end }}
-go_func.BoolAndBoolToFloat_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.BoolAndBoolToFloat_{{- camelCase .Function.Name.String }}(bool(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToBoolFunction" NewBoolToBoolFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToBoolFunction" NewIntToBoolFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -1091,7 +1134,7 @@ go_func.BoolAndBoolToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), bool(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -1118,15 +1161,16 @@ go_func.BoolAndBoolToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "BoolAndBoolToStringFunction" -}}
 {{- /* Expects a BoolAndBoolToStringFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "BoolAndBoolToStringFunction" }}{{ end }}
-go_func.BoolAndBoolToString_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.BoolAndBoolToString_{{- camelCase .Function.Name.String }}(bool(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToBoolFunction" NewBoolToBoolFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToBoolFunction" NewIntToBoolFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -1151,7 +1195,7 @@ go_func.BoolAndBoolToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), bool(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -1178,7 +1222,7 @@ go_func.BoolAndBoolToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
@@ -1186,8 +1230,9 @@ go_func.BoolAndBoolToString_{{- camelCase .Function.Name.String }}(
 {{- define "BoolAndIntToBoolFunction" -}}
 {{- /* Expects a BoolAndIntToBoolFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "BoolAndIntToBoolFunction" }}{{ end }}
-go_func.BoolAndIntToBool_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.BoolAndIntToBool_{{- camelCase .Function.Name.String }}(bool(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToBoolFunction" NewBoolToBoolFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToBoolFunction" NewIntToBoolFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -1212,7 +1257,7 @@ go_func.BoolAndIntToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), int(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -1239,15 +1284,16 @@ go_func.BoolAndIntToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "BoolAndIntToIntFunction" -}}
 {{- /* Expects a BoolAndIntToIntFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "BoolAndIntToIntFunction" }}{{ end }}
-go_func.BoolAndIntToInt_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.BoolAndIntToInt_{{- camelCase .Function.Name.String }}(bool(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToBoolFunction" NewBoolToBoolFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToBoolFunction" NewIntToBoolFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -1272,7 +1318,7 @@ go_func.BoolAndIntToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), int(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -1299,15 +1345,16 @@ go_func.BoolAndIntToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "BoolAndIntToFloatFunction" -}}
 {{- /* Expects a BoolAndIntToFloatFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "BoolAndIntToFloatFunction" }}{{ end }}
-go_func.BoolAndIntToFloat_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.BoolAndIntToFloat_{{- camelCase .Function.Name.String }}(bool(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToBoolFunction" NewBoolToBoolFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToBoolFunction" NewIntToBoolFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -1332,7 +1379,7 @@ go_func.BoolAndIntToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), int(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -1359,15 +1406,16 @@ go_func.BoolAndIntToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "BoolAndIntToStringFunction" -}}
 {{- /* Expects a BoolAndIntToStringFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "BoolAndIntToStringFunction" }}{{ end }}
-go_func.BoolAndIntToString_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.BoolAndIntToString_{{- camelCase .Function.Name.String }}(bool(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToBoolFunction" NewBoolToBoolFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToBoolFunction" NewIntToBoolFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -1392,7 +1440,7 @@ go_func.BoolAndIntToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), int(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -1419,7 +1467,7 @@ go_func.BoolAndIntToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
@@ -1427,8 +1475,9 @@ go_func.BoolAndIntToString_{{- camelCase .Function.Name.String }}(
 {{- define "BoolAndFloatToBoolFunction" -}}
 {{- /* Expects a BoolAndFloatToBoolFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "BoolAndFloatToBoolFunction" }}{{ end }}
-go_func.BoolAndFloatToBool_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.BoolAndFloatToBool_{{- camelCase .Function.Name.String }}(bool(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToBoolFunction" NewBoolToBoolFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToBoolFunction" NewIntToBoolFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -1453,7 +1502,7 @@ go_func.BoolAndFloatToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), float64(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -1480,15 +1529,16 @@ go_func.BoolAndFloatToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "BoolAndFloatToIntFunction" -}}
 {{- /* Expects a BoolAndFloatToIntFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "BoolAndFloatToIntFunction" }}{{ end }}
-go_func.BoolAndFloatToInt_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.BoolAndFloatToInt_{{- camelCase .Function.Name.String }}(bool(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToBoolFunction" NewBoolToBoolFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToBoolFunction" NewIntToBoolFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -1513,7 +1563,7 @@ go_func.BoolAndFloatToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), float64(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -1540,15 +1590,16 @@ go_func.BoolAndFloatToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "BoolAndFloatToFloatFunction" -}}
 {{- /* Expects a BoolAndFloatToFloatFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "BoolAndFloatToFloatFunction" }}{{ end }}
-go_func.BoolAndFloatToFloat_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.BoolAndFloatToFloat_{{- camelCase .Function.Name.String }}(bool(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToBoolFunction" NewBoolToBoolFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToBoolFunction" NewIntToBoolFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -1573,7 +1624,7 @@ go_func.BoolAndFloatToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), float64(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -1600,15 +1651,16 @@ go_func.BoolAndFloatToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "BoolAndFloatToStringFunction" -}}
 {{- /* Expects a BoolAndFloatToStringFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "BoolAndFloatToStringFunction" }}{{ end }}
-go_func.BoolAndFloatToString_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.BoolAndFloatToString_{{- camelCase .Function.Name.String }}(bool(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToBoolFunction" NewBoolToBoolFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToBoolFunction" NewIntToBoolFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -1633,7 +1685,7 @@ go_func.BoolAndFloatToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), float64(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -1660,7 +1712,7 @@ go_func.BoolAndFloatToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
@@ -1668,8 +1720,9 @@ go_func.BoolAndFloatToString_{{- camelCase .Function.Name.String }}(
 {{- define "BoolAndStringToBoolFunction" -}}
 {{- /* Expects a BoolAndStringToBoolFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "BoolAndStringToBoolFunction" }}{{ end }}
-go_func.BoolAndStringToBool_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.BoolAndStringToBool_{{- camelCase .Function.Name.String }}(bool(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToBoolFunction" NewBoolToBoolFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToBoolFunction" NewIntToBoolFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -1694,7 +1747,7 @@ go_func.BoolAndStringToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), string(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -1721,15 +1774,16 @@ go_func.BoolAndStringToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "BoolAndStringToIntFunction" -}}
 {{- /* Expects a BoolAndStringToIntFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "BoolAndStringToIntFunction" }}{{ end }}
-go_func.BoolAndStringToInt_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.BoolAndStringToInt_{{- camelCase .Function.Name.String }}(bool(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToBoolFunction" NewBoolToBoolFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToBoolFunction" NewIntToBoolFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -1754,7 +1808,7 @@ go_func.BoolAndStringToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), string(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -1781,15 +1835,16 @@ go_func.BoolAndStringToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "BoolAndStringToFloatFunction" -}}
 {{- /* Expects a BoolAndStringToFloatFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "BoolAndStringToFloatFunction" }}{{ end }}
-go_func.BoolAndStringToFloat_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.BoolAndStringToFloat_{{- camelCase .Function.Name.String }}(bool(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToBoolFunction" NewBoolToBoolFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToBoolFunction" NewIntToBoolFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -1814,7 +1869,7 @@ go_func.BoolAndStringToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), string(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -1841,15 +1896,16 @@ go_func.BoolAndStringToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "BoolAndStringToStringFunction" -}}
 {{- /* Expects a BoolAndStringToStringFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "BoolAndStringToStringFunction" }}{{ end }}
-go_func.BoolAndStringToString_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.BoolAndStringToString_{{- camelCase .Function.Name.String }}(bool(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToBoolFunction" NewBoolToBoolFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToBoolFunction" NewIntToBoolFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -1874,7 +1930,7 @@ go_func.BoolAndStringToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), string(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -1901,7 +1957,7 @@ go_func.BoolAndStringToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
@@ -1909,8 +1965,9 @@ go_func.BoolAndStringToString_{{- camelCase .Function.Name.String }}(
 {{- define "IntAndBoolToBoolFunction" -}}
 {{- /* Expects a IntAndBoolToBoolFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "IntAndBoolToBoolFunction" }}{{ end }}
-go_func.IntAndBoolToBool_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.IntAndBoolToBool_{{- camelCase .Function.Name.String }}(int(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToIntFunction" NewBoolToIntFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToIntFunction" NewIntToIntFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -1935,7 +1992,7 @@ go_func.IntAndBoolToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), bool(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -1962,15 +2019,16 @@ go_func.IntAndBoolToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "IntAndBoolToIntFunction" -}}
 {{- /* Expects a IntAndBoolToIntFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "IntAndBoolToIntFunction" }}{{ end }}
-go_func.IntAndBoolToInt_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.IntAndBoolToInt_{{- camelCase .Function.Name.String }}(int(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToIntFunction" NewBoolToIntFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToIntFunction" NewIntToIntFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -1995,7 +2053,7 @@ go_func.IntAndBoolToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), bool(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -2022,15 +2080,16 @@ go_func.IntAndBoolToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "IntAndBoolToFloatFunction" -}}
 {{- /* Expects a IntAndBoolToFloatFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "IntAndBoolToFloatFunction" }}{{ end }}
-go_func.IntAndBoolToFloat_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.IntAndBoolToFloat_{{- camelCase .Function.Name.String }}(int(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToIntFunction" NewBoolToIntFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToIntFunction" NewIntToIntFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -2055,7 +2114,7 @@ go_func.IntAndBoolToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), bool(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -2082,15 +2141,16 @@ go_func.IntAndBoolToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "IntAndBoolToStringFunction" -}}
 {{- /* Expects a IntAndBoolToStringFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "IntAndBoolToStringFunction" }}{{ end }}
-go_func.IntAndBoolToString_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.IntAndBoolToString_{{- camelCase .Function.Name.String }}(int(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToIntFunction" NewBoolToIntFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToIntFunction" NewIntToIntFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -2115,7 +2175,7 @@ go_func.IntAndBoolToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), bool(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -2142,7 +2202,7 @@ go_func.IntAndBoolToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
@@ -2150,8 +2210,9 @@ go_func.IntAndBoolToString_{{- camelCase .Function.Name.String }}(
 {{- define "IntAndIntToBoolFunction" -}}
 {{- /* Expects a IntAndIntToBoolFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "IntAndIntToBoolFunction" }}{{ end }}
-go_func.IntAndIntToBool_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.IntAndIntToBool_{{- camelCase .Function.Name.String }}(int(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToIntFunction" NewBoolToIntFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToIntFunction" NewIntToIntFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -2176,7 +2237,7 @@ go_func.IntAndIntToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), int(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -2203,15 +2264,16 @@ go_func.IntAndIntToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "IntAndIntToIntFunction" -}}
 {{- /* Expects a IntAndIntToIntFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "IntAndIntToIntFunction" }}{{ end }}
-go_func.IntAndIntToInt_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.IntAndIntToInt_{{- camelCase .Function.Name.String }}(int(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToIntFunction" NewBoolToIntFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToIntFunction" NewIntToIntFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -2236,7 +2298,7 @@ go_func.IntAndIntToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), int(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -2263,15 +2325,16 @@ go_func.IntAndIntToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "IntAndIntToFloatFunction" -}}
 {{- /* Expects a IntAndIntToFloatFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "IntAndIntToFloatFunction" }}{{ end }}
-go_func.IntAndIntToFloat_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.IntAndIntToFloat_{{- camelCase .Function.Name.String }}(int(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToIntFunction" NewBoolToIntFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToIntFunction" NewIntToIntFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -2296,7 +2359,7 @@ go_func.IntAndIntToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), int(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -2323,15 +2386,16 @@ go_func.IntAndIntToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "IntAndIntToStringFunction" -}}
 {{- /* Expects a IntAndIntToStringFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "IntAndIntToStringFunction" }}{{ end }}
-go_func.IntAndIntToString_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.IntAndIntToString_{{- camelCase .Function.Name.String }}(int(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToIntFunction" NewBoolToIntFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToIntFunction" NewIntToIntFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -2356,7 +2420,7 @@ go_func.IntAndIntToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), int(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -2383,7 +2447,7 @@ go_func.IntAndIntToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
@@ -2391,8 +2455,9 @@ go_func.IntAndIntToString_{{- camelCase .Function.Name.String }}(
 {{- define "IntAndFloatToBoolFunction" -}}
 {{- /* Expects a IntAndFloatToBoolFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "IntAndFloatToBoolFunction" }}{{ end }}
-go_func.IntAndFloatToBool_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.IntAndFloatToBool_{{- camelCase .Function.Name.String }}(int(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToIntFunction" NewBoolToIntFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToIntFunction" NewIntToIntFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -2417,7 +2482,7 @@ go_func.IntAndFloatToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), float64(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -2444,15 +2509,16 @@ go_func.IntAndFloatToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "IntAndFloatToIntFunction" -}}
 {{- /* Expects a IntAndFloatToIntFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "IntAndFloatToIntFunction" }}{{ end }}
-go_func.IntAndFloatToInt_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.IntAndFloatToInt_{{- camelCase .Function.Name.String }}(int(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToIntFunction" NewBoolToIntFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToIntFunction" NewIntToIntFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -2477,7 +2543,7 @@ go_func.IntAndFloatToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), float64(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -2504,15 +2570,16 @@ go_func.IntAndFloatToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "IntAndFloatToFloatFunction" -}}
 {{- /* Expects a IntAndFloatToFloatFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "IntAndFloatToFloatFunction" }}{{ end }}
-go_func.IntAndFloatToFloat_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.IntAndFloatToFloat_{{- camelCase .Function.Name.String }}(int(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToIntFunction" NewBoolToIntFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToIntFunction" NewIntToIntFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -2537,7 +2604,7 @@ go_func.IntAndFloatToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), float64(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -2564,15 +2631,16 @@ go_func.IntAndFloatToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "IntAndFloatToStringFunction" -}}
 {{- /* Expects a IntAndFloatToStringFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "IntAndFloatToStringFunction" }}{{ end }}
-go_func.IntAndFloatToString_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.IntAndFloatToString_{{- camelCase .Function.Name.String }}(int(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToIntFunction" NewBoolToIntFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToIntFunction" NewIntToIntFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -2597,7 +2665,7 @@ go_func.IntAndFloatToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), float64(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -2624,7 +2692,7 @@ go_func.IntAndFloatToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
@@ -2632,8 +2700,9 @@ go_func.IntAndFloatToString_{{- camelCase .Function.Name.String }}(
 {{- define "IntAndStringToBoolFunction" -}}
 {{- /* Expects a IntAndStringToBoolFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "IntAndStringToBoolFunction" }}{{ end }}
-go_func.IntAndStringToBool_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.IntAndStringToBool_{{- camelCase .Function.Name.String }}(int(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToIntFunction" NewBoolToIntFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToIntFunction" NewIntToIntFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -2658,7 +2727,7 @@ go_func.IntAndStringToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), string(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -2685,15 +2754,16 @@ go_func.IntAndStringToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "IntAndStringToIntFunction" -}}
 {{- /* Expects a IntAndStringToIntFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "IntAndStringToIntFunction" }}{{ end }}
-go_func.IntAndStringToInt_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.IntAndStringToInt_{{- camelCase .Function.Name.String }}(int(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToIntFunction" NewBoolToIntFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToIntFunction" NewIntToIntFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -2718,7 +2788,7 @@ go_func.IntAndStringToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), string(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -2745,15 +2815,16 @@ go_func.IntAndStringToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "IntAndStringToFloatFunction" -}}
 {{- /* Expects a IntAndStringToFloatFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "IntAndStringToFloatFunction" }}{{ end }}
-go_func.IntAndStringToFloat_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.IntAndStringToFloat_{{- camelCase .Function.Name.String }}(int(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToIntFunction" NewBoolToIntFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToIntFunction" NewIntToIntFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -2778,7 +2849,7 @@ go_func.IntAndStringToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), string(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -2805,15 +2876,16 @@ go_func.IntAndStringToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "IntAndStringToStringFunction" -}}
 {{- /* Expects a IntAndStringToStringFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "IntAndStringToStringFunction" }}{{ end }}
-go_func.IntAndStringToString_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.IntAndStringToString_{{- camelCase .Function.Name.String }}(int(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToIntFunction" NewBoolToIntFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToIntFunction" NewIntToIntFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -2838,7 +2910,7 @@ go_func.IntAndStringToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), string(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -2865,7 +2937,7 @@ go_func.IntAndStringToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
@@ -2873,8 +2945,9 @@ go_func.IntAndStringToString_{{- camelCase .Function.Name.String }}(
 {{- define "FloatAndBoolToBoolFunction" -}}
 {{- /* Expects a FloatAndBoolToBoolFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "FloatAndBoolToBoolFunction" }}{{ end }}
-go_func.FloatAndBoolToBool_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.FloatAndBoolToBool_{{- camelCase .Function.Name.String }}(float64(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToFloatFunction" NewBoolToFloatFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToFloatFunction" NewIntToFloatFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -2899,7 +2972,7 @@ go_func.FloatAndBoolToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), bool(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -2926,15 +2999,16 @@ go_func.FloatAndBoolToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "FloatAndBoolToIntFunction" -}}
 {{- /* Expects a FloatAndBoolToIntFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "FloatAndBoolToIntFunction" }}{{ end }}
-go_func.FloatAndBoolToInt_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.FloatAndBoolToInt_{{- camelCase .Function.Name.String }}(float64(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToFloatFunction" NewBoolToFloatFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToFloatFunction" NewIntToFloatFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -2959,7 +3033,7 @@ go_func.FloatAndBoolToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), bool(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -2986,15 +3060,16 @@ go_func.FloatAndBoolToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "FloatAndBoolToFloatFunction" -}}
 {{- /* Expects a FloatAndBoolToFloatFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "FloatAndBoolToFloatFunction" }}{{ end }}
-go_func.FloatAndBoolToFloat_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.FloatAndBoolToFloat_{{- camelCase .Function.Name.String }}(float64(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToFloatFunction" NewBoolToFloatFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToFloatFunction" NewIntToFloatFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -3019,7 +3094,7 @@ go_func.FloatAndBoolToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), bool(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -3046,15 +3121,16 @@ go_func.FloatAndBoolToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "FloatAndBoolToStringFunction" -}}
 {{- /* Expects a FloatAndBoolToStringFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "FloatAndBoolToStringFunction" }}{{ end }}
-go_func.FloatAndBoolToString_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.FloatAndBoolToString_{{- camelCase .Function.Name.String }}(float64(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToFloatFunction" NewBoolToFloatFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToFloatFunction" NewIntToFloatFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -3079,7 +3155,7 @@ go_func.FloatAndBoolToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), bool(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -3106,7 +3182,7 @@ go_func.FloatAndBoolToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
@@ -3114,8 +3190,9 @@ go_func.FloatAndBoolToString_{{- camelCase .Function.Name.String }}(
 {{- define "FloatAndIntToBoolFunction" -}}
 {{- /* Expects a FloatAndIntToBoolFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "FloatAndIntToBoolFunction" }}{{ end }}
-go_func.FloatAndIntToBool_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.FloatAndIntToBool_{{- camelCase .Function.Name.String }}(float64(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToFloatFunction" NewBoolToFloatFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToFloatFunction" NewIntToFloatFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -3140,7 +3217,7 @@ go_func.FloatAndIntToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), int(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -3167,15 +3244,16 @@ go_func.FloatAndIntToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "FloatAndIntToIntFunction" -}}
 {{- /* Expects a FloatAndIntToIntFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "FloatAndIntToIntFunction" }}{{ end }}
-go_func.FloatAndIntToInt_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.FloatAndIntToInt_{{- camelCase .Function.Name.String }}(float64(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToFloatFunction" NewBoolToFloatFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToFloatFunction" NewIntToFloatFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -3200,7 +3278,7 @@ go_func.FloatAndIntToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), int(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -3227,15 +3305,16 @@ go_func.FloatAndIntToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "FloatAndIntToFloatFunction" -}}
 {{- /* Expects a FloatAndIntToFloatFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "FloatAndIntToFloatFunction" }}{{ end }}
-go_func.FloatAndIntToFloat_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.FloatAndIntToFloat_{{- camelCase .Function.Name.String }}(float64(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToFloatFunction" NewBoolToFloatFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToFloatFunction" NewIntToFloatFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -3260,7 +3339,7 @@ go_func.FloatAndIntToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), int(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -3287,15 +3366,16 @@ go_func.FloatAndIntToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "FloatAndIntToStringFunction" -}}
 {{- /* Expects a FloatAndIntToStringFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "FloatAndIntToStringFunction" }}{{ end }}
-go_func.FloatAndIntToString_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.FloatAndIntToString_{{- camelCase .Function.Name.String }}(float64(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToFloatFunction" NewBoolToFloatFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToFloatFunction" NewIntToFloatFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -3320,7 +3400,7 @@ go_func.FloatAndIntToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), int(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -3347,7 +3427,7 @@ go_func.FloatAndIntToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
@@ -3355,8 +3435,9 @@ go_func.FloatAndIntToString_{{- camelCase .Function.Name.String }}(
 {{- define "FloatAndFloatToBoolFunction" -}}
 {{- /* Expects a FloatAndFloatToBoolFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "FloatAndFloatToBoolFunction" }}{{ end }}
-go_func.FloatAndFloatToBool_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.FloatAndFloatToBool_{{- camelCase .Function.Name.String }}(float64(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToFloatFunction" NewBoolToFloatFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToFloatFunction" NewIntToFloatFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -3381,7 +3462,7 @@ go_func.FloatAndFloatToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), float64(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -3408,15 +3489,16 @@ go_func.FloatAndFloatToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "FloatAndFloatToIntFunction" -}}
 {{- /* Expects a FloatAndFloatToIntFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "FloatAndFloatToIntFunction" }}{{ end }}
-go_func.FloatAndFloatToInt_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.FloatAndFloatToInt_{{- camelCase .Function.Name.String }}(float64(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToFloatFunction" NewBoolToFloatFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToFloatFunction" NewIntToFloatFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -3441,7 +3523,7 @@ go_func.FloatAndFloatToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), float64(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -3468,15 +3550,16 @@ go_func.FloatAndFloatToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "FloatAndFloatToFloatFunction" -}}
 {{- /* Expects a FloatAndFloatToFloatFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "FloatAndFloatToFloatFunction" }}{{ end }}
-go_func.FloatAndFloatToFloat_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.FloatAndFloatToFloat_{{- camelCase .Function.Name.String }}(float64(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToFloatFunction" NewBoolToFloatFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToFloatFunction" NewIntToFloatFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -3501,7 +3584,7 @@ go_func.FloatAndFloatToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), float64(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -3528,15 +3611,16 @@ go_func.FloatAndFloatToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "FloatAndFloatToStringFunction" -}}
 {{- /* Expects a FloatAndFloatToStringFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "FloatAndFloatToStringFunction" }}{{ end }}
-go_func.FloatAndFloatToString_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.FloatAndFloatToString_{{- camelCase .Function.Name.String }}(float64(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToFloatFunction" NewBoolToFloatFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToFloatFunction" NewIntToFloatFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -3561,7 +3645,7 @@ go_func.FloatAndFloatToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), float64(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -3588,7 +3672,7 @@ go_func.FloatAndFloatToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
@@ -3596,8 +3680,9 @@ go_func.FloatAndFloatToString_{{- camelCase .Function.Name.String }}(
 {{- define "FloatAndStringToBoolFunction" -}}
 {{- /* Expects a FloatAndStringToBoolFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "FloatAndStringToBoolFunction" }}{{ end }}
-go_func.FloatAndStringToBool_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.FloatAndStringToBool_{{- camelCase .Function.Name.String }}(float64(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToFloatFunction" NewBoolToFloatFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToFloatFunction" NewIntToFloatFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -3622,7 +3707,7 @@ go_func.FloatAndStringToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), string(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -3649,15 +3734,16 @@ go_func.FloatAndStringToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "FloatAndStringToIntFunction" -}}
 {{- /* Expects a FloatAndStringToIntFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "FloatAndStringToIntFunction" }}{{ end }}
-go_func.FloatAndStringToInt_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.FloatAndStringToInt_{{- camelCase .Function.Name.String }}(float64(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToFloatFunction" NewBoolToFloatFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToFloatFunction" NewIntToFloatFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -3682,7 +3768,7 @@ go_func.FloatAndStringToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), string(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -3709,15 +3795,16 @@ go_func.FloatAndStringToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "FloatAndStringToFloatFunction" -}}
 {{- /* Expects a FloatAndStringToFloatFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "FloatAndStringToFloatFunction" }}{{ end }}
-go_func.FloatAndStringToFloat_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.FloatAndStringToFloat_{{- camelCase .Function.Name.String }}(float64(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToFloatFunction" NewBoolToFloatFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToFloatFunction" NewIntToFloatFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -3742,7 +3829,7 @@ go_func.FloatAndStringToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), string(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -3769,15 +3856,16 @@ go_func.FloatAndStringToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "FloatAndStringToStringFunction" -}}
 {{- /* Expects a FloatAndStringToStringFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "FloatAndStringToStringFunction" }}{{ end }}
-go_func.FloatAndStringToString_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.FloatAndStringToString_{{- camelCase .Function.Name.String }}(float64(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToFloatFunction" NewBoolToFloatFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToFloatFunction" NewIntToFloatFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -3802,7 +3890,7 @@ go_func.FloatAndStringToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), string(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -3829,7 +3917,7 @@ go_func.FloatAndStringToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
@@ -3837,8 +3925,9 @@ go_func.FloatAndStringToString_{{- camelCase .Function.Name.String }}(
 {{- define "StringAndBoolToBoolFunction" -}}
 {{- /* Expects a StringAndBoolToBoolFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "StringAndBoolToBoolFunction" }}{{ end }}
-go_func.StringAndBoolToBool_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.StringAndBoolToBool_{{- camelCase .Function.Name.String }}(string(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToStringFunction" NewBoolToStringFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToStringFunction" NewIntToStringFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -3863,7 +3952,7 @@ go_func.StringAndBoolToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), bool(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -3890,15 +3979,16 @@ go_func.StringAndBoolToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "StringAndBoolToIntFunction" -}}
 {{- /* Expects a StringAndBoolToIntFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "StringAndBoolToIntFunction" }}{{ end }}
-go_func.StringAndBoolToInt_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.StringAndBoolToInt_{{- camelCase .Function.Name.String }}(string(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToStringFunction" NewBoolToStringFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToStringFunction" NewIntToStringFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -3923,7 +4013,7 @@ go_func.StringAndBoolToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), bool(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -3950,15 +4040,16 @@ go_func.StringAndBoolToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "StringAndBoolToFloatFunction" -}}
 {{- /* Expects a StringAndBoolToFloatFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "StringAndBoolToFloatFunction" }}{{ end }}
-go_func.StringAndBoolToFloat_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.StringAndBoolToFloat_{{- camelCase .Function.Name.String }}(string(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToStringFunction" NewBoolToStringFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToStringFunction" NewIntToStringFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -3983,7 +4074,7 @@ go_func.StringAndBoolToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), bool(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -4010,15 +4101,16 @@ go_func.StringAndBoolToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "StringAndBoolToStringFunction" -}}
 {{- /* Expects a StringAndBoolToStringFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "StringAndBoolToStringFunction" }}{{ end }}
-go_func.StringAndBoolToString_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.StringAndBoolToString_{{- camelCase .Function.Name.String }}(string(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToStringFunction" NewBoolToStringFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToStringFunction" NewIntToStringFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -4043,7 +4135,7 @@ go_func.StringAndBoolToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), bool(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -4070,7 +4162,7 @@ go_func.StringAndBoolToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "BoolValueIf" NewBoolValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
@@ -4078,8 +4170,9 @@ go_func.StringAndBoolToString_{{- camelCase .Function.Name.String }}(
 {{- define "StringAndIntToBoolFunction" -}}
 {{- /* Expects a StringAndIntToBoolFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "StringAndIntToBoolFunction" }}{{ end }}
-go_func.StringAndIntToBool_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.StringAndIntToBool_{{- camelCase .Function.Name.String }}(string(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToStringFunction" NewBoolToStringFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToStringFunction" NewIntToStringFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -4104,7 +4197,7 @@ go_func.StringAndIntToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), int(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -4131,15 +4224,16 @@ go_func.StringAndIntToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "StringAndIntToIntFunction" -}}
 {{- /* Expects a StringAndIntToIntFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "StringAndIntToIntFunction" }}{{ end }}
-go_func.StringAndIntToInt_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.StringAndIntToInt_{{- camelCase .Function.Name.String }}(string(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToStringFunction" NewBoolToStringFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToStringFunction" NewIntToStringFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -4164,7 +4258,7 @@ go_func.StringAndIntToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), int(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -4191,15 +4285,16 @@ go_func.StringAndIntToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "StringAndIntToFloatFunction" -}}
 {{- /* Expects a StringAndIntToFloatFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "StringAndIntToFloatFunction" }}{{ end }}
-go_func.StringAndIntToFloat_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.StringAndIntToFloat_{{- camelCase .Function.Name.String }}(string(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToStringFunction" NewBoolToStringFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToStringFunction" NewIntToStringFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -4224,7 +4319,7 @@ go_func.StringAndIntToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), int(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -4251,15 +4346,16 @@ go_func.StringAndIntToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "StringAndIntToStringFunction" -}}
 {{- /* Expects a StringAndIntToStringFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "StringAndIntToStringFunction" }}{{ end }}
-go_func.StringAndIntToString_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.StringAndIntToString_{{- camelCase .Function.Name.String }}(string(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToStringFunction" NewBoolToStringFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToStringFunction" NewIntToStringFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -4284,7 +4380,7 @@ go_func.StringAndIntToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), int(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -4311,7 +4407,7 @@ go_func.StringAndIntToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "IntValueIf" NewIntValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
@@ -4319,8 +4415,9 @@ go_func.StringAndIntToString_{{- camelCase .Function.Name.String }}(
 {{- define "StringAndFloatToBoolFunction" -}}
 {{- /* Expects a StringAndFloatToBoolFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "StringAndFloatToBoolFunction" }}{{ end }}
-go_func.StringAndFloatToBool_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.StringAndFloatToBool_{{- camelCase .Function.Name.String }}(string(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToStringFunction" NewBoolToStringFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToStringFunction" NewIntToStringFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -4345,7 +4442,7 @@ go_func.StringAndFloatToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), float64(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -4372,15 +4469,16 @@ go_func.StringAndFloatToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "StringAndFloatToIntFunction" -}}
 {{- /* Expects a StringAndFloatToIntFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "StringAndFloatToIntFunction" }}{{ end }}
-go_func.StringAndFloatToInt_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.StringAndFloatToInt_{{- camelCase .Function.Name.String }}(string(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToStringFunction" NewBoolToStringFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToStringFunction" NewIntToStringFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -4405,7 +4503,7 @@ go_func.StringAndFloatToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), float64(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -4432,15 +4530,16 @@ go_func.StringAndFloatToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "StringAndFloatToFloatFunction" -}}
 {{- /* Expects a StringAndFloatToFloatFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "StringAndFloatToFloatFunction" }}{{ end }}
-go_func.StringAndFloatToFloat_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.StringAndFloatToFloat_{{- camelCase .Function.Name.String }}(string(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToStringFunction" NewBoolToStringFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToStringFunction" NewIntToStringFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -4465,7 +4564,7 @@ go_func.StringAndFloatToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), float64(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -4492,15 +4591,16 @@ go_func.StringAndFloatToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "StringAndFloatToStringFunction" -}}
 {{- /* Expects a StringAndFloatToStringFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "StringAndFloatToStringFunction" }}{{ end }}
-go_func.StringAndFloatToString_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.StringAndFloatToString_{{- camelCase .Function.Name.String }}(string(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToStringFunction" NewBoolToStringFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToStringFunction" NewIntToStringFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -4525,7 +4625,7 @@ go_func.StringAndFloatToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), float64(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -4552,7 +4652,7 @@ go_func.StringAndFloatToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "FloatValueIf" NewFloatValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
@@ -4560,8 +4660,9 @@ go_func.StringAndFloatToString_{{- camelCase .Function.Name.String }}(
 {{- define "StringAndStringToBoolFunction" -}}
 {{- /* Expects a StringAndStringToBoolFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "StringAndStringToBoolFunction" }}{{ end }}
-go_func.StringAndStringToBool_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.StringAndStringToBool_{{- camelCase .Function.Name.String }}(string(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToStringFunction" NewBoolToStringFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToStringFunction" NewIntToStringFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -4586,7 +4687,7 @@ go_func.StringAndStringToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), string(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -4613,15 +4714,16 @@ go_func.StringAndStringToBool_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "StringAndStringToIntFunction" -}}
 {{- /* Expects a StringAndStringToIntFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "StringAndStringToIntFunction" }}{{ end }}
-go_func.StringAndStringToInt_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.StringAndStringToInt_{{- camelCase .Function.Name.String }}(string(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToStringFunction" NewBoolToStringFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToStringFunction" NewIntToStringFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -4646,7 +4748,7 @@ go_func.StringAndStringToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), string(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -4673,15 +4775,16 @@ go_func.StringAndStringToInt_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "StringAndStringToFloatFunction" -}}
 {{- /* Expects a StringAndStringToFloatFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "StringAndStringToFloatFunction" }}{{ end }}
-go_func.StringAndStringToFloat_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.StringAndStringToFloat_{{- camelCase .Function.Name.String }}(string(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToStringFunction" NewBoolToStringFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToStringFunction" NewIntToStringFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -4706,7 +4809,7 @@ go_func.StringAndStringToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), string(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -4733,15 +4836,16 @@ go_func.StringAndStringToFloat_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
 {{- define "StringAndStringToStringFunction" -}}
 {{- /* Expects a StringAndStringToStringFunctionParams */}}
 {{- if not .Function.Name }}{{ failNoFunctionName "StringAndStringToStringFunction" }}{{ end }}
-go_func.StringAndStringToString_{{- camelCase .Function.Name.String }}(
-	{{- if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
+go_func.StringAndStringToString_{{- camelCase .Function.Name.String }}(string(
+	{{- if .Function.GetConstant_1 }}{{ .Function.GetConstant_1 }}
+	{{- else if .Function.GetInput_1 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 }}
 	{{- else if .Function.GetState_1 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 }}
 	{{- else if .Function.GetBoolFunc_1 }}{{ template "BoolToStringFunction" NewBoolToStringFunctionParams .Function.GetBoolFunc_1 .InputVariable .StateVariable }}
 	{{- else if .Function.GetIntFunc_1 }}{{ template "IntToStringFunction" NewIntToStringFunctionParams .Function.GetIntFunc_1 .InputVariable .StateVariable }}
@@ -4766,7 +4870,7 @@ go_func.StringAndStringToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_1 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_1 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}), string(
 
 	{{- if .Function.GetInput_2 }}{{ template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 }}
 	{{- else if .Function.GetState_2 }}{{ template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 }}
@@ -4793,7 +4897,7 @@ go_func.StringAndStringToString_{{- camelCase .Function.Name.String }}(
 
 	{{- else if .Function.GetIf_2 }}{{ template "StringValueIf" NewStringValueParams .Function.GetIf_2 .InputVariable .StateVariable }}
 
-	{{- end }},
+	{{- end }}),
 )
 {{- end }}
 
@@ -4862,11 +4966,15 @@ func NewReferenceParams(variable string, reference *pb.Reference) ReferenceParam
 
 type ValueParams struct {
 	Value *pb.Value
+	InputVariable string
+	StateVariable string
 }
 
-func NewValueParams(value *pb.Value) ValueParams {
+func NewValueParams(value *pb.Value, input, state string) ValueParams {
 	return ValueParams{
 		Value: value,
+		InputVariable: input,
+		StateVariable: state,
 	}
 }
 
@@ -6051,18 +6159,52 @@ func NewStringAndStringToStringFunctionParams(function *pb.StringAndStringToStri
 	}
 }
 
-type MessageInitializer struct {
+type EffectParams struct {
+	Effect *pb.Effect
+	InputVariable string
+	StateVariable string
+}
+
+func NewEffectParams(effect *pb.Effect, input, state string) EffectParams {
+	return EffectParams {
+		Effect: effect,
+		InputVariable: input,
+		StateVariable: state,
+	}
+}
+
+type ResponseParams struct {
+	Reference *pb.Reference
+	InputVariable string
+	StateVariable string
+}
+
+func NewResponseParams(reference *pb.Reference, input, state string) ResponseParams {
+	return ResponseParams {
+		Reference: reference,
+		InputVariable: input,
+		StateVariable: state,
+	}
+}
+
+type MessageInitializerParams struct {
 	Identifier string
+	Package string
 	MessageDescriptor *desc.MessageDescriptor
 }
 
-func NewMessageInitializer(ident string, msg *desc.MessageDescriptor) MessageInitializer {
-	return MessageInitializer {
+func NewMessageInitializerParams(ident, pkg string, msg *desc.MessageDescriptor) MessageInitializerParams {
+	return MessageInitializerParams {
 		Identifier: ident,
+		Package: pkg,
 		MessageDescriptor: msg,
 	}
 }
 
 func failNoFunctionName(funcType string) (interface{}, error) {
 	return nil, fmt.Errorf("function name missing for function type %s", funcType)
+}
+
+func failUndefinedEffect() (interface{}, error) {
+	return nil, fmt.Errorf("undefined effect")
 }

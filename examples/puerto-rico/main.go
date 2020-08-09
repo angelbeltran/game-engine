@@ -42,7 +42,7 @@ func main() {
 }
 
 func testClient(cli pb.ActionsClient) error {
-	res1, err := cli.SetPlayers(context.Background(), &pb.Count{}, grpc.WaitForReady(true))
+	res1, err := cli.SetPlayers(context.Background(), &pb.Count{Count: 3}, grpc.WaitForReady(true))
 	if err != nil {
 		return fmt.Errorf("failed to perform Count: %v", err)
 	}
