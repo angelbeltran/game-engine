@@ -64,7 +64,7 @@ func validateResponse(state *desc.MessageDescriptor, refs []*pb.Reference) error
 			return fmt.Errorf("empty state reference")
 		}
 
-		if err := valid.VerifyPath(ref.Path, state); err != nil {
+		if err := valid.VerifyEndOfPath(ref.Path, state); err != nil {
 			return fmt.Errorf("invalid state reference: %w", err)
 		}
 	}

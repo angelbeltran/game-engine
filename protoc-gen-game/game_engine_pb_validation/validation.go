@@ -42,11 +42,7 @@ const (
 // Generic tools for verifying Reference values.
 
 func ValidateReference(ref *pb.Reference, md *desc.MessageDescriptor, t Type) error {
-	return VerifyPathType(ref.Path, md, t)
-}
-
-func VerifyPathType(path []string, md *desc.MessageDescriptor, t Type) error {
-	return VerifyPath(path, md, func(fd *desc.FieldDescriptor) error {
+	return VerifyEndOfPath(ref.Path, md, func(fd *desc.FieldDescriptor) error {
 		u, err := FieldDescriptorTypeToSupportedType(fd.GetType())
 		if err != nil {
 			return fmt.Errorf("invalid field %s: %w", fd.GetFullyQualifiedName(), err)
@@ -60,37 +56,33 @@ func VerifyPathType(path []string, md *desc.MessageDescriptor, t Type) error {
 	})
 }
 
-func VerifyPath(path []string, md *desc.MessageDescriptor, validators ...func (*desc.FieldDescriptor) error) error {
-	if md == nil {
-		return fmt.Errorf("nil message descriptor")
-	}
+func VerifyEndOfPath(path []string, md *desc.MessageDescriptor, validators ...func(*desc.FieldDescriptor) error) error {
 	if len(path) == 0 {
 		return fmt.Errorf("no path specified")
 	}
 
-	fd := md.FindFieldByName(path[0])
-	if fd == nil {
-		return fmt.Errorf("no field named %s", path[0])
-	}
-	if len(path) == 1 {
-		if md = fd.GetMessageType(); md != nil {
-			return fmt.Errorf("field named %s is a message type", path[0])
+	var fd *desc.FieldDescriptor
+
+	for _, part := range path {
+		if md == nil {
+			return fmt.Errorf("field %s is not a message type", part)
 		}
 
-		for _, f := range validators {
-			if err := f(fd); err != nil {
-				return err
-			}
+		if fd = md.FindFieldByName(part); fd == nil {
+			return fmt.Errorf("no field named %s", part)
 		}
 
-		return nil
+		md = fd.GetMessageType()
 	}
 
-	if md = fd.GetMessageType(); md == nil {
-		return fmt.Errorf("field %s is not a message type", path[0])
+	if md != nil {
+		return fmt.Errorf("field named %s is a message type", path[len(path)-1])
 	}
-	if err := VerifyPath(path[1:], md, validators...); err != nil {
-		return fmt.Errorf("error verifying field beyond field %s: %w", path[0], err)
+
+	for _, f := range validators {
+		if err := f(fd); err != nil {
+			return err
+		}
 	}
 
 	return nil
