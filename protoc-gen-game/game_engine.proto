@@ -20,6 +20,7 @@ extend google.protobuf.MethodOptions {
 extend google.protobuf.MessageOptions {
   optional bool is_game_state = 50002;
   optional bool is_action_service_response = 50003;
+  optional string enum_key = 50004; // note the enum type name must be fully qualified.
 }
 
 message Action {

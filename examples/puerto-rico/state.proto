@@ -14,6 +14,8 @@ message State {
   option (game_engine.is_game_state) = true;
 
   message Players {
+    option (game_engine.enum_key) = "puerto_rico_game.PlayerID";
+
     Player player_1 = 1;
     Player player_2 = 2;
     Player player_3 = 3;

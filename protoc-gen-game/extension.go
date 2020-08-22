@@ -11,7 +11,7 @@ import (
 )
 
 func getMessagesWithExtension(files []*desc.FileDescriptor, field int) ([]*desc.MessageDescriptor, error) {
-	var stateMessages []*desc.MessageDescriptor
+	var matches []*desc.MessageDescriptor
 
 	traversed := make(map[string]bool)
 
@@ -41,7 +41,7 @@ func getMessagesWithExtension(files []*desc.FileDescriptor, field int) ([]*desc.
 				}
 
 				if found {
-					stateMessages = append(stateMessages, md)
+					matches = append(matches, md)
 					break
 				}
 			}
@@ -50,7 +50,71 @@ func getMessagesWithExtension(files []*desc.FileDescriptor, field int) ([]*desc.
 		}
 	}
 
-	return stateMessages, nil
+	return matches, nil
+}
+
+func getMessagesAndExtensions(files []*desc.FileDescriptor, field int) (map[*desc.MessageDescriptor]interface{}, error) {
+	matches := make(map[*desc.MessageDescriptor]interface{})
+
+	traversed := make(map[string]bool)
+
+	for _, file := range files {
+		for _, file := range append([]*desc.FileDescriptor{file}, file.GetDependencies()...) {
+			if traversed[file.GetFullyQualifiedName()] {
+				continue
+			}
+
+			msgTypes := file.GetMessageTypes()
+			for i := 0; i < len(msgTypes); i++ {
+				md := msgTypes[i]
+
+				ext, err := getMessageExtension(md, field)
+				if err != nil {
+					return nil, err
+				}
+
+				if ext != nil {
+					matches[md] = ext
+				}
+
+				msgTypes = append(msgTypes, md.GetNestedMessageTypes()...)
+			}
+
+			traversed[file.GetFullyQualifiedName()] = true
+		}
+	}
+
+	return matches, nil
+}
+
+func getMessageExtension(md *desc.MessageDescriptor, field int) (interface{}, error) {
+	opts := md.GetMessageOptions()
+	if opts == nil {
+		return nil, nil
+	}
+
+	extensions, err := proto.ExtensionDescs(opts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to examine message extensions descriptions: %w", err)
+	}
+
+	var extDesc *proto.ExtensionDesc
+	for _, ext := range extensions {
+		if ext != nil && ext.Field == int32(field) {
+			extDesc = ext
+			break
+		}
+	}
+	if extDesc == nil {
+		return nil, nil
+	}
+
+	ext, err := proto.GetExtension(opts, extDesc)
+	if err != nil {
+		return nil, fmt.Errorf("failed to examine message extension: %w", err)
+	}
+
+	return ext, nil
 }
 
 func createMessageFactoryWithActionExtension(files []*desc.FileDescriptor) (*dynamic.MessageFactory, error) {

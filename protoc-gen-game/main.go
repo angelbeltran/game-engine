@@ -100,6 +100,19 @@ func entrypoint(req *plugins.CodeGenRequest, resp *plugins.CodeGenResponse) erro
 		})
 	}
 
+	// Find and validate all enum key options.
+
+	msgs, err := getMessagesWithEnumKeys(req.Files)
+	if err != nil {
+		return fmt.Errorf("failed to parse enum keys options: %w", err)
+	}
+
+	if err = validateMessagesWithEnums(msgs); err != nil {
+		return fmt.Errorf("invalid enum keys options: %w", err)
+	}
+
+	// Generate service files
+
 	w := resp.OutputFile("engine.game.pb.go")
 
 	if err := GenerateService(w, TemplateParams{
@@ -112,14 +125,15 @@ func entrypoint(req *plugins.CodeGenRequest, resp *plugins.CodeGenResponse) erro
 			"google.golang.org/grpc",
 			"github.com/angelbeltran/game-engine/protoc-gen-game/game_engine_pb",
 		},
-		Service:            srv,
-		Methods:            methods,
-		State:              sd,
-		Response:           rd,
-		StateVariable:      stateVariable,
-		InputVariable:      inputVariable,
-		ResponseStateField: responseStateFieldNameCamelCase,
-		ResponseErrorField: responseErrorFieldNameCamelCase,
+		Service:             srv,
+		Methods:             methods,
+		State:               sd,
+		Response:            rd,
+		StateVariable:       stateVariable,
+		InputVariable:       inputVariable,
+		EnumToFieldMappings: msgs,
+		ResponseStateField:  responseStateFieldNameCamelCase,
+		ResponseErrorField:  responseErrorFieldNameCamelCase,
 	}); err != nil {
 		return fmt.Errorf("failed to generate files: %w", err)
 	}

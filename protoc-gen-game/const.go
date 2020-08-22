@@ -9,6 +9,7 @@ const (
 	actionExtensionFieldNumber                  = 50001
 	isGameStateExtensionFieldNumber             = 50002
 	isActionServiceResponseExtensionFieldNumber = 50003
+	isEnumKeyFieldNumber                        = 50004
 
 	protoPackageName       = "game_engine"
 	responseFieldName      = "response"

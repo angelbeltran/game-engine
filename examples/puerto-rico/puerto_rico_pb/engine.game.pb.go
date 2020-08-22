@@ -427,3 +427,24 @@ func NewResponse() Response {
 
 	return res
 }
+
+//
+// Enum Key Mappings
+//
+
+func PuertoRicoPbState_PlayersFieldByPlayerID(msg *State_Players, key PlayerID) (*Player, error) {
+	switch key {
+	case PlayerID_PLAYER_1:
+		return msg.Player_1, nil
+	case PlayerID_PLAYER_2:
+		return msg.Player_2, nil
+	case PlayerID_PLAYER_3:
+		return msg.Player_3, nil
+	case PlayerID_PLAYER_4:
+		return msg.Player_4, nil
+	case PlayerID_PLAYER_5:
+		return msg.Player_5, nil
+	}
+
+	return nil, fmt.Errorf("unexpected PlayerID value: %v", key)
+}
