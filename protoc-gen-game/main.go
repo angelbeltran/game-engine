@@ -10,8 +10,16 @@ import (
 )
 
 //go:generate go generate ./generate
-//go:generate protoc -I=./generate/dst/proto --go_out=$GOPATH/src game_engine.proto
-//go:generate cp ./generate/dst/proto/game_engine.proto game_engine.proto
+//go:generate protoc -I=./generate/dst/proto --go_out=$GOPATH/src action.proto effect.proto error.proto extensions.proto reference.proto type.proto values_and_functions.proto
+
+//go:generate cp ./generate/dst/proto/action.proto protos/action.proto
+//go:generate cp ./generate/dst/proto/effect.proto protos/effect.proto
+//go:generate cp ./generate/dst/proto/error.proto protos/error.proto
+//go:generate cp ./generate/dst/proto/extensions.proto protos/extensions.proto
+//go:generate cp ./generate/dst/proto/reference.proto protos/reference.proto
+//go:generate cp ./generate/dst/proto/type.proto protos/type.proto
+//go:generate cp ./generate/dst/proto/values_and_functions.proto protos/values_and_functions.proto
+
 //go:generate cp ./generate/dst/go/validation.go game_engine_pb_validation
 //go:generate cp ./generate/dst/go/template.go template.go
 //go:generate go mod vendor
