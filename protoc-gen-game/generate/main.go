@@ -12,10 +12,11 @@ import (
 //go:generate go run main.go
 
 const (
-	jsonSpec               = "spec.json"
-	protoTemplateExtension = "proto.tmpl"
-	goTemplateExtension    = "go.tmpl"
-	outputDir              = "output"
+	jsonSpec      = "spec.json"
+	protoFileType = "proto"
+	goFileType    = "go"
+	sourceDir     = "src"
+	outputDir     = "dst"
 )
 
 type (
@@ -36,19 +37,19 @@ type (
 )
 
 func main() {
-	if err := generateProtos(jsonSpec, protoTemplateExtension); err != nil {
+	if err := generateProtos(jsonSpec, protoFileType); err != nil {
 		log.Fatalf("failed to generate .proto files: %v", err)
 	}
 
-	if err := generateProtos(jsonSpec, goTemplateExtension); err != nil {
+	if err := generateProtos(jsonSpec, goFileType); err != nil {
 		log.Fatalf("failed to generate .go files: %v", err) // TODO: apply formatting?
 	}
 }
 
-func generateProtos(filename, templateFileExtension string) error {
-	spec, err := decodeSpecFile(filename)
+func generateProtos(specFile, fileTypeExtension string) error {
+	spec, err := decodeSpecFile(specFile)
 	if err != nil {
-		return fmt.Errorf("failed to decode file %s: %w", filename, err)
+		return fmt.Errorf("failed to decode file %s: %w", specFile, err)
 	}
 
 	tmpl := template.New("base").Funcs(template.FuncMap{
@@ -60,7 +61,7 @@ func generateProtos(filename, templateFileExtension string) error {
 		"multiply":   multiply,
 	})
 
-	pattern := "*." + templateFileExtension
+	pattern := sourceDir + "/" + fileTypeExtension + "/*." + fileTypeExtension + ".tmpl"
 	if tmpl, err = tmpl.ParseGlob(pattern); err != nil {
 		return fmt.Errorf("failed to parse template files %s: %w", pattern, err)
 	}
@@ -72,7 +73,7 @@ func generateProtos(filename, templateFileExtension string) error {
 			ext = parts[len(parts)-1]
 		}
 
-		target := outputDir + "/" + strings.TrimSuffix(t.Name(), "."+templateFileExtension) + "." + ext
+		target := outputDir + "/" + fileTypeExtension + "/" + strings.TrimSuffix(t.Name(), "."+fileTypeExtension+".tmpl") + "." + ext
 
 		fd, err := os.OpenFile(target, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
 		if err != nil {
@@ -88,8 +89,8 @@ func generateProtos(filename, templateFileExtension string) error {
 	return nil
 }
 
-func decodeSpecFile(filename string) (spec specDefinition, err error) {
-	fd, err := os.Open(filename)
+func decodeSpecFile(specFile string) (spec specDefinition, err error) {
+	fd, err := os.Open(specFile)
 	if err != nil {
 		return spec, err
 	}

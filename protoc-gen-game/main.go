@@ -9,11 +9,11 @@ import (
 	"github.com/jhump/goprotoc/plugins"
 )
 
-//go:generate go generate ./proto-generation
-//go:generate protoc -I=./proto-generation/output --go_out=$GOPATH/src game_engine.proto
-//go:generate cp ./proto-generation/output/game_engine.proto game_engine.proto
-//go:generate cp ./proto-generation/output/validation.go game_engine_pb_validation
-//go:generate cp ./proto-generation/output/template.go template.go
+//go:generate go generate ./generate
+//go:generate protoc -I=./generate/dst/proto --go_out=$GOPATH/src game_engine.proto
+//go:generate cp ./generate/dst/proto/game_engine.proto game_engine.proto
+//go:generate cp ./generate/dst/go/validation.go game_engine_pb_validation
+//go:generate cp ./generate/dst/go/template.go template.go
 //go:generate go mod vendor
 
 // TODO: get rid of 'types' package once no longer needed.
