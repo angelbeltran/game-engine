@@ -37,16 +37,26 @@ type (
 )
 
 func main() {
-	if err := generateProtos(jsonSpec, protoFileType); err != nil {
+	if err := generateProtos(jsonSpec, protoFileType, nil); err != nil {
 		log.Fatalf("failed to generate .proto files: %v", err)
 	}
 
-	if err := generateProtos(jsonSpec, goFileType); err != nil {
+	if err := generateProtos(jsonSpec, goFileType, func(target string) string {
+		parts := strings.Split(target, "/")
+
+		path := parts[:len(parts)-1]
+		filename := parts[len(parts)-1]
+
+		filenameWithoutExtension := strings.Split(filename, ".")[0]
+		packageDir := filenameWithoutExtension
+
+		return strings.Join(path, "/") + "/" + packageDir + "/" + filename
+	}); err != nil {
 		log.Fatalf("failed to generate .go files: %v", err) // TODO: apply formatting?
 	}
 }
 
-func generateProtos(specFile, fileTypeExtension string) error {
+func generateProtos(specFile, fileTypeExtension string, mapTarget func(string) string) error {
 	spec, err := decodeSpecFile(specFile)
 	if err != nil {
 		return fmt.Errorf("failed to decode file %s: %w", specFile, err)
@@ -74,6 +84,10 @@ func generateProtos(specFile, fileTypeExtension string) error {
 		}
 
 		target := outputDir + "/" + fileTypeExtension + "/" + strings.TrimSuffix(t.Name(), "."+fileTypeExtension+".tmpl") + "." + ext
+
+		if mapTarget != nil {
+			target = mapTarget(target)
+		}
 
 		fd, err := os.OpenFile(target, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
 		if err != nil {

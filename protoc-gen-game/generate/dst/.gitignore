@@ -1,2 +1,2 @@
-go/*.go
-proto/*.proto
+go/**/*.go
+proto/**/*.proto

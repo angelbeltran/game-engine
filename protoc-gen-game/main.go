@@ -7,6 +7,8 @@ import (
 	"strings"
 
 	"github.com/jhump/goprotoc/plugins"
+
+	"github.com/angelbeltran/game-engine/protoc-gen-game/generate/dst/go/template"
 )
 
 //go:generate go generate ./generate
@@ -20,8 +22,6 @@ import (
 //go:generate cp ./generate/dst/proto/type.proto protos/type.proto
 //go:generate cp ./generate/dst/proto/values_and_functions.proto protos/values_and_functions.proto
 
-//go:generate cp ./generate/dst/go/validation.go game_engine_pb_validation
-//go:generate cp ./generate/dst/go/template.go template.go
 //go:generate go mod vendor
 
 // TODO: get rid of 'types' package once no longer needed.
@@ -123,7 +123,7 @@ func entrypoint(req *plugins.CodeGenRequest, resp *plugins.CodeGenResponse) erro
 
 	w := resp.OutputFile("engine.game.pb.go")
 
-	if err := GenerateService(w, TemplateParams{
+	if err := template.GenerateService(w, template.TemplateParams{
 		Package: pkgName,
 		Imports: []string{
 			"context",

@@ -6,7 +6,7 @@ import (
 	"github.com/jhump/protoreflect/desc"
 
 	pb "github.com/angelbeltran/game-engine/protoc-gen-game/game_engine_pb"
-	valid "github.com/angelbeltran/game-engine/protoc-gen-game/game_engine_pb_validation"
+	"github.com/angelbeltran/game-engine/protoc-gen-game/generation/dst/go/validation"
 )
 
 func validateAction(state, input *desc.MessageDescriptor, msg *pb.Action) error {
@@ -26,7 +26,7 @@ func validateAction(state, input *desc.MessageDescriptor, msg *pb.Action) error 
 		}
 	}
 
-	if err := valid.ValidateBoolValueReferences(msg.Rule, state, input); err != nil {
+	if err := validation.ValidateBoolValueReferences(msg.Rule, state, input); err != nil {
 		return fmt.Errorf("invalid rule: %w", err)
 	}
 
@@ -39,7 +39,7 @@ func validateAction(state, input *desc.MessageDescriptor, msg *pb.Action) error 
 
 func validateEffect(state, input *desc.MessageDescriptor, effect *pb.Effect) error {
 	if up := effect.GetUpdate(); up != nil {
-		valueType, err := valid.ValidateValue(up.Value, state, input)
+		valueType, err := validation.ValidateValue(up.Value, state, input)
 		if err != nil {
 			return fmt.Errorf("invalid value: %w", err)
 		}
@@ -48,7 +48,7 @@ func validateEffect(state, input *desc.MessageDescriptor, effect *pb.Effect) err
 			return fmt.Errorf("missing state on update effect")
 		}
 
-		if err := valid.ValidateReference(up.State, state, valueType); err != nil {
+		if err := validation.ValidateReference(up.State, state, valueType); err != nil {
 			return fmt.Errorf("invalid state reference: %w", err)
 		}
 
@@ -64,7 +64,7 @@ func validateResponse(state *desc.MessageDescriptor, refs []*pb.Reference) error
 			return fmt.Errorf("empty state reference")
 		}
 
-		if err := valid.VerifyEndOfPath(ref.Path, state); err != nil {
+		if err := validation.VerifyEndOfPath(ref.Path, state); err != nil {
 			return fmt.Errorf("invalid state reference: %w", err)
 		}
 	}
