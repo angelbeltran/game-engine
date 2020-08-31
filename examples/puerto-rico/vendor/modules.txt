@@ -1,7 +1,7 @@
 # github.com/angelbeltran/game-engine/protoc-gen-game v0.0.2 => ../../protoc-gen-game
 ## explicit
 github.com/angelbeltran/game-engine/protoc-gen-game/game_engine_pb
-github.com/angelbeltran/game-engine/protoc-gen-game/proto-generation/go_func
+github.com/angelbeltran/game-engine/protoc-gen-game/generate/go_func
 # github.com/golang/protobuf v1.4.2
 ## explicit
 github.com/golang/protobuf/proto
@@ -11,7 +11,6 @@ github.com/golang/protobuf/ptypes/any
 github.com/golang/protobuf/ptypes/duration
 github.com/golang/protobuf/ptypes/timestamp
 # golang.org/x/net v0.0.0-20190522155817-f3200d17e092
-## explicit
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2
 golang.org/x/net/http2/hpack
@@ -21,7 +20,6 @@ golang.org/x/net/trace
 # golang.org/x/sys v0.0.0-20190215142949-d0b11bdaac8a
 golang.org/x/sys/unix
 # golang.org/x/text v0.3.0
-## explicit
 golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
 golang.org/x/text/unicode/bidi

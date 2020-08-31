@@ -21,6 +21,7 @@ import (
 //go:generate cp ./generate/dst/proto/reference.proto protos/reference.proto
 //go:generate cp ./generate/dst/proto/type.proto protos/type.proto
 //go:generate cp ./generate/dst/proto/values_and_functions.proto protos/values_and_functions.proto
+//go:generate cp ./generate/dst/proto/bundle.proto protos/bundle.proto
 
 //go:generate go mod vendor
 
@@ -76,7 +77,7 @@ func entrypoint(req *plugins.CodeGenRequest, resp *plugins.CodeGenResponse) erro
 
 	// Find and validate the "action" options defined on rpc methods.
 
-	var methods []MethodInfo
+	var methods []template.MethodInfo
 	responseMessageName := rd.GetFullyQualifiedName()
 
 	for _, method := range srv.GetMethods() {
@@ -92,7 +93,7 @@ func entrypoint(req *plugins.CodeGenRequest, resp *plugins.CodeGenResponse) erro
 			return err
 		}
 		if action == nil {
-			methods = append(methods, MethodInfo{Method: method})
+			methods = append(methods, template.MethodInfo{Method: method})
 			continue
 		}
 
@@ -102,7 +103,7 @@ func entrypoint(req *plugins.CodeGenRequest, resp *plugins.CodeGenResponse) erro
 			return err
 		}
 
-		methods = append(methods, MethodInfo{
+		methods = append(methods, template.MethodInfo{
 			Method: method,
 			Action: action,
 		})

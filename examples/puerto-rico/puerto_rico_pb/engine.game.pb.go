@@ -5,7 +5,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/angelbeltran/game-engine/protoc-gen-game/game_engine_pb"
-	"github.com/angelbeltran/game-engine/protoc-gen-game/proto-generation/go_func"
+	"github.com/angelbeltran/game-engine/protoc-gen-game/generate/go_func"
 	"google.golang.org/grpc"
 	"net"
 	"sync"

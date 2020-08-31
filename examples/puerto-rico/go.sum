@@ -1,11 +1,5 @@
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
-github.com/angelbeltran/game-engine v0.0.1 h1:v6lEXtLugdl+J57RcAMusz+gisOad7Hb/mi0sCtrroQ=
-github.com/angelbeltran/game-engine v0.0.2 h1:6iSzYBosavNGDViyIf/Wai+K76danoDliNrMkh/7Wdg=
-github.com/angelbeltran/game-engine/protoc-gen-game v0.0.0-20200725023809-075a31ba5f76 h1:ZgHxpeWkcnK8+kDDF91ejm8/N9qvnGKVEpcb+NIO9kY=
-github.com/angelbeltran/game-engine/protoc-gen-game v0.0.0-20200725023809-075a31ba5f76/go.mod h1:fxM850gKMDa/sx9uVNpuJqdRAqnsJORTUN8v2OeWU38=
-github.com/angelbeltran/game-engine/protoc-gen-game v0.0.0-20200726081353-35db44bff03c h1:9HRblSYszayi5o3Jrijl/c3sjwxTgjKQCNBMLAABjNY=
-github.com/angelbeltran/game-engine/protoc-gen-game v0.0.0-20200726081353-35db44bff03c/go.mod h1:fxM850gKMDa/sx9uVNpuJqdRAqnsJORTUN8v2OeWU38=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=

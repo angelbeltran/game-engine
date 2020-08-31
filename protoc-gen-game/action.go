@@ -6,7 +6,7 @@ import (
 	"github.com/jhump/protoreflect/desc"
 
 	pb "github.com/angelbeltran/game-engine/protoc-gen-game/game_engine_pb"
-	"github.com/angelbeltran/game-engine/protoc-gen-game/generation/dst/go/validation"
+	"github.com/angelbeltran/game-engine/protoc-gen-game/generate/dst/go/validation"
 )
 
 func validateAction(state, input *desc.MessageDescriptor, msg *pb.Action) error {

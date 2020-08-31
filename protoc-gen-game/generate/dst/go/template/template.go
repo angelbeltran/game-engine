@@ -224,7 +224,7 @@ package {{ .Package }}
 
 import (
 {{ range $_, $import := .Imports }}	{{ printf "%q" $import }}
-	"github.com/angelbeltran/game-engine/protoc-gen-game/proto-generation/go_func"
+	"github.com/angelbeltran/game-engine/protoc-gen-game/generate/go_func"
 {{ end }}
 )
 
