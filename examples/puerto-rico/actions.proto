@@ -2,7 +2,7 @@ syntax = "proto3";
 package puerto_rico_game;
 
 import "google/protobuf/descriptor.proto";
-import "github.com/angelbeltran/game-engine/protoc-gen-game/protos/bundle.proto";
+import "github.com/angelbeltran/game-engine/protoc-gen-game/generate/dst/proto/bundle.proto";
 import "github.com/angelbeltran/game-engine/examples/puerto-rico/role.proto";
 import "github.com/angelbeltran/game-engine/examples/puerto-rico/building.proto";
 import "github.com/angelbeltran/game-engine/examples/puerto-rico/good.proto";
