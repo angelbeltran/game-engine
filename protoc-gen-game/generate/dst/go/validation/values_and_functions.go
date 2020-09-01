@@ -5,10 +5,10 @@ import (
 	"fmt"
 
 	"github.com/jhump/protoreflect/desc"
-	dpb "github.com/golang/protobuf/protoc-gen-go/descriptor"
 
 	pb "github.com/angelbeltran/game-engine/protoc-gen-game/game_engine_pb"
 )
+
 
 func ValidateValue(val *pb.Value, state, input *desc.MessageDescriptor) (Type, error) {
 	if val.Value == nil {
@@ -28,105 +28,6 @@ func ValidateValue(val *pb.Value, state, input *desc.MessageDescriptor) (Type, e
 		return "", fmt.Errorf("unrecognized value type: %T", v)
 	}
 }
-
-type Type string
-
-const (
-	TypeNone Type = ""
-	TypeBool Type = "bool"
-	TypeInt Type = "int"
-	TypeFloat Type = "float"
-	TypeString Type = "string"
-)
-
-// Generic tools for verifying Reference values.
-
-func ValidateReference(ref *pb.Reference, md *desc.MessageDescriptor, t Type) error {
-	return VerifyEndOfPath(ref.Path, md, func(fd *desc.FieldDescriptor) error {
-		u, err := FieldDescriptorTypeToSupportedType(fd.GetType())
-		if err != nil {
-			return fmt.Errorf("invalid field %s: %w", fd.GetFullyQualifiedName(), err)
-		}
-
-		if t != u {
-			return fmt.Errorf("unexpected type at field %s: expected %s but found %s", fd.GetFullyQualifiedName(), t, u)
-		}
-
-		return nil
-	})
-}
-
-func VerifyEndOfPath(path []string, md *desc.MessageDescriptor, validators ...func(*desc.FieldDescriptor) error) error {
-	if len(path) == 0 {
-		return fmt.Errorf("no path specified")
-	}
-
-	var fd *desc.FieldDescriptor
-
-	for _, part := range path {
-		if md == nil {
-			return fmt.Errorf("field %s is not a message type", part)
-		}
-
-		if fd = md.FindFieldByName(part); fd == nil {
-			return fmt.Errorf("no field named %s", part)
-		}
-
-		md = fd.GetMessageType()
-	}
-
-	if md != nil {
-		return fmt.Errorf("field named %s is a message type", path[len(path)-1])
-	}
-
-	for _, f := range validators {
-		if err := f(fd); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func FieldDescriptorTypeToSupportedType(t dpb.FieldDescriptorProto_Type) (Type, error) {
-	switch t {
-	case 1:
-		return TypeFloat, nil
-	case 13:
-		return TypeInt, nil
-	case 14:
-		return TypeString, nil
-	case 15:
-		return TypeInt, nil
-	case 16:
-		return TypeInt, nil
-	case 17:
-		return TypeInt, nil
-	case 18:
-		return TypeInt, nil
-	case 2:
-		return TypeFloat, nil
-	case 3:
-		return TypeInt, nil
-	case 4:
-		return TypeInt, nil
-	case 5:
-		return TypeInt, nil
-	case 6:
-		return TypeInt, nil
-	case 7:
-		return TypeInt, nil
-	case 8:
-		return TypeBool, nil
-	case 9:
-		return TypeString, nil
-	}
-	return TypeNone, fmt.Errorf("unsupported field type: %s", t)
-}
-
-// Protobuf Type-Specific Validation Tools.
-
-// Value Validation
 
 func ValidateBoolValueReferences(val *pb.BoolValue, state, input *desc.MessageDescriptor) error {
 	if val == nil {
