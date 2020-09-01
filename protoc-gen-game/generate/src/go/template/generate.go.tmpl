@@ -11,7 +11,6 @@ import (
 	"text/template"
 
 	"github.com/jhump/protoreflect/desc"
-	"github.com/jhump/goprotoc/plugins"
 
 	pb "github.com/angelbeltran/game-engine/protoc-gen-game/game_engine_pb"
 )
@@ -28,7 +27,7 @@ func GenerateService(w io.Writer, opts TemplateParams) error {
 	// Parse template.
 
 	tmpl, err := template.New("main").Funcs(template.FuncMap{
-		"camelCase": (&plugins.GoNames{}).CamelCase,
+		"camelCase": names.CamelCase,
 		"goTypeOfField": names.GoTypeOfField,
 		"goTypeForMessage": names.GoTypeForMessage,
 		"goTypeForMessageWithoutTargetPackageName": func(md *desc.MessageDescriptor) string {
@@ -144,6 +143,3 @@ type MethodInfo struct {
 	Method *desc.MethodDescriptor
 	Action *pb.Action
 }
-
-var names plugins.GoNames
-
