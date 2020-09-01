@@ -11,6 +11,10 @@ import (
 	"sync"
 )
 
+//
+// Server and state initialization
+//
+
 func NewServer(port uint) (*grpc.Server, net.Listener, error) {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
@@ -27,6 +31,116 @@ type gameEngine struct {
 	UnimplementedActionsServer
 }
 
+var state = newGameState()
+
+func newGameState() gameState {
+	var s gameState
+
+	s.State.Players = new(State_Players)
+	s.State.Players.Player_1 = new(Player)
+	s.State.Players.Player_1.Buildings = new(Player_Buildings)
+	s.State.Players.Player_1.Plantations = new(Player_Plantations)
+	s.State.Players.Player_1.Goods = new(Player_Goods)
+	s.State.Players.Player_2 = new(Player)
+	s.State.Players.Player_2.Buildings = new(Player_Buildings)
+	s.State.Players.Player_2.Plantations = new(Player_Plantations)
+	s.State.Players.Player_2.Goods = new(Player_Goods)
+	s.State.Players.Player_3 = new(Player)
+	s.State.Players.Player_3.Buildings = new(Player_Buildings)
+	s.State.Players.Player_3.Plantations = new(Player_Plantations)
+	s.State.Players.Player_3.Goods = new(Player_Goods)
+	s.State.Players.Player_4 = new(Player)
+	s.State.Players.Player_4.Buildings = new(Player_Buildings)
+	s.State.Players.Player_4.Plantations = new(Player_Plantations)
+	s.State.Players.Player_4.Goods = new(Player_Goods)
+	s.State.Players.Player_5 = new(Player)
+	s.State.Players.Player_5.Buildings = new(Player_Buildings)
+	s.State.Players.Player_5.Plantations = new(Player_Plantations)
+	s.State.Players.Player_5.Goods = new(Player_Goods)
+	s.State.Roles = new(State_Roles)
+	s.State.Roles.Prospector1 = new(Role)
+	s.State.Roles.Prospector2 = new(Role)
+	s.State.Roles.Builder = new(Role)
+	s.State.Roles.Captain = new(Role)
+	s.State.Roles.Craftsman = new(Role)
+	s.State.Roles.Mayor = new(Role)
+	s.State.Roles.Settler = new(Role)
+	s.State.Roles.Trader = new(Role)
+	s.State.Plantations = new(State_Plantations)
+	s.State.Plantations.Displayed = new(State_Plantations_Displayed)
+	s.State.Plantations.Facedown = new(State_Plantations_Counts)
+	s.State.Plantations.Discarded = new(State_Plantations_Counts)
+	s.State.Goods = new(State_Goods)
+	s.State.Buildings = new(State_Buildings)
+	s.State.CargoShips = new(State_CargoShips)
+	s.State.CargoShips.Ship_4 = new(CargoShip)
+	s.State.CargoShips.Ship_5 = new(CargoShip)
+	s.State.CargoShips.Ship_6 = new(CargoShip)
+	s.State.CargoShips.Ship_7 = new(CargoShip)
+	s.State.CargoShips.Ship_8 = new(CargoShip)
+
+	return s
+}
+
+type gameState struct {
+	State
+	sync.Mutex
+}
+
+func newResponse() Response {
+	var res Response
+
+	res.State = new(State)
+	res.State.Players = new(State_Players)
+	res.State.Players.Player_1 = new(Player)
+	res.State.Players.Player_1.Buildings = new(Player_Buildings)
+	res.State.Players.Player_1.Plantations = new(Player_Plantations)
+	res.State.Players.Player_1.Goods = new(Player_Goods)
+	res.State.Players.Player_2 = new(Player)
+	res.State.Players.Player_2.Buildings = new(Player_Buildings)
+	res.State.Players.Player_2.Plantations = new(Player_Plantations)
+	res.State.Players.Player_2.Goods = new(Player_Goods)
+	res.State.Players.Player_3 = new(Player)
+	res.State.Players.Player_3.Buildings = new(Player_Buildings)
+	res.State.Players.Player_3.Plantations = new(Player_Plantations)
+	res.State.Players.Player_3.Goods = new(Player_Goods)
+	res.State.Players.Player_4 = new(Player)
+	res.State.Players.Player_4.Buildings = new(Player_Buildings)
+	res.State.Players.Player_4.Plantations = new(Player_Plantations)
+	res.State.Players.Player_4.Goods = new(Player_Goods)
+	res.State.Players.Player_5 = new(Player)
+	res.State.Players.Player_5.Buildings = new(Player_Buildings)
+	res.State.Players.Player_5.Plantations = new(Player_Plantations)
+	res.State.Players.Player_5.Goods = new(Player_Goods)
+	res.State.Roles = new(State_Roles)
+	res.State.Roles.Prospector1 = new(Role)
+	res.State.Roles.Prospector2 = new(Role)
+	res.State.Roles.Builder = new(Role)
+	res.State.Roles.Captain = new(Role)
+	res.State.Roles.Craftsman = new(Role)
+	res.State.Roles.Mayor = new(Role)
+	res.State.Roles.Settler = new(Role)
+	res.State.Roles.Trader = new(Role)
+	res.State.Plantations = new(State_Plantations)
+	res.State.Plantations.Displayed = new(State_Plantations_Displayed)
+	res.State.Plantations.Facedown = new(State_Plantations_Counts)
+	res.State.Plantations.Discarded = new(State_Plantations_Counts)
+	res.State.Goods = new(State_Goods)
+	res.State.Buildings = new(State_Buildings)
+	res.State.CargoShips = new(State_CargoShips)
+	res.State.CargoShips.Ship_4 = new(CargoShip)
+	res.State.CargoShips.Ship_5 = new(CargoShip)
+	res.State.CargoShips.Ship_6 = new(CargoShip)
+	res.State.CargoShips.Ship_7 = new(CargoShip)
+	res.State.CargoShips.Ship_8 = new(CargoShip)
+	res.Error = new(game_engine_pb.Error)
+
+	return res
+}
+
+//
+// Service methods
+//
 func (e *gameEngine) SetPlayers(ctx context.Context, in *Count) (*Response, error) {
 	state.Lock()
 	defer state.Unlock()
@@ -57,7 +171,7 @@ func (e *gameEngine) SetPlayers(ctx context.Context, in *Count) (*Response, erro
 	state.Players.Player_5.Present = go_func.IntAndIntToBool_LTE(int(5), int(in.Count))
 
 	// Construct the response
-	res := NewResponse()
+	res := newResponse()
 	res.State.Started = state.Started
 	res.State.Players.Player_1.Present = state.Players.Player_1.Present
 	res.State.Players.Player_2.Present = state.Players.Player_2.Present
@@ -94,7 +208,7 @@ func (e *gameEngine) Start(ctx context.Context, in *EmptyMsg) (*Response, error)
 	state.Started = true
 
 	// Construct the response
-	res := NewResponse()
+	res := newResponse()
 	res.State.Started = state.Started
 
 	return &res, nil
@@ -190,7 +304,7 @@ func (e *gameEngine) Accept(ctx context.Context, in *RoleChoice) (*Response, err
 	)
 
 	// Construct the response
-	res := NewResponse()
+	res := newResponse()
 
 	return &res, nil
 }
@@ -319,113 +433,6 @@ func (e *gameEngine) EndAction(ctx context.Context, in *PlayerChoice) (*Response
 			Msg: "unimplemented",
 		},
 	}, nil
-}
-
-var state = NewGameState()
-
-type GameState struct {
-	State
-	sync.Mutex
-}
-
-func NewGameState() GameState {
-	var s GameState
-
-	s.State.Players = new(State_Players)
-	s.State.Players.Player_1 = new(Player)
-	s.State.Players.Player_1.Buildings = new(Player_Buildings)
-	s.State.Players.Player_1.Plantations = new(Player_Plantations)
-	s.State.Players.Player_1.Goods = new(Player_Goods)
-	s.State.Players.Player_2 = new(Player)
-	s.State.Players.Player_2.Buildings = new(Player_Buildings)
-	s.State.Players.Player_2.Plantations = new(Player_Plantations)
-	s.State.Players.Player_2.Goods = new(Player_Goods)
-	s.State.Players.Player_3 = new(Player)
-	s.State.Players.Player_3.Buildings = new(Player_Buildings)
-	s.State.Players.Player_3.Plantations = new(Player_Plantations)
-	s.State.Players.Player_3.Goods = new(Player_Goods)
-	s.State.Players.Player_4 = new(Player)
-	s.State.Players.Player_4.Buildings = new(Player_Buildings)
-	s.State.Players.Player_4.Plantations = new(Player_Plantations)
-	s.State.Players.Player_4.Goods = new(Player_Goods)
-	s.State.Players.Player_5 = new(Player)
-	s.State.Players.Player_5.Buildings = new(Player_Buildings)
-	s.State.Players.Player_5.Plantations = new(Player_Plantations)
-	s.State.Players.Player_5.Goods = new(Player_Goods)
-	s.State.Roles = new(State_Roles)
-	s.State.Roles.Prospector1 = new(Role)
-	s.State.Roles.Prospector2 = new(Role)
-	s.State.Roles.Builder = new(Role)
-	s.State.Roles.Captain = new(Role)
-	s.State.Roles.Craftsman = new(Role)
-	s.State.Roles.Mayor = new(Role)
-	s.State.Roles.Settler = new(Role)
-	s.State.Roles.Trader = new(Role)
-	s.State.Plantations = new(State_Plantations)
-	s.State.Plantations.Displayed = new(State_Plantations_Displayed)
-	s.State.Plantations.Facedown = new(State_Plantations_Counts)
-	s.State.Plantations.Discarded = new(State_Plantations_Counts)
-	s.State.Goods = new(State_Goods)
-	s.State.Buildings = new(State_Buildings)
-	s.State.CargoShips = new(State_CargoShips)
-	s.State.CargoShips.Ship_4 = new(CargoShip)
-	s.State.CargoShips.Ship_5 = new(CargoShip)
-	s.State.CargoShips.Ship_6 = new(CargoShip)
-	s.State.CargoShips.Ship_7 = new(CargoShip)
-	s.State.CargoShips.Ship_8 = new(CargoShip)
-
-	return s
-}
-
-func NewResponse() Response {
-	var res Response
-
-	res.State = new(State)
-	res.State.Players = new(State_Players)
-	res.State.Players.Player_1 = new(Player)
-	res.State.Players.Player_1.Buildings = new(Player_Buildings)
-	res.State.Players.Player_1.Plantations = new(Player_Plantations)
-	res.State.Players.Player_1.Goods = new(Player_Goods)
-	res.State.Players.Player_2 = new(Player)
-	res.State.Players.Player_2.Buildings = new(Player_Buildings)
-	res.State.Players.Player_2.Plantations = new(Player_Plantations)
-	res.State.Players.Player_2.Goods = new(Player_Goods)
-	res.State.Players.Player_3 = new(Player)
-	res.State.Players.Player_3.Buildings = new(Player_Buildings)
-	res.State.Players.Player_3.Plantations = new(Player_Plantations)
-	res.State.Players.Player_3.Goods = new(Player_Goods)
-	res.State.Players.Player_4 = new(Player)
-	res.State.Players.Player_4.Buildings = new(Player_Buildings)
-	res.State.Players.Player_4.Plantations = new(Player_Plantations)
-	res.State.Players.Player_4.Goods = new(Player_Goods)
-	res.State.Players.Player_5 = new(Player)
-	res.State.Players.Player_5.Buildings = new(Player_Buildings)
-	res.State.Players.Player_5.Plantations = new(Player_Plantations)
-	res.State.Players.Player_5.Goods = new(Player_Goods)
-	res.State.Roles = new(State_Roles)
-	res.State.Roles.Prospector1 = new(Role)
-	res.State.Roles.Prospector2 = new(Role)
-	res.State.Roles.Builder = new(Role)
-	res.State.Roles.Captain = new(Role)
-	res.State.Roles.Craftsman = new(Role)
-	res.State.Roles.Mayor = new(Role)
-	res.State.Roles.Settler = new(Role)
-	res.State.Roles.Trader = new(Role)
-	res.State.Plantations = new(State_Plantations)
-	res.State.Plantations.Displayed = new(State_Plantations_Displayed)
-	res.State.Plantations.Facedown = new(State_Plantations_Counts)
-	res.State.Plantations.Discarded = new(State_Plantations_Counts)
-	res.State.Goods = new(State_Goods)
-	res.State.Buildings = new(State_Buildings)
-	res.State.CargoShips = new(State_CargoShips)
-	res.State.CargoShips.Ship_4 = new(CargoShip)
-	res.State.CargoShips.Ship_5 = new(CargoShip)
-	res.State.CargoShips.Ship_6 = new(CargoShip)
-	res.State.CargoShips.Ship_7 = new(CargoShip)
-	res.State.CargoShips.Ship_8 = new(CargoShip)
-	res.Error = new(game_engine_pb.Error)
-
-	return res
 }
 
 //
