@@ -5,19 +5,96 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 	"text/template"
 )
 
 //go:generate go run main.go
 
+func main() {
+	spec, err := decodeSpecFile(specFile)
+	if err != nil {
+		log.Fatalf("failed to decode file %s: %v", specFile, err)
+	}
+
+	if err := generateAll(spec); err != nil {
+		log.Fatalf("failed to generate files: %v", err)
+	}
+}
+
+func decodeSpecFile(specFile string) (spec specDefinition, err error) {
+	fd, err := os.Open(specFile)
+	if err != nil {
+		return spec, err
+	}
+	defer fd.Close()
+
+	err = json.NewDecoder(fd).Decode(&spec)
+
+	return spec, err
+}
+
+func generateAll(spec specDefinition) error {
+	return filepath.Walk(sourceDir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return fmt.Errorf("error while walking directory: %w", err)
+		}
+
+		if info.IsDir() {
+			return nil
+		}
+
+		if !strings.HasSuffix(info.Name(), ".tmpl") {
+			return nil
+		}
+
+		parts := strings.Split(path, "/")
+		base := parts[len(parts)-1]
+
+		tmpl, err := template.New(base).Funcs(template.FuncMap{
+			"toUpper":    strings.ToUpper,
+			"capitalize": capitalize,
+			"inc":        inc,
+			"dec":        dec,
+			"add":        add,
+			"multiply":   multiply,
+		}).ParseFiles(path)
+		if err != nil {
+			return fmt.Errorf("failed to parse template from file %s: %w", path, err)
+		}
+
+		target := outputDir + strings.TrimSuffix(strings.TrimPrefix(path, sourceDir), ".tmpl")
+
+		parts = strings.Split(target, "/")
+		dir := strings.Join(parts[:len(parts)-1], "/")
+		if err := os.MkdirAll(dir, 0700); err != nil {
+			return fmt.Errorf("failed to create directory %s: %w", dir, err)
+		}
+
+		fd, err := os.OpenFile(target, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
+		if err != nil {
+			return fmt.Errorf("failed to create and truncate file %s: %w", target, err)
+		}
+		defer fd.Close()
+
+		if err := tmpl.Execute(fd, spec); err != nil {
+			return fmt.Errorf("failed to execute template from file %s: %w", path, err)
+		}
+
+		return nil
+	})
+}
+
+// files and directories
+
 const (
-	jsonSpec      = "spec.json"
-	protoFileType = "proto"
-	goFileType    = "go"
-	sourceDir     = "src"
-	outputDir     = "dst"
+	specFile  = "spec.json"
+	sourceDir = "src"
+	outputDir = "dst"
 )
+
+// parameters available to templates during execution
 
 type (
 	// NOTE: might be able to get rid of these altogether, use interface{}s, and let the json do it all!
@@ -35,85 +112,6 @@ type (
 		Nary   map[string]map[string][]string
 	}
 )
-
-func main() {
-	if err := generateProtos(jsonSpec, protoFileType, nil); err != nil {
-		log.Fatalf("failed to generate .proto files: %v", err)
-	}
-
-	if err := generateProtos(jsonSpec, goFileType, func(target string) string {
-		parts := strings.Split(target, "/")
-
-		path := parts[:len(parts)-1]
-		filename := parts[len(parts)-1]
-
-		filenameWithoutExtension := strings.Split(filename, ".")[0]
-		packageDir := filenameWithoutExtension
-
-		return strings.Join(path, "/") + "/" + packageDir + "/" + filename
-	}); err != nil {
-		log.Fatalf("failed to generate .go files: %v", err) // TODO: apply formatting?
-	}
-}
-
-func generateProtos(specFile, fileTypeExtension string, mapTarget func(string) string) error {
-	spec, err := decodeSpecFile(specFile)
-	if err != nil {
-		return fmt.Errorf("failed to decode file %s: %w", specFile, err)
-	}
-
-	tmpl := template.New("base").Funcs(template.FuncMap{
-		"toUpper":    strings.ToUpper,
-		"capitalize": capitalize,
-		"inc":        inc,
-		"dec":        dec,
-		"add":        add,
-		"multiply":   multiply,
-	})
-
-	pattern := sourceDir + "/" + fileTypeExtension + "/*." + fileTypeExtension + ".tmpl"
-	if tmpl, err = tmpl.ParseGlob(pattern); err != nil {
-		return fmt.Errorf("failed to parse template files %s: %w", pattern, err)
-	}
-
-	for _, t := range tmpl.Templates() {
-		ext := "proto"
-		parts := strings.Split(strings.TrimSuffix(t.Name(), ".tmpl"), ".")
-		if len(parts) > 1 {
-			ext = parts[len(parts)-1]
-		}
-
-		target := outputDir + "/" + fileTypeExtension + "/" + strings.TrimSuffix(t.Name(), "."+fileTypeExtension+".tmpl") + "." + ext
-
-		if mapTarget != nil {
-			target = mapTarget(target)
-		}
-
-		fd, err := os.OpenFile(target, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
-		if err != nil {
-			return err
-		}
-		defer fd.Close()
-
-		if err = t.Execute(fd, spec); err != nil {
-			return fmt.Errorf("failed to execute template %s: %w", t.Name(), err)
-		}
-	}
-
-	return nil
-}
-
-func decodeSpecFile(specFile string) (spec specDefinition, err error) {
-	fd, err := os.Open(specFile)
-	if err != nil {
-		return spec, err
-	}
-	defer fd.Close()
-
-	err = json.NewDecoder(fd).Decode(&spec)
-
-	return spec, err
-}
 
 // template utitlies
 
