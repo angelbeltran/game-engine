@@ -47,16 +47,28 @@ type gameEngine struct {
 var state = newGameState()
 
 func newGameState() gameState {
-	var s gameState
+	s := gameState{
+		{{ $state.GetName }}: new({{ $state.GetName }}),
+		Mutex: new(sync.Mutex),
+	}
 
 	{{ template "initialize" NewMessageInitializerParams (printf "s.%s" $state.GetName) $package $state }}
 
 	return s
 }
 
+func (s *{{ $state.GetName }}) Copy() *{{ $state.GetName }} {
+	c := new({{ $state.GetName }})
+	*c = *s
+
+	{{ template "copy" NewMessageCopyParams "c" "s" $package $state }}
+
+	return c
+}
+
 type gameState struct {
-	{{ $state.GetName }}
-	sync.Mutex
+	*{{ $state.GetName }}
+	*sync.Mutex
 }
 
 func newResponse() {{ $responseType }} {
@@ -80,7 +92,14 @@ func (e *gameEngine) {{ $bundle.Method.GetName }}(ctx context.Context, in *{{ $b
 
 		// Enforce the rules
 
-		allowed := {{ template "BoolValue" NewBoolValueParams $action.Rule $inputVariable $stateVariable }}
+		allowed, err := {{ template "BoolValue" NewBoolValueParams $action.Rule $inputVariable $stateVariable }}.Value()
+		if err != nil {
+			return &{{ $responseType }}{
+				{{ $responseErrorField }}: &game_engine_pb.Error{
+					Msg: fmt.Sprint(err),
+				},
+			}, nil
+		}
 		if !allowed {
 			return &{{ $responseType }}{
 				{{ $responseErrorField }}: &game_engine_pb.Error{
@@ -92,15 +111,33 @@ func (e *gameEngine) {{ $bundle.Method.GetName }}(ctx context.Context, in *{{ $b
 
 		// Apply any effects
 
+		next := {{ $stateVariable }}.{{ $state.GetName }}.Copy()
+
 		{{- range $effect := $action.Effect }}
-			{{ template "effect" NewEffectParams $effect $inputVariable $stateVariable }}
+
+		{{- if $effect.GetUpdate }}
+		{{ template "Reference" NewReferenceParams "next" $effect.GetUpdate.State }}, err ={{" "}}
+		{{- template "Value" NewValueParams $effect.GetUpdate.Value $inputVariable $stateVariable }}.Value()
+		if err != nil {
+			return &{{ $responseType }}{
+				{{ $responseErrorField }}: &game_engine_pb.Error{
+					Msg: fmt.Sprintf("failed to apply effects: %v", err),
+				},
+			}, nil
+		}
+
+		{{- else }}
+			{{ failUndefinedEffect }}
 		{{- end }}
+		{{- end }}
+
+		state.{{ $state.GetName }} = next
 
 		// Construct the response
 		res := newResponse()
 
 		{{- range $ref := $action.Response }}
-			{{ template "Reference" NewReferenceParams (printf "res.%s" $responseStateField ) $ref }} = {{ template "Reference" NewReferenceParams $stateVariable $ref }}
+			{{ template "Reference" NewReferenceParams (printf "res.%s" $responseStateField ) $ref }} = {{ template "Reference" NewReferenceParams "next" $ref }}
 		{{- end }}
 
 		return &res, nil
@@ -116,20 +153,6 @@ func (e *gameEngine) {{ $bundle.Method.GetName }}(ctx context.Context, in *{{ $b
 	{{- end }}
 }
 {{ end }}
-
-
-{{- /* Effect Evaluations */}}
-
-{{- define "effect" }}
-{{/* Expects EffectParams */}}
-{{- if .Effect.GetUpdate }}
-	{{- $up := .Effect.GetUpdate }}
-	{{ template "Reference" NewReferenceParams .StateVariable $up.State }} = 
-	{{- template "Value" NewValueParams $up.Value .InputVariable .StateVariable }}
-{{- else }}
-	{{ failUndefinedEffect }}
-{{- end }}
-{{- end }}
 
 
 {{- /* Message Initializations */}}
@@ -184,6 +207,62 @@ func (e *gameEngine) {{ $bundle.Method.GetName }}(ctx context.Context, in *{{ $b
 	{{- end }}
 {{- end }}
 
+
+{{- /* Message Copying */}}
+
+{{- define "copy" }}
+{{/* Expects MessageCopyParams */}}
+	{{- $lhIdent := .LeftHandIdentifier }}
+	{{- $rhIdent := .RightHandIdentifier }}
+	{{- $package := .Package }}
+
+	{{- range $field := .MessageDescriptor.GetFields }}
+		{{- if or $field.GetMessageType $field.IsMap }}
+			{{- $typeName := (goTypeOfField $field).String }}
+
+			{{- $isPointer := eq (index $typeName 0) '*' }}
+			{{- if $isPointer }}
+				{{- $typeName = slice $typeName 1 }}
+			{{- end }}
+
+			{{- $parts := split $typeName "." }}
+			{{- $n := len $parts }}
+			{{- if or (eq $n 0) (gt $n 2 )}}
+				{{- errBadTypeName $typeName }}
+			{{- else if eq $n 2 }}
+				{{- /*$typeName = index $parts 1 */}}
+
+				{{- if eq (index $parts 0) $package }}
+					{{- /* Target package. Trim package name. */}}
+					{{- $typeName = index $parts 1 }}
+				{{- else }}
+				{{- end }}
+			{{- end }}
+
+			{{- if $field.GetMessageType }}
+				{{- $lh := printf "%s.%s"  $lhIdent (camelCase $field.GetName) }}
+				{{- $rh := printf "%s.%s"  $rhIdent (camelCase $field.GetName) }}
+
+				{{- if $isPointer }}
+		{{- $lh }} = new({{ $typeName }})
+		*{{ $lh }} = *({{ $rh }})
+				{{- end }}
+
+				{{- template "copy" NewMessageCopyParams $lh $rh $package $field.GetMessageType }}
+
+			{{- else }}
+				{{- $lh := printf "%s.%s"  $lhIdent (camelCase $field.GetName) }}
+				{{- $rh := printf "%s.%s"  $rhIdent (camelCase $field.GetName) }}
+
+		{{- $lh }} = make({{ $typeName }})
+		for k, v := range {{ $rh }} { {{ $lh }}[k] = v /* TODO: these need to be deep copies */}
+
+			{{- end }}
+
+		{{- end }}
+	{{- end }}
+{{- end }}
+
 `}}
 
 
@@ -193,6 +272,7 @@ func (e *gameEngine) {{ $bundle.Method.GetName }}(ctx context.Context, in *{{ $b
 {{- /* Expects a ReferenceParams */}}
 {{- .Variable }}{{ range $_, $field := .Reference.Path }}.{{ camelCase $field }}{{ end }}
 {{- end }}`}}
+
 
 {{- /* Value Templates */}}
 
@@ -240,7 +320,7 @@ func (e *gameEngine) {{ $bundle.Method.GetName }}(ctx context.Context, in *{{ $b
 {{- end }}
 
 {{ `{{-` }} else if .Value.GetIf {{ `}}{{` }} template "{{ $type }}ValueIf" New{{ $type }}ValueIfParams .Value.GetIf .InputVariable .StateVariable {{ `}}` }}
-{{ "{{-" }} else {{ "}}{{" }} printf "%v" .Value.GetConstant {{ "}}" }}
+{{ "{{-" }} else {{ "}}" }}go_func.{{ $type }}({{"{{" }} printf "%v" .Value.GetConstant {{ "}})" }}
 {{`{{- end }}`}}
 {{`{{- end }}`}}
 
@@ -258,9 +338,9 @@ func (e *gameEngine) {{ $bundle.Method.GetName }}(ctx context.Context, in *{{ $b
 {{ `{{-` }} define "{{ $funcTypeName }}" {{ `-}}` }}
 {{ `{{- /*`}} Expects a {{ $funcTypeName }}Params {{ `*/}}` }}
 {{ `{{-` }} if not .Function.Name {{ `}}{{` }} failNoFunctionName "{{ $funcTypeName }}" {{ `}}{{` }} end {{ `}}` -}}
-go_func.{{- $domain }}To{{ $codomain }}_{{ `{{- camelCase .Function.Name.String }}(` }}{{ $domainGoType }}(
-	{{ `{{-` }} if .Function.GetInput {{ `}}{{` }} template "Reference" NewReferenceParams .InputVariable .Function.GetInput {{ `}}` }}
-	{{ `{{-` }} else if .Function.GetState {{ `}}{{` }} template "Reference" NewReferenceParams .StateVariable .Function.GetState {{ `}}` }}
+go_func.{{- $domain }}To{{ $codomain }}_{{ `{{- camelCase .Function.Name.String }}(` }}
+	{{ `{{-` }} if .Function.GetInput {{ `}}` }}go_func.{{ $domain }}({{ $domainGoType }}({{ `{{` }} template "Reference" NewReferenceParams .InputVariable .Function.GetInput {{ `}}` }}))
+	{{ `{{-` }} else if .Function.GetState {{ `}}` }}go_func.{{ $domain }}({{ $domainGoType }}({{ `{{` }} template "Reference" NewReferenceParams .StateVariable .Function.GetState {{ `}}` }}))
 
 	{{- /* Unary function output at input */}}
 	{{- range $fieldDomain := $types }}
@@ -294,8 +374,7 @@ go_func.{{- $domain }}To{{ $codomain }}_{{ `{{- camelCase .Function.Name.String 
 
 	{{ `{{-` }} else if .If {{ `}}{{` }} template "{{ $domain }}ValueIf" New{{ $domain }}ValueIfParams .If .InputVariable .StateVariable {{ `}}` }}
 
-	{{ `{{-` }} end {{ `}}` }},
-{{ `))` }}
+	{{ `{{-` }} end {{ `}}` }})
 {{ `{{-` }} end {{ `}}` }}
 {{ end }}
 {{- end }}
@@ -315,9 +394,9 @@ go_func.{{- $domain }}To{{ $codomain }}_{{ `{{- camelCase .Function.Name.String 
 {{ `{{-` }} define "{{ $funcTypeName }}" {{ `-}}` }}
 {{ `{{- /*`}} Expects a {{ $funcTypeName }}Params {{ `*/}}` }}
 {{ `{{-` }} if not .Function.Name {{ `}}{{` }} failNoFunctionName "{{ $funcTypeName }}" {{ `}}{{` }} end {{ `}}` -}}
-go_func.{{- $domain1 }}And{{ $domain2 }}To{{ $codomain }}_{{ `{{- camelCase .Function.Name.String }}(` }}{{ $domain1GoType }}(
-	{{ `{{-` }} if .Function.GetInput_1 {{ `}}{{` }} template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 {{ `}}` }}
-	{{ `{{-` }} else if .Function.GetState_1 {{ `}}{{` }} template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 {{ `}}` }}
+go_func.{{- $domain1 }}And{{ $domain2 }}To{{ $codomain }}_{{ `{{- camelCase .Function.Name.String }}(` }}
+	{{ `{{-` }} if .Function.GetInput_1 {{ `}}` }}go_func.{{ $domain1 }}({{ $domain1GoType }}({{`{{` }} template "Reference" NewReferenceParams .InputVariable .Function.GetInput_1 {{ `}}` }}))
+	{{ `{{-` }} else if .Function.GetState_1 {{ `}}` }}go_func.{{ $domain1 }}({{ $domain1GoType }}({{ `{{` }} template "Reference" NewReferenceParams .StateVariable .Function.GetState_1 {{ `}}` }}))
 
 	{{- /* Unary function output at input 1 */}}
 	{{- range $fieldDomain := $types }}
@@ -351,12 +430,12 @@ go_func.{{- $domain1 }}And{{ $domain2 }}To{{ $codomain }}_{{ `{{- camelCase .Fun
 
 	{{ `{{-` }} else if .Function.GetIf_1 {{ `}}{{` }} template "{{ $domain1 }}ValueIf" New{{ $domain1 }}ValueIfParams .Function.GetIf_1 .InputVariable .StateVariable {{ `}}` }}
 
-	{{ `{{-` }} else {{ `}}{{` }} printf "%v" .Function.GetConstant_1 {{ `}}` }}
+	{{ `{{-` }} else {{ `}}` }}go_func.{{ $domain1 }}({{`{{` }} printf "%v" .Function.GetConstant_1 {{ `}}` }})
 
-	{{ `{{-` }} end {{ `}}` }}), {{ $domain2GoType }}(
+	{{ `{{-` }} end {{ `}}` }},
 
-	{{ `{{-` }} if .Function.GetInput_2 {{ `}}{{` }} template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 {{ `}}` }}
-	{{ `{{-` }} else if .Function.GetState_2 {{ `}}{{` }} template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 {{ `}}` }}
+	{{ `{{-` }} if .Function.GetInput_2 {{ `}}` }}go_func.{{ $domain2 }}({{ $domain2GoType }}({{ `{{` }} template "Reference" NewReferenceParams .InputVariable .Function.GetInput_2 {{ `}}` }}))
+	{{ `{{-` }} else if .Function.GetState_2 {{ `}}` }}go_func.{{ $domain2 }}({{ $domain2GoType }}({{ `{{` }} template "Reference" NewReferenceParams .StateVariable .Function.GetState_2 {{ `}}` }}))
 
 	{{- /* Unary function output at input 2 */}}
 	{{- range $fieldDomain := $types }}
@@ -390,8 +469,7 @@ go_func.{{- $domain1 }}And{{ $domain2 }}To{{ $codomain }}_{{ `{{- camelCase .Fun
 
 	{{ `{{-` }} else if .Function.GetIf_2 {{ `}}{{` }} template "{{ $domain2 }}ValueIf" New{{ $domain2 }}ValueIfParams .Function.GetIf_2 .InputVariable .StateVariable {{ `}}` }}
 
-	{{ `{{-` }} end {{ `}}` }}),
-{{ `)` }}
+	{{ `{{-` }} end {{ `}}` }})
 {{ `{{-` }} end {{ `}}` }}
 {{ end }}
 {{ end }}
@@ -414,9 +492,8 @@ go_func.{{ $domain }}sTo{{ $codomain }}_{{ `{{- camelCase .Function.Name.String 
 {{ `{{-` }} $stateVariable := .StateVariable {{ `}}` }}
 {{ `{{-` }} range $arg := .Function.Arguments {{ `}}` }}
 
-{{- $domainGoType }}(
-	{{ `{{-` }} if $arg.GetInput {{ `}}{{` }} template "Reference" NewReferenceParams $inputVariable $arg.GetInput {{ `}}` }}
-	{{ `{{-` }} else if $arg.GetState {{ `}}{{` }} template "Reference" NewReferenceParams $stateVariable $arg.GetState {{ `}}` }}
+	{{ `{{-` }} if $arg.GetInput {{ `}}` }}go_func.{{ $domain }}({{ $domainGoType }}({{ `{{` }} template "Reference" NewReferenceParams $inputVariable $arg.GetInput {{ `}}` }}))
+	{{ `{{-` }} else if $arg.GetState {{ `}}` }}go_func.{{ $domain }}({{ $domainGoType }}({{ `{{` }} template "Reference" NewReferenceParams $stateVariable $arg.GetState {{ `}}` }}))
 
 	{{- /* Unary function output at input */}}
 	{{- range $fieldDomain := $types }}
@@ -450,11 +527,10 @@ go_func.{{ $domain }}sTo{{ $codomain }}_{{ `{{- camelCase .Function.Name.String 
 
 	{{ `{{-` }} else if $arg.GetIf {{ `}}{{` }} template "{{ $domain }}ValueIf" New{{ $domain }}ValueIfParams $arg.GetIf $inputVariable $stateVariable {{ `}}` }}
 
-	{{ `{{-` }} else {{ `}}{{` }} printf "%v" $arg.GetConstant {{ `}}` }}
+	{{ `{{-` }} else {{ `}}` }}go_func.{{ $domain }}({{`{{` }} printf "%v" $arg.GetConstant {{ `}}` }})
 
 	{{ `{{-` }} end {{ `}}` }},
-{{ `),{{-` }} end {{ `}}` }}
-{{ `)` }}
+{{ `{{-` }} end {{ `}}` }})
 {{ `{{-` }} end {{ `}}` }}
 {{ end }}
 {{- end }}
@@ -463,11 +539,10 @@ go_func.{{ $domain }}sTo{{ $codomain }}_{{ `{{- camelCase .Function.Name.String 
 {{- /* If-Else control structures */}}
 
 {{- range $type := $types }}
-{{- $lowerCaseType := $type }}
 {{- $type = capitalize $type }}
 {{ `{{-` }} define "{{ $type }}ValueIf" {{ `-}}` }}
 {{ `{{- /* Expects a ` }}{{ $type }}{{`ValueIfParams */}}` -}}
-func() {{ $lowerCaseType }} {
+func() go_func.{{ $type }} {
 	if {{ `{{` }} template "BoolValue" NewBoolValueParams .If.Predicate .InputVariable .StateVariable {{ `}}` }} {
 		return {{ `{{` }} template "{{ $type }}Value" New{{ $type }}ValueParams .If.Then .InputVariable .StateVariable {{ `}}` }}
 	}

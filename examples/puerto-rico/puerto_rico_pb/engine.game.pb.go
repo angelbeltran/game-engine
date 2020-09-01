@@ -34,7 +34,10 @@ type gameEngine struct {
 var state = newGameState()
 
 func newGameState() gameState {
-	var s gameState
+	s := gameState{
+		State: new(State),
+		Mutex: new(sync.Mutex),
+	}
 
 	s.State.Players = new(State_Players)
 	s.State.Players.Player_1 = new(Player)
@@ -82,9 +85,101 @@ func newGameState() gameState {
 	return s
 }
 
+func (s *State) Copy() *State {
+	c := new(State)
+	*c = *s
+
+	c.Players = new(State_Players)
+	*c.Players = *(s.Players)
+	c.Players.Player_1 = new(Player)
+	*c.Players.Player_1 = *(s.Players.Player_1)
+	c.Players.Player_1.Buildings = new(Player_Buildings)
+	*c.Players.Player_1.Buildings = *(s.Players.Player_1.Buildings)
+	c.Players.Player_1.Plantations = new(Player_Plantations)
+	*c.Players.Player_1.Plantations = *(s.Players.Player_1.Plantations)
+	c.Players.Player_1.Goods = new(Player_Goods)
+	*c.Players.Player_1.Goods = *(s.Players.Player_1.Goods)
+	c.Players.Player_2 = new(Player)
+	*c.Players.Player_2 = *(s.Players.Player_2)
+	c.Players.Player_2.Buildings = new(Player_Buildings)
+	*c.Players.Player_2.Buildings = *(s.Players.Player_2.Buildings)
+	c.Players.Player_2.Plantations = new(Player_Plantations)
+	*c.Players.Player_2.Plantations = *(s.Players.Player_2.Plantations)
+	c.Players.Player_2.Goods = new(Player_Goods)
+	*c.Players.Player_2.Goods = *(s.Players.Player_2.Goods)
+	c.Players.Player_3 = new(Player)
+	*c.Players.Player_3 = *(s.Players.Player_3)
+	c.Players.Player_3.Buildings = new(Player_Buildings)
+	*c.Players.Player_3.Buildings = *(s.Players.Player_3.Buildings)
+	c.Players.Player_3.Plantations = new(Player_Plantations)
+	*c.Players.Player_3.Plantations = *(s.Players.Player_3.Plantations)
+	c.Players.Player_3.Goods = new(Player_Goods)
+	*c.Players.Player_3.Goods = *(s.Players.Player_3.Goods)
+	c.Players.Player_4 = new(Player)
+	*c.Players.Player_4 = *(s.Players.Player_4)
+	c.Players.Player_4.Buildings = new(Player_Buildings)
+	*c.Players.Player_4.Buildings = *(s.Players.Player_4.Buildings)
+	c.Players.Player_4.Plantations = new(Player_Plantations)
+	*c.Players.Player_4.Plantations = *(s.Players.Player_4.Plantations)
+	c.Players.Player_4.Goods = new(Player_Goods)
+	*c.Players.Player_4.Goods = *(s.Players.Player_4.Goods)
+	c.Players.Player_5 = new(Player)
+	*c.Players.Player_5 = *(s.Players.Player_5)
+	c.Players.Player_5.Buildings = new(Player_Buildings)
+	*c.Players.Player_5.Buildings = *(s.Players.Player_5.Buildings)
+	c.Players.Player_5.Plantations = new(Player_Plantations)
+	*c.Players.Player_5.Plantations = *(s.Players.Player_5.Plantations)
+	c.Players.Player_5.Goods = new(Player_Goods)
+	*c.Players.Player_5.Goods = *(s.Players.Player_5.Goods)
+	c.Roles = new(State_Roles)
+	*c.Roles = *(s.Roles)
+	c.Roles.Prospector1 = new(Role)
+	*c.Roles.Prospector1 = *(s.Roles.Prospector1)
+	c.Roles.Prospector2 = new(Role)
+	*c.Roles.Prospector2 = *(s.Roles.Prospector2)
+	c.Roles.Builder = new(Role)
+	*c.Roles.Builder = *(s.Roles.Builder)
+	c.Roles.Captain = new(Role)
+	*c.Roles.Captain = *(s.Roles.Captain)
+	c.Roles.Craftsman = new(Role)
+	*c.Roles.Craftsman = *(s.Roles.Craftsman)
+	c.Roles.Mayor = new(Role)
+	*c.Roles.Mayor = *(s.Roles.Mayor)
+	c.Roles.Settler = new(Role)
+	*c.Roles.Settler = *(s.Roles.Settler)
+	c.Roles.Trader = new(Role)
+	*c.Roles.Trader = *(s.Roles.Trader)
+	c.Plantations = new(State_Plantations)
+	*c.Plantations = *(s.Plantations)
+	c.Plantations.Displayed = new(State_Plantations_Displayed)
+	*c.Plantations.Displayed = *(s.Plantations.Displayed)
+	c.Plantations.Facedown = new(State_Plantations_Counts)
+	*c.Plantations.Facedown = *(s.Plantations.Facedown)
+	c.Plantations.Discarded = new(State_Plantations_Counts)
+	*c.Plantations.Discarded = *(s.Plantations.Discarded)
+	c.Goods = new(State_Goods)
+	*c.Goods = *(s.Goods)
+	c.Buildings = new(State_Buildings)
+	*c.Buildings = *(s.Buildings)
+	c.CargoShips = new(State_CargoShips)
+	*c.CargoShips = *(s.CargoShips)
+	c.CargoShips.Ship_4 = new(CargoShip)
+	*c.CargoShips.Ship_4 = *(s.CargoShips.Ship_4)
+	c.CargoShips.Ship_5 = new(CargoShip)
+	*c.CargoShips.Ship_5 = *(s.CargoShips.Ship_5)
+	c.CargoShips.Ship_6 = new(CargoShip)
+	*c.CargoShips.Ship_6 = *(s.CargoShips.Ship_6)
+	c.CargoShips.Ship_7 = new(CargoShip)
+	*c.CargoShips.Ship_7 = *(s.CargoShips.Ship_7)
+	c.CargoShips.Ship_8 = new(CargoShip)
+	*c.CargoShips.Ship_8 = *(s.CargoShips.Ship_8)
+
+	return c
+}
+
 type gameState struct {
-	State
-	sync.Mutex
+	*State
+	*sync.Mutex
 }
 
 func newResponse() Response {
@@ -147,8 +242,14 @@ func (e *gameEngine) SetPlayers(ctx context.Context, in *Count) (*Response, erro
 
 	// Enforce the rules
 
-	allowed := go_func.BoolAndBoolToBool_AND(bool(go_func.BoolToBool_NOT(bool(state.Started))), bool(go_func.IntAndIntToBool_LTE(int(3), int(in.Count))),
-	)
+	allowed, err := go_func.BoolAndBoolToBool_AND(go_func.BoolToBool_NOT(go_func.Bool(bool(state.Started))), go_func.IntAndIntToBool_LTE(go_func.Int(3), go_func.Int(int(in.Count)))).Value()
+	if err != nil {
+		return &Response{
+			Error: &game_engine_pb.Error{
+				Msg: fmt.Sprint(err),
+			},
+		}, nil
+	}
 	if !allowed {
 		return &Response{
 			Error: &game_engine_pb.Error{
@@ -160,24 +261,58 @@ func (e *gameEngine) SetPlayers(ctx context.Context, in *Count) (*Response, erro
 
 	// Apply any effects
 
-	state.Players.Player_1.Present = go_func.IntAndIntToBool_LTE(int(3), int(in.Count))
+	next := state.State.Copy()
+	next.Players.Player_1.Present, err = go_func.IntAndIntToBool_LTE(go_func.Int(3), go_func.Int(int(in.Count))).Value()
+	if err != nil {
+		return &Response{
+			Error: &game_engine_pb.Error{
+				Msg: fmt.Sprintf("failed to apply effects: %v", err),
+			},
+		}, nil
+	}
+	next.Players.Player_2.Present, err = go_func.IntAndIntToBool_LTE(go_func.Int(3), go_func.Int(int(in.Count))).Value()
+	if err != nil {
+		return &Response{
+			Error: &game_engine_pb.Error{
+				Msg: fmt.Sprintf("failed to apply effects: %v", err),
+			},
+		}, nil
+	}
+	next.Players.Player_3.Present, err = go_func.IntAndIntToBool_LTE(go_func.Int(3), go_func.Int(int(in.Count))).Value()
+	if err != nil {
+		return &Response{
+			Error: &game_engine_pb.Error{
+				Msg: fmt.Sprintf("failed to apply effects: %v", err),
+			},
+		}, nil
+	}
+	next.Players.Player_4.Present, err = go_func.IntAndIntToBool_LTE(go_func.Int(4), go_func.Int(int(in.Count))).Value()
+	if err != nil {
+		return &Response{
+			Error: &game_engine_pb.Error{
+				Msg: fmt.Sprintf("failed to apply effects: %v", err),
+			},
+		}, nil
+	}
+	next.Players.Player_5.Present, err = go_func.IntAndIntToBool_LTE(go_func.Int(5), go_func.Int(int(in.Count))).Value()
+	if err != nil {
+		return &Response{
+			Error: &game_engine_pb.Error{
+				Msg: fmt.Sprintf("failed to apply effects: %v", err),
+			},
+		}, nil
+	}
 
-	state.Players.Player_2.Present = go_func.IntAndIntToBool_LTE(int(3), int(in.Count))
-
-	state.Players.Player_3.Present = go_func.IntAndIntToBool_LTE(int(3), int(in.Count))
-
-	state.Players.Player_4.Present = go_func.IntAndIntToBool_LTE(int(4), int(in.Count))
-
-	state.Players.Player_5.Present = go_func.IntAndIntToBool_LTE(int(5), int(in.Count))
+	state.State = next
 
 	// Construct the response
 	res := newResponse()
-	res.State.Started = state.Started
-	res.State.Players.Player_1.Present = state.Players.Player_1.Present
-	res.State.Players.Player_2.Present = state.Players.Player_2.Present
-	res.State.Players.Player_3.Present = state.Players.Player_3.Present
-	res.State.Players.Player_4.Present = state.Players.Player_4.Present
-	res.State.Players.Player_5.Present = state.Players.Player_5.Present
+	res.State.Started = next.Started
+	res.State.Players.Player_1.Present = next.Players.Player_1.Present
+	res.State.Players.Player_2.Present = next.Players.Player_2.Present
+	res.State.Players.Player_3.Present = next.Players.Player_3.Present
+	res.State.Players.Player_4.Present = next.Players.Player_4.Present
+	res.State.Players.Player_5.Present = next.Players.Player_5.Present
 
 	return &res, nil
 }
@@ -188,12 +323,14 @@ func (e *gameEngine) Start(ctx context.Context, in *EmptyMsg) (*Response, error)
 
 	// Enforce the rules
 
-	allowed := go_func.BoolAndBoolToBool_AND(bool(go_func.BoolToBool_NOT(bool(state.Started))), bool(go_func.BoolAndBoolToBool_AND(bool(state.Players.Player_1.Present), bool(go_func.BoolAndBoolToBool_AND(bool(state.Players.Player_2.Present), bool(go_func.BoolAndBoolToBool_AND(bool(state.Players.Player_3.Present), bool(go_func.BoolAndBoolToBool_OR(bool(state.Players.Player_4.Present), bool(go_func.BoolToBool_NOT(bool(state.Players.Player_5.Present))),
-	)),
-	)),
-	)),
-	)),
-	)
+	allowed, err := go_func.BoolAndBoolToBool_AND(go_func.BoolToBool_NOT(go_func.Bool(bool(state.Started))), go_func.BoolAndBoolToBool_AND(go_func.Bool(bool(state.Players.Player_1.Present)), go_func.BoolAndBoolToBool_AND(go_func.Bool(bool(state.Players.Player_2.Present)), go_func.BoolAndBoolToBool_AND(go_func.Bool(bool(state.Players.Player_3.Present)), go_func.BoolAndBoolToBool_OR(go_func.Bool(bool(state.Players.Player_4.Present)), go_func.BoolToBool_NOT(go_func.Bool(bool(state.Players.Player_5.Present)))))))).Value()
+	if err != nil {
+		return &Response{
+			Error: &game_engine_pb.Error{
+				Msg: fmt.Sprint(err),
+			},
+		}, nil
+	}
 	if !allowed {
 		return &Response{
 			Error: &game_engine_pb.Error{
@@ -205,11 +342,21 @@ func (e *gameEngine) Start(ctx context.Context, in *EmptyMsg) (*Response, error)
 
 	// Apply any effects
 
-	state.Started = true
+	next := state.State.Copy()
+	next.Started, err = go_func.Bool(true).Value()
+	if err != nil {
+		return &Response{
+			Error: &game_engine_pb.Error{
+				Msg: fmt.Sprintf("failed to apply effects: %v", err),
+			},
+		}, nil
+	}
+
+	state.State = next
 
 	// Construct the response
 	res := newResponse()
-	res.State.Started = state.Started
+	res.State.Started = next.Started
 
 	return &res, nil
 }
@@ -220,54 +367,14 @@ func (e *gameEngine) Accept(ctx context.Context, in *RoleChoice) (*Response, err
 
 	// Enforce the rules
 
-	allowed := go_func.BoolsToBool_AND(bool(state.Started), bool(go_func.BoolsToBool_OR(bool(go_func.BoolAndBoolToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(1), int(in.Player))), bool(go_func.IntAndIntToBool_EQ(int(0), int(state.Players.Player_1.Role))),
-	),
-	), bool(go_func.BoolAndBoolToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(2), int(in.Player))), bool(go_func.IntAndIntToBool_EQ(int(0), int(state.Players.Player_2.Role))),
-	),
-	), bool(go_func.BoolAndBoolToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(3), int(in.Player))), bool(go_func.IntAndIntToBool_EQ(int(0), int(state.Players.Player_3.Role))),
-	),
-	), bool(go_func.BoolAndBoolToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(4), int(in.Player))), bool(go_func.IntAndIntToBool_EQ(int(0), int(state.Players.Player_4.Role))),
-	),
-	), bool(go_func.BoolAndBoolToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(5), int(in.Player))), bool(go_func.IntAndIntToBool_EQ(int(0), int(state.Players.Player_5.Role))),
-	),
-	),
-	),
-	), bool(go_func.BoolsToBool_OR(bool(go_func.BoolsToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(1), int(in.Role)),
-	), bool(go_func.BoolToBool_NOT(bool(state.Roles.Prospector1.Available)),
-	),
-	),
-	), bool(go_func.BoolsToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(2), int(in.Role)),
-	), bool(go_func.BoolToBool_NOT(bool(state.Roles.Prospector2.Available)),
-	),
-	),
-	), bool(go_func.BoolsToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(3), int(in.Role)),
-	), bool(go_func.BoolToBool_NOT(bool(state.Roles.Builder.Available)),
-	),
-	),
-	), bool(go_func.BoolsToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(4), int(in.Role)),
-	), bool(go_func.BoolToBool_NOT(bool(state.Roles.Captain.Available)),
-	),
-	),
-	), bool(go_func.BoolsToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(5), int(in.Role)),
-	), bool(go_func.BoolToBool_NOT(bool(state.Roles.Craftsman.Available)),
-	),
-	),
-	), bool(go_func.BoolsToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(6), int(in.Role)),
-	), bool(go_func.BoolToBool_NOT(bool(state.Roles.Mayor.Available)),
-	),
-	),
-	), bool(go_func.BoolsToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(7), int(in.Role)),
-	), bool(go_func.BoolToBool_NOT(bool(state.Roles.Settler.Available)),
-	),
-	),
-	), bool(go_func.BoolsToBool_AND(bool(go_func.IntAndIntToBool_EQ(int(8), int(in.Role)),
-	), bool(go_func.BoolToBool_NOT(bool(state.Roles.Trader.Available)),
-	),
-	),
-	),
-	),
-	),
-	)
+	allowed, err := go_func.BoolsToBool_AND(go_func.Bool(bool(state.Started)), go_func.BoolsToBool_OR(go_func.BoolAndBoolToBool_AND(go_func.IntAndIntToBool_EQ(go_func.Int(1), go_func.Int(int(in.Player))), go_func.IntAndIntToBool_EQ(go_func.Int(0), go_func.Int(int(state.Players.Player_1.Role)))), go_func.BoolAndBoolToBool_AND(go_func.IntAndIntToBool_EQ(go_func.Int(2), go_func.Int(int(in.Player))), go_func.IntAndIntToBool_EQ(go_func.Int(0), go_func.Int(int(state.Players.Player_2.Role)))), go_func.BoolAndBoolToBool_AND(go_func.IntAndIntToBool_EQ(go_func.Int(3), go_func.Int(int(in.Player))), go_func.IntAndIntToBool_EQ(go_func.Int(0), go_func.Int(int(state.Players.Player_3.Role)))), go_func.BoolAndBoolToBool_AND(go_func.IntAndIntToBool_EQ(go_func.Int(4), go_func.Int(int(in.Player))), go_func.IntAndIntToBool_EQ(go_func.Int(0), go_func.Int(int(state.Players.Player_4.Role)))), go_func.BoolAndBoolToBool_AND(go_func.IntAndIntToBool_EQ(go_func.Int(5), go_func.Int(int(in.Player))), go_func.IntAndIntToBool_EQ(go_func.Int(0), go_func.Int(int(state.Players.Player_5.Role))))), go_func.BoolsToBool_OR(go_func.BoolsToBool_AND(go_func.IntAndIntToBool_EQ(go_func.Int(1), go_func.Int(int(in.Role))), go_func.BoolToBool_NOT(go_func.Bool(bool(state.Roles.Prospector1.Available)))), go_func.BoolsToBool_AND(go_func.IntAndIntToBool_EQ(go_func.Int(2), go_func.Int(int(in.Role))), go_func.BoolToBool_NOT(go_func.Bool(bool(state.Roles.Prospector2.Available)))), go_func.BoolsToBool_AND(go_func.IntAndIntToBool_EQ(go_func.Int(3), go_func.Int(int(in.Role))), go_func.BoolToBool_NOT(go_func.Bool(bool(state.Roles.Builder.Available)))), go_func.BoolsToBool_AND(go_func.IntAndIntToBool_EQ(go_func.Int(4), go_func.Int(int(in.Role))), go_func.BoolToBool_NOT(go_func.Bool(bool(state.Roles.Captain.Available)))), go_func.BoolsToBool_AND(go_func.IntAndIntToBool_EQ(go_func.Int(5), go_func.Int(int(in.Role))), go_func.BoolToBool_NOT(go_func.Bool(bool(state.Roles.Craftsman.Available)))), go_func.BoolsToBool_AND(go_func.IntAndIntToBool_EQ(go_func.Int(6), go_func.Int(int(in.Role))), go_func.BoolToBool_NOT(go_func.Bool(bool(state.Roles.Mayor.Available)))), go_func.BoolsToBool_AND(go_func.IntAndIntToBool_EQ(go_func.Int(7), go_func.Int(int(in.Role))), go_func.BoolToBool_NOT(go_func.Bool(bool(state.Roles.Settler.Available)))), go_func.BoolsToBool_AND(go_func.IntAndIntToBool_EQ(go_func.Int(8), go_func.Int(int(in.Role))), go_func.BoolToBool_NOT(go_func.Bool(bool(state.Roles.Trader.Available)))))).Value()
+	if err != nil {
+		return &Response{
+			Error: &game_engine_pb.Error{
+				Msg: fmt.Sprint(err),
+			},
+		}, nil
+	}
 	if !allowed {
 		return &Response{
 			Error: &game_engine_pb.Error{
@@ -279,29 +386,73 @@ func (e *gameEngine) Accept(ctx context.Context, in *RoleChoice) (*Response, err
 
 	// Apply any effects
 
-	state.Roles.Prospector1.Available = go_func.BoolAndBoolToBool_OR(bool(state.Roles.Prospector1.Available), bool(go_func.IntAndIntToBool_EQ(int(1), int(in.Role))),
-	)
+	next := state.State.Copy()
+	next.Roles.Prospector1.Available, err = go_func.BoolAndBoolToBool_OR(go_func.Bool(bool(state.Roles.Prospector1.Available)), go_func.IntAndIntToBool_EQ(go_func.Int(1), go_func.Int(int(in.Role)))).Value()
+	if err != nil {
+		return &Response{
+			Error: &game_engine_pb.Error{
+				Msg: fmt.Sprintf("failed to apply effects: %v", err),
+			},
+		}, nil
+	}
+	next.Roles.Prospector2.Available, err = go_func.BoolAndBoolToBool_OR(go_func.Bool(bool(state.Roles.Prospector2.Available)), go_func.IntAndIntToBool_EQ(go_func.Int(2), go_func.Int(int(in.Role)))).Value()
+	if err != nil {
+		return &Response{
+			Error: &game_engine_pb.Error{
+				Msg: fmt.Sprintf("failed to apply effects: %v", err),
+			},
+		}, nil
+	}
+	next.Roles.Builder.Available, err = go_func.BoolAndBoolToBool_OR(go_func.Bool(bool(state.Roles.Builder.Available)), go_func.IntAndIntToBool_EQ(go_func.Int(3), go_func.Int(int(in.Role)))).Value()
+	if err != nil {
+		return &Response{
+			Error: &game_engine_pb.Error{
+				Msg: fmt.Sprintf("failed to apply effects: %v", err),
+			},
+		}, nil
+	}
+	next.Roles.Captain.Available, err = go_func.BoolAndBoolToBool_OR(go_func.Bool(bool(state.Roles.Captain.Available)), go_func.IntAndIntToBool_EQ(go_func.Int(4), go_func.Int(int(in.Role)))).Value()
+	if err != nil {
+		return &Response{
+			Error: &game_engine_pb.Error{
+				Msg: fmt.Sprintf("failed to apply effects: %v", err),
+			},
+		}, nil
+	}
+	next.Roles.Craftsman.Available, err = go_func.BoolAndBoolToBool_OR(go_func.Bool(bool(state.Roles.Craftsman.Available)), go_func.IntAndIntToBool_EQ(go_func.Int(5), go_func.Int(int(in.Role)))).Value()
+	if err != nil {
+		return &Response{
+			Error: &game_engine_pb.Error{
+				Msg: fmt.Sprintf("failed to apply effects: %v", err),
+			},
+		}, nil
+	}
+	next.Roles.Mayor.Available, err = go_func.BoolAndBoolToBool_OR(go_func.Bool(bool(state.Roles.Mayor.Available)), go_func.IntAndIntToBool_EQ(go_func.Int(6), go_func.Int(int(in.Role)))).Value()
+	if err != nil {
+		return &Response{
+			Error: &game_engine_pb.Error{
+				Msg: fmt.Sprintf("failed to apply effects: %v", err),
+			},
+		}, nil
+	}
+	next.Roles.Settler.Available, err = go_func.BoolAndBoolToBool_OR(go_func.Bool(bool(state.Roles.Settler.Available)), go_func.IntAndIntToBool_EQ(go_func.Int(7), go_func.Int(int(in.Role)))).Value()
+	if err != nil {
+		return &Response{
+			Error: &game_engine_pb.Error{
+				Msg: fmt.Sprintf("failed to apply effects: %v", err),
+			},
+		}, nil
+	}
+	next.Roles.Trader.Available, err = go_func.BoolAndBoolToBool_OR(go_func.Bool(bool(state.Roles.Trader.Available)), go_func.IntAndIntToBool_EQ(go_func.Int(8), go_func.Int(int(in.Role)))).Value()
+	if err != nil {
+		return &Response{
+			Error: &game_engine_pb.Error{
+				Msg: fmt.Sprintf("failed to apply effects: %v", err),
+			},
+		}, nil
+	}
 
-	state.Roles.Prospector2.Available = go_func.BoolAndBoolToBool_OR(bool(state.Roles.Prospector2.Available), bool(go_func.IntAndIntToBool_EQ(int(2), int(in.Role))),
-	)
-
-	state.Roles.Builder.Available = go_func.BoolAndBoolToBool_OR(bool(state.Roles.Builder.Available), bool(go_func.IntAndIntToBool_EQ(int(3), int(in.Role))),
-	)
-
-	state.Roles.Captain.Available = go_func.BoolAndBoolToBool_OR(bool(state.Roles.Captain.Available), bool(go_func.IntAndIntToBool_EQ(int(4), int(in.Role))),
-	)
-
-	state.Roles.Craftsman.Available = go_func.BoolAndBoolToBool_OR(bool(state.Roles.Craftsman.Available), bool(go_func.IntAndIntToBool_EQ(int(5), int(in.Role))),
-	)
-
-	state.Roles.Mayor.Available = go_func.BoolAndBoolToBool_OR(bool(state.Roles.Mayor.Available), bool(go_func.IntAndIntToBool_EQ(int(6), int(in.Role))),
-	)
-
-	state.Roles.Settler.Available = go_func.BoolAndBoolToBool_OR(bool(state.Roles.Settler.Available), bool(go_func.IntAndIntToBool_EQ(int(7), int(in.Role))),
-	)
-
-	state.Roles.Trader.Available = go_func.BoolAndBoolToBool_OR(bool(state.Roles.Trader.Available), bool(go_func.IntAndIntToBool_EQ(int(8), int(in.Role))),
-	)
+	state.State = next
 
 	// Construct the response
 	res := newResponse()

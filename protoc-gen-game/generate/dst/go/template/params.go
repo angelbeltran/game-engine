@@ -1561,3 +1561,19 @@ func NewMessageInitializerParams(ident, pkg string, msg *desc.MessageDescriptor)
 	}
 }
 
+type MessageCopyParams struct {
+	LeftHandIdentifier string
+	RightHandIdentifier string
+	Package string
+	MessageDescriptor *desc.MessageDescriptor
+}
+
+func NewMessageCopyParams(left, right, pkg string, msg *desc.MessageDescriptor) MessageCopyParams {
+	return MessageCopyParams {
+		LeftHandIdentifier: left,
+		RightHandIdentifier: right,
+		Package: pkg,
+		MessageDescriptor: msg,
+	}
+}
+

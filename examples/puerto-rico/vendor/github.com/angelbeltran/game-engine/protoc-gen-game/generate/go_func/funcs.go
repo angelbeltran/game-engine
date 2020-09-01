@@ -6,316 +6,472 @@ import (
 	"strings"
 )
 
-func BoolToBool_NOT(v bool) bool {
-	return !v
+// Chainable values
+
+type BoolValue struct {
+	value bool
+	err   error
 }
 
-func BoolToInt_CAST(v bool) int {
-	if v {
-		return 1
+type IntValue struct {
+	value int
+	err   error
+}
+
+type FloatValue struct {
+	value float64
+	err   error
+}
+
+type StringValue struct {
+	value string
+	err   error
+}
+
+func Bool(v bool) BoolValue {
+	return BoolValue{value: v}
+}
+
+func Int(v int) IntValue {
+	return IntValue{value: v}
+}
+
+func Float(v float64) FloatValue {
+	return FloatValue{value: v}
+}
+
+func String(v string) StringValue {
+	return StringValue{value: v}
+}
+
+func (v BoolValue) Value() (bool, error) {
+	return v.value, v.err
+}
+
+func (v IntValue) Value() (int, error) {
+	return v.value, v.err
+}
+
+func (v FloatValue) Value() (float64, error) {
+	return v.value, v.err
+}
+
+func (v StringValue) Value() (string, error) {
+	return v.value, v.err
+}
+
+func (v BoolValue) Err() error {
+	return v.err
+}
+
+func (v IntValue) Err() error {
+	return v.err
+}
+
+func (v FloatValue) Err() error {
+	return v.err
+}
+
+func (v StringValue) Err() error {
+	return v.err
+}
+
+// Unary functions
+
+// Bool -> .
+
+func BoolToBool_NOT(v BoolValue) BoolValue {
+	v.value = !v.value
+	return v
+}
+
+func BoolToInt_CAST(v BoolValue) IntValue {
+	i := IntValue{err: v.err}
+	if v.value {
+		i.value = 1
 	}
-	return 0
+	return i
 }
 
-func BoolToFloat_CAST(v bool) float64 {
-	if v {
-		return 1
+func BoolToFloat_CAST(v BoolValue) FloatValue {
+	f := FloatValue{err: v.err}
+	if v.value {
+		f.value = 1
 	}
-	return 0
+	return f
 }
 
-func BoolToString_CAST(v bool) string {
-	if v {
-		return "true"
+func BoolToString_CAST(v BoolValue) StringValue {
+	s := StringValue{err: v.err}
+	if v.value {
+		s.value = "true"
+	} else {
+		s.value = "false"
 	}
-	return "false"
+	return s
 }
 
-func IntToBool_CAST(v int) bool {
-	return v != 0
+// Int -> .
+
+func IntToBool_CAST(v IntValue) BoolValue {
+	return BoolValue{value: v.value != 0, err: v.err}
 }
 
-func IntToInt_NEG(v int) int {
-	return -v
+func IntToInt_NEG(v IntValue) IntValue {
+	v.value = -v.value
+	return v
 }
 
-func IntToInt_INC(v int) int {
-	return v + 1
+func IntToInt_INC(v IntValue) IntValue {
+	v.value++
+	return v
 }
 
-func IntToInt_DEC(v int) int {
-	return v - 1
+func IntToInt_DEC(v IntValue) IntValue {
+	v.value--
+	return v
 }
 
-func IntToString_CAST(v int) string {
-	return fmt.Sprint(v)
+func IntToString_CAST(v IntValue) StringValue {
+	return StringValue{value: fmt.Sprint(v.value), err: v.err}
 }
 
-func StringToBool_CAST(v string) bool {
-	return len(v) > 0
+// String -> .
+
+func StringToBool_CAST(v StringValue) BoolValue {
+	return BoolValue{value: len(v.value) > 0, err: v.err}
 }
 
-func StringToInt_LEN(v string) int {
-	return len(v)
+func StringToInt_LEN(v StringValue) IntValue {
+	return IntValue{value: len(v.value), err: v.err}
 }
 
-func StringToString_UPPER(v string) string {
-	return strings.ToUpper(v)
+func StringToString_UPPER(v StringValue) StringValue {
+	return StringValue{value: strings.ToUpper(v.value), err: v.err}
 }
 
-func StringToString_LOWER(v string) string {
-	return strings.ToLower(v)
+func StringToString_LOWER(v StringValue) StringValue {
+	return StringValue{value: strings.ToLower(v.value), err: v.err}
 }
 
-func BoolAndBoolToBool_EQ(v, w bool) bool {
-	return v == w
+// Binary functions
+
+// (Bool, Bool) -> .
+
+func BoolAndBoolToBool_EQ(v, w BoolValue) BoolValue {
+	return BoolValue{value: v.value == w.value, err: firstError(v, w)}
 }
 
-func BoolAndBoolToBool_NEQ(v, w bool) bool {
-	return v != w
+func BoolAndBoolToBool_NEQ(v, w BoolValue) BoolValue {
+	return BoolValue{value: v.value != w.value, err: firstError(v, w)}
 }
 
-func BoolAndBoolToBool_GT(v, w bool) bool {
-	return v && !w
+func BoolAndBoolToBool_GT(v, w BoolValue) BoolValue {
+	return BoolValue{value: v.value && !w.value, err: firstError(v, w)}
 }
 
-func BoolAndBoolToBool_LT(v, w bool) bool {
-	return !v && w
+func BoolAndBoolToBool_LT(v, w BoolValue) BoolValue {
+	return BoolValue{value: !v.value && w.value, err: firstError(v, w)}
 }
 
-func BoolAndBoolToBool_GTE(v, w bool) bool {
-	return v || !w
+func BoolAndBoolToBool_GTE(v, w BoolValue) BoolValue {
+	return BoolValue{value: v.value || !w.value, err: firstError(v, w)}
 }
 
-func BoolAndBoolToBool_LTE(v, w bool) bool {
-	return !v || w
+func BoolAndBoolToBool_LTE(v, w BoolValue) BoolValue {
+	return BoolValue{value: !v.value || w.value, err: firstError(v, w)}
 }
 
-func BoolAndBoolToBool_AND(v, w bool) bool {
-	return v && w
+func BoolAndBoolToBool_AND(v, w BoolValue) BoolValue {
+	return BoolValue{value: v.value && w.value, err: firstError(v, w)}
 }
 
-func BoolAndBoolToBool_OR(v, w bool) bool {
-	return v || w
+func BoolAndBoolToBool_OR(v, w BoolValue) BoolValue {
+	return BoolValue{value: v.value || w.value, err: firstError(v, w)}
 }
 
-func IntAndIntToBool_EQ(v, w int) bool {
-	return v == w
+// (Int, Int) -> .
+
+func IntAndIntToBool_EQ(v, w IntValue) BoolValue {
+	return BoolValue{value: v.value == w.value, err: firstError(v, w)}
 }
 
-func IntAndIntToBool_NEQ(v, w int) bool {
-	return v != w
+func IntAndIntToBool_NEQ(v, w IntValue) BoolValue {
+	return BoolValue{value: v.value != w.value, err: firstError(v, w)}
 }
 
-func IntAndIntToBool_GT(v, w int) bool {
-	return v > w
+func IntAndIntToBool_GT(v, w IntValue) BoolValue {
+	return BoolValue{value: v.value > w.value, err: firstError(v, w)}
 }
 
-func IntAndIntToBool_LT(v, w int) bool {
-	return v < w
+func IntAndIntToBool_LT(v, w IntValue) BoolValue {
+	return BoolValue{value: v.value < w.value, err: firstError(v, w)}
 }
 
-func IntAndIntToBool_GTE(v, w int) bool {
-	return v >= w
+func IntAndIntToBool_GTE(v, w IntValue) BoolValue {
+	return BoolValue{value: v.value >= w.value, err: firstError(v, w)}
 }
 
-func IntAndIntToBool_LTE(v, w int) bool {
-	return v <= w
+func IntAndIntToBool_LTE(v, w IntValue) BoolValue {
+	return BoolValue{value: v.value <= w.value, err: firstError(v, w)}
 }
 
-func IntAndIntToInt_ADD(v, w int) int {
-	return v + w
+func IntAndIntToInt_ADD(v, w IntValue) IntValue {
+	return IntValue{value: v.value + w.value, err: firstError(v, w)}
 }
 
-func IntAndIntToInt_SUB(v, w int) int {
-	return v - w
+func IntAndIntToInt_SUB(v, w IntValue) IntValue {
+	return IntValue{value: v.value - w.value, err: firstError(v, w)}
 }
 
-func IntAndIntToInt_MULT(v, w int) int {
-	return v * w
+func IntAndIntToInt_MULT(v, w IntValue) IntValue {
+	return IntValue{value: v.value * w.value, err: firstError(v, w)}
 }
 
-func IntAndIntToInt_DIV(v, w int) int {
-	if v == 0 {
-		return 0
-	}
-	if w == 0 {
-		if w > 0 {
-			return math.MaxInt64
-		}
-		return math.MinInt64
-	}
+func IntAndIntToInt_DIV(v, w IntValue) IntValue {
+	i := IntValue{err: firstError(v, w)}
 
-	return v / w
-}
-
-func IntAndIntToInt_MOD(v, w int) int {
-	if v == 0 || w == 0 {
-		return 0
-	}
-
-	return v % w
-}
-
-func FloatAndFloatToBool_EQ(v, w float64) bool {
-	return v == w
-}
-
-func FloatAndFloatToBool_NEQ(v, w float64) bool {
-	return v != w
-}
-
-func FloatAndFloatToBool_GT(v, w float64) bool {
-	return v > w
-}
-
-func FloatAndFloatToBool_LT(v, w float64) bool {
-	return v < w
-}
-
-func FloatAndFloatToBool_GTE(v, w float64) bool {
-	return v >= w
-}
-
-func FloatAndFloatToBool_LTE(v, w float64) bool {
-	return v <= w
-}
-
-func FloatAndFloatToBool_ADD(v, w float64) float64 {
-	return v + w
-}
-
-func FloatAndFloatToBool_SUB(v, w float64) float64 {
-	return v - w
-}
-
-func FloatAndFloatToBool_MULT(v, w float64) float64 {
-	return v * w
-}
-
-func FloatAndFloatToFloat_DIV(v, w float64) float64 {
-	if v == 0 {
-		return 0
-	}
-	if w == 0 {
-		if w > 0 {
-			return math.MaxFloat64
-		}
-		return math.SmallestNonzeroFloat64
+	if v.value == 0 {
+	} else if w.value != 0 {
+		i.value = v.value / w.value
+	} else if v.value > 0 {
+		i.value = math.MaxInt64
+	} else {
+		i.value = math.MinInt64
 	}
 
-	return v / w
+	return i
 }
 
-func StringAndStringToBool_EQ(v, w string) bool {
-	return v == w
+func IntAndIntToInt_MOD(v, w IntValue) IntValue {
+	i := IntValue{err: firstError(v, w)}
+
+	if v.value != 0 && w.value != 0 {
+		i.value = v.value % w.value
+	}
+
+	return i
 }
 
-func StringAndStringToBool_NEQ(v, w string) bool {
-	return v != w
+// (Float, Float) -> .
+
+func FloatAndFloatToBool_EQ(v, w FloatValue) BoolValue {
+	return BoolValue{value: v.value == w.value, err: firstError(v, w)}
 }
 
-func StringAndStringToBool_GT(v, w string) bool {
-	return v > w
+func FloatAndFloatToBool_NEQ(v, w FloatValue) BoolValue {
+	return BoolValue{value: v.value != w.value, err: firstError(v, w)}
 }
 
-func StringAndStringToBool_LT(v, w string) bool {
-	return v < w
+func FloatAndFloatToBool_GT(v, w FloatValue) BoolValue {
+	return BoolValue{value: v.value > w.value, err: firstError(v, w)}
 }
 
-func StringAndStringToBool_GTE(v, w string) bool {
-	return v >= w
+func FloatAndFloatToBool_LT(v, w FloatValue) BoolValue {
+	return BoolValue{value: v.value < w.value, err: firstError(v, w)}
 }
 
-func StringAndStringToBool_LTE(v, w string) bool {
-	return v <= w
+func FloatAndFloatToBool_GTE(v, w FloatValue) BoolValue {
+	return BoolValue{value: v.value >= w.value, err: firstError(v, w)}
 }
 
-func StringAndStringToBool_CONCAT(v, w string) string {
-	return v + w
+func FloatAndFloatToBool_LTE(v, w FloatValue) BoolValue {
+	return BoolValue{value: v.value <= w.value, err: firstError(v, w)}
 }
 
-func BoolsToBool_EQ(v ...bool) bool {
+func FloatAndFloatToBool_ADD(v, w FloatValue) FloatValue {
+	return FloatValue{value: v.value + w.value, err: firstError(v, w)}
+}
+
+func FloatAndFloatToBool_SUB(v, w FloatValue) FloatValue {
+	return FloatValue{value: v.value - w.value, err: firstError(v, w)}
+}
+
+func FloatAndFloatToBool_MULT(v, w FloatValue) FloatValue {
+	return FloatValue{value: v.value * w.value, err: firstError(v, w)}
+}
+
+func FloatAndFloatToFloat_DIV(v, w FloatValue) FloatValue {
+	f := FloatValue{err: firstError(v, w)}
+
+	if v.value == 0 {
+	} else if w.value != 0 {
+		f.value = v.value / w.value
+	} else if v.value > 0 {
+		f.value = math.MaxFloat64
+	} else {
+		f.value = -math.MaxFloat64
+	}
+
+	return f
+}
+
+// (String, String) -> .
+
+func StringAndStringToBool_EQ(v, w StringValue) BoolValue {
+	return BoolValue{value: v.value == w.value, err: firstError(v, w)}
+}
+
+func StringAndStringToBool_NEQ(v, w StringValue) BoolValue {
+	return BoolValue{value: v.value != w.value, err: firstError(v, w)}
+}
+
+func StringAndStringToBool_GT(v, w StringValue) BoolValue {
+	return BoolValue{value: v.value > w.value, err: firstError(v, w)}
+}
+
+func StringAndStringToBool_LT(v, w StringValue) BoolValue {
+	return BoolValue{value: v.value < w.value, err: firstError(v, w)}
+}
+
+func StringAndStringToBool_GTE(v, w StringValue) BoolValue {
+	return BoolValue{value: v.value >= w.value, err: firstError(v, w)}
+}
+
+func StringAndStringToBool_LTE(v, w StringValue) BoolValue {
+	return BoolValue{value: v.value <= w.value, err: firstError(v, w)}
+}
+
+func StringAndStringToBool_CONCAT(v, w StringValue) StringValue {
+	return StringValue{value: v.value + w.value, err: firstError(v, w)}
+}
+
+// N-ary functions
+
+// (Bool..) -> .
+
+func BoolsToBool_EQ(v ...BoolValue) BoolValue {
+	b := BoolValue{err: firstError(boolValueErrors(v...)...)}
+
 	if len(v) == 0 {
-		return false
+		return b
 	}
 
-	for _, b := range v[1:] {
-		if v[0] != b {
-			return false
+	for _, val := range v[1:] {
+		if v[0].value != val.value {
+			return b
 		}
 	}
 
-	return true
+	b.value = true
+	return b
 }
 
-func BoolsToBool_NEQ(v ...bool) bool {
-	switch len(v) {
-	case 0:
-		return false
-	case 1:
-		return true
-	case 2:
-		return v[0] != v[1]
-	default:
-		return false
+func BoolsToBool_NEQ(v ...BoolValue) BoolValue {
+	return BoolValue{
+		value: (len(v) == 1) || (len(v) == 2 && v[0].value != v[1].value),
+		err:   firstError(boolValueErrors(v...)...),
 	}
 }
 
-func BoolsToBool_AND(v ...bool) bool {
+func BoolsToBool_AND(v ...BoolValue) BoolValue {
+	b := BoolValue{err: firstError(boolValueErrors(v...)...)}
+
 	if len(v) == 0 {
-		return false
+		return b
 	}
 
-	for _, b := range v {
-		if !b {
-			return false
+	for _, val := range v {
+		if !val.value {
+			return b
 		}
 	}
 
-	return true
+	b.value = true
+	return b
 }
 
-func BoolsToBool_OR(v ...bool) bool {
-	if len(v) == 0 {
-		return false
-	}
+func BoolsToBool_OR(v ...BoolValue) BoolValue {
+	b := BoolValue{err: firstError(boolValueErrors(v...)...)}
 
-	for _, b := range v {
-		if b {
-			return true
+	for _, val := range v {
+		if val.value {
+			b.value = true
+			break
 		}
 	}
 
-	return false
+	return b
 }
 
-func IntsToInt_ADD(v ...int) int {
-	var res int
+// (Int..) -> .
 
-	for _, i := range v {
-		res += i
+func IntsToInt_ADD(v ...IntValue) IntValue {
+	i := IntValue{err: firstError(intValueErrors(v...)...)}
+
+	for _, val := range v {
+		i.value += val.value
 	}
 
-	return res
+	return i
 }
 
-func IntsToInt_MULT(v ...int) int {
-	var res int
+func IntsToInt_MULT(v ...IntValue) IntValue {
+	i := IntValue{err: firstError(intValueErrors(v...)...)}
 
-	for _, i := range v {
-		res *= i
+	for _, val := range v {
+		i.value *= val.value
 	}
 
-	return res
+	return i
 }
 
-func StringsToString_CONCAT(v ...string) string {
-	var res string
+// (String..) -> .
 
-	for _, s := range v {
-		res += s
+func StringsToString_CONCAT(v ...StringValue) StringValue {
+	s := StringValue{err: firstError(stringValueErrors(v...)...)}
+
+	for _, val := range v {
+		s.value += val.value
 	}
 
-	return res
+	return s
+}
+
+// Error handling
+
+type errHolder interface {
+	Err() error
+}
+
+func boolValueErrors(vs ...BoolValue) []errHolder {
+	a := make([]errHolder, len(vs))
+	for i, v := range vs {
+		a[i] = v
+	}
+	return a
+}
+
+func intValueErrors(vs ...IntValue) []errHolder {
+	a := make([]errHolder, len(vs))
+	for i, v := range vs {
+		a[i] = v
+	}
+	return a
+}
+
+func floatValueErrors(vs ...FloatValue) []errHolder {
+	a := make([]errHolder, len(vs))
+	for i, v := range vs {
+		a[i] = v
+	}
+	return a
+}
+
+func stringValueErrors(vs ...StringValue) []errHolder {
+	a := make([]errHolder, len(vs))
+	for i, v := range vs {
+		a[i] = v
+	}
+	return a
+}
+
+func firstError(values ...errHolder) error {
+	for _, v := range values {
+		if err := v.Err(); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

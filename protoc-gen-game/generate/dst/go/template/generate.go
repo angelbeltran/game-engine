@@ -57,6 +57,7 @@ func GenerateService(w io.Writer, opts TemplateParams) error {
 		},
 		"NewEffectParams": NewEffectParams,
 		"NewMessageInitializerParams": NewMessageInitializerParams,
+		"NewMessageCopyParams": NewMessageCopyParams,
 		"NewReferenceParams": NewReferenceParams,
 		"NewValueParams": NewValueParams,
 		"NewBoolValueParams": NewBoolValueParams,
